@@ -1,0 +1,521 @@
+# coding: latin-1
+"""
+Cross-platform collateralized-loan risk assessment (crypto collateral).
+
+Not a traditional credit score: a risk-of-undercollateralization check for
+a loan backed by crypto collateral. The only quantity genuinely private to
+more than one party is the client's existing debt on OTHER lending
+platforms -- everything else (prices, volatility, on-chain wallet
+behaviour, market liquidity) is public data, computed by a Python layer
+outside MP-SPDZ (see Scripts/risk_data/) and fed in as private input of the
+REQUESTING platform only, because MP-SPDZ has no live network access during
+a secure computation and Programs/Public-Input/ (the framework's public-
+input channel) does not work in the binary circuit domain (PUBINPUT is
+absent from GC/instructions.h) -- see Compiler.compilerLib for the binary
+dummy-type list that would otherwise silently misbehave.
+
+All arithmetic is sint (integers), no sfix: every ratio test is a
+cross-multiplication against a public policy constant instead of a secret
+division, which sidesteps the whole class of sfix/binary-domain portability
+bugs found while building the previous program in this repo.
+
+Three reveal modes (compile-time arg <mode>, see decide_* below):
+  0 = benchmark (default): decide_public() reveals every sub-score, both
+      policy thresholds, and all 7 intermediate boolean flags to all N
+      parties. Portable to all three domains -- this is the only mode
+      compiled for the binary domain, and the only one exercised by
+      Scripts/mpc_bench.py's automated sweeps.
+  1 = strict: decide_strict() composes the whole decision in SECRET
+      arithmetic and reveals only a 0/1/2 code, and only to REQUESTER via
+      reveal_to(). A thesis case study on the cost of maximal privacy
+      (see the field/ring-only limitation below), not meant for
+      production use -- REQUESTER alone learns the outcome, so no
+      multi-party sign-off on a shared result is possible.
+  2 = production: decide_production() also composes in secret arithmetic
+      (so the 7 flags never exist in the clear to any party, not even
+      transiently), but reveals the decision code, the total score,
+      max_ltv_bps, AND liq_threshold_bps to ALL N parties via plain
+      .reveal() -- enough for every participating platform to
+      independently verify and sign the same outcome, and to derive an
+      accurate (not just conservative) indicative liquidation price (see
+      Scripts/crypto_risk_run.py's on-chain-publish step and
+      Scripts/risk_data/policy.py) -- without exposing the 5 sub-scores
+      or any of the 7 flags that would reveal the internal weighting of
+      the risk model. liq_threshold_bps was withheld in an earlier
+      revision on the assumption that withholding more was automatically
+      safer; it derives only from max_ltv_bps (itself already revealed)
+      plus PUBLIC policy constants, never from the cross-platform debt
+      this program actually protects, so withholding it bought no
+      privacy -- only a needlessly noisy liquidation-price estimate. Same
+      N==2-vs-N>=3 exposure rule as mode 0, with no exception: at N==2
+      only the leverage band is ever revealed, to anyone, including
+      REQUESTER -- giving REQUESTER the exact aggregate would let it
+      recover the other platform's exact debt by subtraction (it already
+      knows its own contribution and the new loan), independent of who
+      the reveal target is.
+
+Modes 1 and 2 are field/ring only: both depend on composing the decision
+in secret arithmetic BEFORE any reveal, which is only proven safe outside
+the binary domain (decide_public's docstring explains why composing
+secret booleans arithmetically before revealing silently broke in an
+earlier program in the binary domain specifically). Mode 1 additionally
+needs reveal_to(), unavailable for binary-circuit types
+(Compiler/GC/types.py). Requesting mode 1/2 while compiling for binary
+raises CompilerError at compile time rather than failing in a more
+confusing way later.
+
+Input file order (Player-Data/Input-P<i>-0), whitespace separated:
+  i != REQUESTER:
+    existing_debt_usd
+  i == REQUESTER, in this exact order:
+    existing_debt_usd        (its own slot in the platform loop above)
+    new_loan_usd              private, the loan being underwritten
+    collateral_value_usd       collateral_amount x spot price
+    vol_30d_bps                annualized volatility, basis points
+    corr_bps                   collateral vs benchmark asset, 90d, bps
+    liquidity_ratio_bps        24h volume / collateral_value, bps
+    wallet_age_days
+    wallet_flags                count of on-chain red flags (0 = clean)
+
+Usage: ./compile.py [domain flags] crypto_collateral_risk <n_platforms=2> <requester=0> <mode=0>
+"""
+
+# Deliberately NOT importing sint/print_ln/etc: see credit_score.mpc's note
+# in prior revisions -- the compiler injects domain-configured versions of
+# these names into this file's exec namespace, an explicit import would
+# grab the wrong (non-domain-configured) version. CompilerError is a plain
+# exception class, not one of those domain-configured names, so importing
+# it explicitly is safe.
+from Compiler.exceptions import CompilerError
+
+# ---------------------------------------------------------------------------
+# Compile-time parameters
+# ---------------------------------------------------------------------------
+
+N_PLATFORMS = 2
+if len(program.args) > 1:
+    N_PLATFORMS = int(program.args[1])
+
+REQUESTER = 0
+if len(program.args) > 2:
+    REQUESTER = int(program.args[2])
+
+MODE_BENCHMARK = 0   # decide_public: full detail, all N parties, all domains
+MODE_STRICT = 1      # decide_strict: code only, REQUESTER only, field/ring
+MODE_PRODUCTION = 2  # decide_production: code+score+max_ltv, all N parties, field/ring
+
+MODE = MODE_BENCHMARK
+if len(program.args) > 3:
+    MODE = int(program.args[3])
+
+if MODE != MODE_BENCHMARK and program.options.binary:
+    raise CompilerError(
+        f'mode={MODE} (strict/production) requires the field or ring '
+        f'domain, not binary: both modes depend on composing the '
+        f'decision in secret arithmetic before any reveal, which is not '
+        f'proven safe in the binary domain (see decide_public\'s '
+        f'docstring), and mode=1 additionally needs reveal_to(), which '
+        f'Compiler/GC/types.py raises CompilerError for unconditionally '
+        f'on binary-circuit types. Compile with mode=0 for binary, or '
+        f'drop -B/-G for mode=1/2.')
+
+if not program.options.binary:
+    program.use_edabit(True)
+
+# ---------------------------------------------------------------------------
+# Policy constants: PUBLIC, compile-time, versioned. Never read as input
+# from any party -- these are the lender's underwriting rules, not data
+# belonging to a client or a single platform. All N parties must agree on
+# them *before* participating, which in practice means verifying the
+# compiled bytecode/source hash against a published policy version, not
+# trusting a value any single party could otherwise inject at runtime.
+# ---------------------------------------------------------------------------
+
+POLICY_VERSION = 1  # bump whenever any constant below changes
+
+BPS = 10000
+
+# Volatility tiers -> (max_ltv_bps, volatility sub-score out of 20)
+VOL_STABLE_BPS = 500      # < 0.5% daily-return stdev, annualized -- stablecoin-like
+VOL_BLUECHIP_BPS = 3000   # < 30% -- BTC/ETH-like
+VOL_MEDIUM_BPS = 6000     # < 60% -- mid-cap
+MAX_LTV_STABLE_BPS = 8500
+MAX_LTV_BLUECHIP_BPS = 6500
+MAX_LTV_MEDIUM_BPS = 5000
+MAX_LTV_HIGH_BPS = 3500
+VOL_SCORE_STABLE = 20
+VOL_SCORE_BLUECHIP = 18
+VOL_SCORE_MEDIUM = 10
+VOL_SCORE_HIGH = 3
+
+LIQ_BUFFER_BPS = 1000        # liquidation threshold = max_ltv + this buffer
+
+CORR_LOW_BPS = 3000
+CORR_MED_BPS = 6000
+CORR_SCORE_LOW = 15
+CORR_SCORE_MED = 8
+CORR_SCORE_HIGH = 0
+
+LIQUIDITY_GOOD_BPS = 100000   # 24h volume >= 10x collateral value
+LIQUIDITY_OK_BPS = 20000      # >= 2x
+LIQUIDITY_MIN_BPS = 5000      # >= 0.5x; below this, "thin market"
+LIQUIDITY_SCORE_GOOD = 15
+LIQUIDITY_SCORE_OK = 9
+LIQUIDITY_SCORE_MIN = 4
+LIQUIDITY_SCORE_BAD = 0
+
+WALLET_AGE_ESTABLISHED = 365
+WALLET_AGE_NEW = 90
+WALLET_SCORE_AGE_ESTABLISHED = 8
+WALLET_SCORE_AGE_NEW = 4
+WALLET_SCORE_FLAGS_CLEAN = 7
+WALLET_SCORE_FLAGS_ONE = 3
+
+APPROVAL_SCORE_THRESHOLD = 70
+MAX_DEBT_CAP = 1_000_000_000  # $1e9, input-validation ceiling per platform
+
+
+# ---------------------------------------------------------------------------
+# Step 1: read inputs. Per-platform existing debt (private, one per party,
+# 0 = no position -- also hides membership), then the requester's own
+# business-private + pre-computed-public-metric fields.
+# ---------------------------------------------------------------------------
+
+def read_platform_debts():
+    return [sint.get_input_from(i) for i in range(N_PLATFORMS)]
+
+
+def read_requester_context():
+    new_loan = sint.get_input_from(REQUESTER)
+    collateral_value = sint.get_input_from(REQUESTER)
+    vol_bps = sint.get_input_from(REQUESTER)
+    corr_bps = sint.get_input_from(REQUESTER)
+    liquidity_ratio_bps = sint.get_input_from(REQUESTER)
+    wallet_age_days = sint.get_input_from(REQUESTER)
+    wallet_flags = sint.get_input_from(REQUESTER)
+    return dict(new_loan=new_loan, collateral_value=collateral_value,
+                vol_bps=vol_bps, corr_bps=corr_bps,
+                liquidity_ratio_bps=liquidity_ratio_bps,
+                wallet_age_days=wallet_age_days, wallet_flags=wallet_flags)
+
+
+# ---------------------------------------------------------------------------
+# Step 2: input validation. A platform inputting a negative or absurd debt
+# would skew the aggregate -- the protocol's malicious security (where
+# available) authenticates the SHARING, not the semantics of what was
+# shared. Cheap in-circuit range check, closes that gap.
+# ---------------------------------------------------------------------------
+
+def validate_debts(platform_debts):
+    any_invalid = sint(0)
+    for debt in platform_debts:
+        valid = (debt >= sint(0)) * (debt <= sint(MAX_DEBT_CAP))
+        any_invalid = any_invalid + (sint(1) - valid)
+    return (any_invalid > sint(0)).reveal()
+
+
+# ---------------------------------------------------------------------------
+# Step 3: volatility tier -> max LTV + volatility sub-score. Nested
+# .if_else() on SECRET comparisons, never revealed individually here --
+# only the final aggregated score gets revealed once, at the very end,
+# exactly like credit_score.mpc's sub-score functions. That pattern is
+# proven safe across all three compile domains; only revealing a COMPOSED
+# BOOLEAN decision flag before combining is not (see decide() below).
+# ---------------------------------------------------------------------------
+
+def volatility_tier(vol_bps):
+    is_stable = (vol_bps < sint(VOL_STABLE_BPS))
+    is_bluechip = (vol_bps < sint(VOL_BLUECHIP_BPS))
+    is_medium = (vol_bps < sint(VOL_MEDIUM_BPS))
+    max_ltv_bps = is_stable.if_else(sint(MAX_LTV_STABLE_BPS),
+                  is_bluechip.if_else(sint(MAX_LTV_BLUECHIP_BPS),
+                  is_medium.if_else(sint(MAX_LTV_MEDIUM_BPS),
+                                     sint(MAX_LTV_HIGH_BPS))))
+    vol_score = is_stable.if_else(sint(VOL_SCORE_STABLE),
+                is_bluechip.if_else(sint(VOL_SCORE_BLUECHIP),
+                is_medium.if_else(sint(VOL_SCORE_MEDIUM),
+                                   sint(VOL_SCORE_HIGH))))
+    return max_ltv_bps, vol_score
+
+
+def correlation_score(corr_bps):
+    low = (corr_bps < sint(CORR_LOW_BPS))
+    med = (corr_bps < sint(CORR_MED_BPS))
+    return low.if_else(sint(CORR_SCORE_LOW),
+           med.if_else(sint(CORR_SCORE_MED), sint(CORR_SCORE_HIGH)))
+
+
+def liquidity_score(liquidity_ratio_bps):
+    good = (liquidity_ratio_bps >= sint(LIQUIDITY_GOOD_BPS))
+    ok = (liquidity_ratio_bps >= sint(LIQUIDITY_OK_BPS))
+    thin = (liquidity_ratio_bps >= sint(LIQUIDITY_MIN_BPS))
+    return good.if_else(sint(LIQUIDITY_SCORE_GOOD),
+           ok.if_else(sint(LIQUIDITY_SCORE_OK),
+           thin.if_else(sint(LIQUIDITY_SCORE_MIN), sint(LIQUIDITY_SCORE_BAD))))
+
+
+def wallet_score(wallet_age_days, wallet_flags):
+    established = (wallet_age_days > sint(WALLET_AGE_ESTABLISHED))
+    new_ish = (wallet_age_days > sint(WALLET_AGE_NEW))
+    age_pts = established.if_else(sint(WALLET_SCORE_AGE_ESTABLISHED),
+              new_ish.if_else(sint(WALLET_SCORE_AGE_NEW), sint(0)))
+    clean = (wallet_flags == sint(0))
+    one_flag = (wallet_flags == sint(1))
+    flag_pts = clean.if_else(sint(WALLET_SCORE_FLAGS_CLEAN),
+               one_flag.if_else(sint(WALLET_SCORE_FLAGS_ONE), sint(0)))
+    return age_pts + flag_pts
+
+
+def leverage_tier_and_score(exposure, collateral_value, max_ltv_bps):
+    """exposure/collateral_value vs fractions of the policy budget
+    (collateral_value * max_ltv_bps), via cross-multiplication -- no
+    secret division anywhere. Returns (tier 0..3, score out of 35);
+    tier 0 = most comfortable, 3 = over policy."""
+    budget = collateral_value * max_ltv_bps
+    half = (exposure * BPS * 2 <= budget)
+    three_q = (exposure * BPS * 4 <= budget * 3)
+    within = (exposure * BPS <= budget)
+    tier = half.if_else(sint(0), three_q.if_else(sint(1),
+            within.if_else(sint(2), sint(3))))
+    score = half.if_else(sint(35), three_q.if_else(sint(25),
+            within.if_else(sint(15), sint(0))))
+    return tier, score
+
+
+# ---------------------------------------------------------------------------
+# Step 4: decision. Each condition is revealed INDIVIDUALLY right after its
+# comparison -- exactly the tutorial.mpc / credit_score.mpc pattern proven
+# portable -- then combined with + / * on the now-clear (regint/cint) flags
+# (OR = sum > 0, AND = product), never composed as secret booleans before
+# revealing (that silently gave the wrong answer in the binary domain in an
+# earlier program in this repo). | and & were tried first since they look
+# more natural for boolean combination, but they fail at RUNTIME in the
+# binary domain ("Code not defined for instruction CONVINT") even though
+# they compile cleanly -- confirmed by isolated minimal probes; + and *
+# work correctly in all three domains. Priority: RIFIUTATO > APPROVATO >
+# REVIEW MANUALE.
+# ---------------------------------------------------------------------------
+
+def compute_flags(exposure, collateral_value, max_ltv_bps, liq_threshold_bps,
+                   vol_bps, liquidity_ratio_bps, wallet_flags, total_score):
+    """The seven SECRET comparisons the decision is built from. Kept secret
+    here on purpose -- what each caller does with them differs (see below)."""
+    return dict(
+        over_liq=(exposure * BPS > collateral_value * liq_threshold_bps),
+        over_max=(exposure * BPS > collateral_value * max_ltv_bps),
+        flags_bad=(wallet_flags >= sint(2)),
+        illiquid=(liquidity_ratio_bps < sint(LIQUIDITY_MIN_BPS)),
+        vol_extreme=(vol_bps > sint(15000)),
+        score_high=(total_score >= sint(APPROVAL_SCORE_THRESHOLD)),
+        ample=(exposure * BPS * 10 <= collateral_value * max_ltv_bps * 8),
+    )
+
+
+def decide_public(flags, r_any_invalid):
+    """Default, portable-everywhere path: reveal each flag INDIVIDUALLY
+    right after its comparison, then combine the already-revealed
+    (regint/cint) flags with + (OR, as sum > 0) / * (AND, as product).
+    Composing secret booleans arithmetically before revealing is the one
+    thing NOT to do here -- it silently gave the wrong answer in the binary
+    domain in an earlier program in this repo. Returns already-revealed
+    reject/approve for public branching."""
+    r_over_liq = flags['over_liq'].reveal()
+    r_over_max = flags['over_max'].reveal()
+    r_flags_bad = flags['flags_bad'].reveal()
+    r_illiquid = flags['illiquid'].reveal()
+    r_vol_extreme = flags['vol_extreme'].reveal()
+    r_score_high = flags['score_high'].reveal()
+    r_ample = flags['ample'].reveal()
+
+    reject_sum = (r_over_liq + r_over_max + r_flags_bad + r_illiquid
+                  + r_vol_extreme + r_any_invalid)
+    reject = (reject_sum > 0)
+    approve = (r_score_high * r_ample)
+    return reject, approve
+
+
+def decide_strict(flags, r_any_invalid):
+    """MODE_STRICT (field/ring only, see main()): compose in SECRET
+    arithmetic and reveal only the final code, only to the requester.
+    Arithmetic composition-then-reveal is fine here specifically because
+    this path never runs in the binary domain -- the bug that ruled it
+    out for decide_public() above was binary-domain-specific."""
+    not_over_liq = sint(1) - flags['over_liq']
+    not_over_max = sint(1) - flags['over_max']
+    not_flags_bad = sint(1) - flags['flags_bad']
+    not_illiquid = sint(1) - flags['illiquid']
+    not_vol_extreme = sint(1) - flags['vol_extreme']
+    not_invalid = sint(1) - sint(r_any_invalid)
+    all_clear = (not_over_liq * not_over_max * not_flags_bad
+                 * not_illiquid * not_vol_extreme * not_invalid)
+    reject_s = sint(1) - all_clear
+    approve_s = flags['score_high'] * flags['ample']
+    return reject_s, approve_s
+
+
+def decide_production(flags, r_any_invalid):
+    """MODE_PRODUCTION (field/ring only, see main()): identical secret-
+    arithmetic composition to decide_strict -- the 7 flags must never
+    exist in the clear to any party, not even transiently, which rules
+    out decide_public()'s reveal-then-combine pattern here too. The only
+    difference from decide_strict is what main() does with the result
+    afterwards: broadcast via plain .reveal() to all N parties instead of
+    reveal_to(REQUESTER) alone, so every participating platform can
+    independently verify and sign the same outcome. Kept as a separate
+    function (rather than reusing decide_strict) so that distinction is
+    explicit at the call site in main(), not implicit in how the caller
+    happens to use a shared helper's return value."""
+    not_over_liq = sint(1) - flags['over_liq']
+    not_over_max = sint(1) - flags['over_max']
+    not_flags_bad = sint(1) - flags['flags_bad']
+    not_illiquid = sint(1) - flags['illiquid']
+    not_vol_extreme = sint(1) - flags['vol_extreme']
+    not_invalid = sint(1) - sint(r_any_invalid)
+    all_clear = (not_over_liq * not_over_max * not_flags_bad
+                 * not_illiquid * not_vol_extreme * not_invalid)
+    reject_s = sint(1) - all_clear
+    approve_s = flags['score_high'] * flags['ample']
+    return reject_s, approve_s
+
+
+def main():
+    platform_debts = read_platform_debts()
+    ctx = read_requester_context()
+
+    r_any_invalid = validate_debts(platform_debts)
+
+    existing_debt = sum(platform_debts, sint(0))
+    exposure = existing_debt + ctx['new_loan']  # post-issuance leverage
+
+    max_ltv_bps, vol_score = volatility_tier(ctx['vol_bps'])
+    liq_threshold_bps = max_ltv_bps + sint(LIQ_BUFFER_BPS)
+    # thin markets liquidate worse: tighten the buffer
+    thin = (ctx['liquidity_ratio_bps'] < sint(LIQUIDITY_MIN_BPS))
+    liq_threshold_bps = thin.if_else(liq_threshold_bps - sint(500), liq_threshold_bps)
+
+    lev_tier, lev_score = leverage_tier_and_score(
+        exposure, ctx['collateral_value'], max_ltv_bps)
+    corr_score = correlation_score(ctx['corr_bps'])
+    liq_score = liquidity_score(ctx['liquidity_ratio_bps'])
+    wal_score = wallet_score(ctx['wallet_age_days'], ctx['wallet_flags'])
+
+    total_score = lev_score + vol_score + corr_score + liq_score + wal_score
+
+    flags = compute_flags(exposure, ctx['collateral_value'], max_ltv_bps,
+                           liq_threshold_bps, ctx['vol_bps'],
+                           ctx['liquidity_ratio_bps'], ctx['wallet_flags'],
+                           total_score)
+
+    # MODE is compile-time-known (a plain int from program.args, resolved
+    # before any of this runs), and program.options.binary is too, so
+    # these are plain Python branches -- exactly one body ends up in the
+    # compiled bytecode, never a runtime branch on a compile-time value.
+    # The compile-time guard above already rejects MODE != 0 for binary,
+    # so "not program.options.binary" here is defensive, not load-bearing.
+    if MODE == MODE_STRICT and not program.options.binary:
+        # Nothing but the final code is revealed, and only to the
+        # requester: no sub-scores, no aggregate, no public branching
+        # (branching needs an openly-known condition by construction, so
+        # a real APPROVATO/RIFIUTATO print from inside MPC is incompatible
+        # with hiding the outcome from the other platforms -- the caller
+        # has to map the numeric code to a label itself, after the reveal).
+        reject_s, approve_s = decide_strict(flags, r_any_invalid)
+        decision_code = reject_s.if_else(sint(0), approve_s.if_else(sint(2), sint(1)))
+        print_ln_to(REQUESTER, 'policy_version: %s', POLICY_VERSION)
+        print_ln_to(REQUESTER, 'esito_code_strict: %s',
+                    decision_code.reveal_to(REQUESTER))
+        return
+
+    if MODE == MODE_PRODUCTION and not program.options.binary:
+        # All N parties learn the same numbers -- enough to verify and
+        # co-sign one outcome -- and nothing else: no sub-scores, no raw
+        # flags. max_ltv_bps AND liq_threshold_bps are both safe to
+        # reveal here: both derive only from the requester's own public
+        # volatility figure plus PUBLIC policy constants (LIQ_BUFFER_BPS,
+        # the thin-market adjustment) -- neither touches the
+        # cross-platform debt data that is the actual thing this
+        # program protects. An earlier revision withheld
+        # liq_threshold_bps here on the mistaken assumption that
+        # withholding more was automatically safer, without checking
+        # whether it actually derived from the protected secret (it does
+        # not) -- the only real cost of that choice was a needlessly
+        # noisy liquidation-price estimate downstream (see
+        # Scripts/risk_data/policy.py), not any privacy gain. A signer
+        # needs both figures downstream to derive an accurate indicative
+        # liquidation price (see policy.py's N==2 conservative estimate,
+        # needed because the exact exposure below is withheld at N==2).
+        reject_s, approve_s = decide_production(flags, r_any_invalid)
+        decision_code = reject_s.if_else(sint(0), approve_s.if_else(sint(2), sint(1)))
+        r_decision = decision_code.reveal()
+        r_score = total_score.reveal()
+        r_max_ltv = max_ltv_bps.reveal()
+        r_liq_threshold = liq_threshold_bps.reveal()
+        print_ln('policy_version: %s', POLICY_VERSION)
+        print_ln('esito_code: %s', r_decision)
+        print_ln('risk_score: %s', r_score)
+        print_ln('max_ltv_bps: %s', r_max_ltv)
+        print_ln('liq_threshold_bps: %s', r_liq_threshold)
+        # Same N==2-vs-N>=3 rule as MODE_BENCHMARK, no exception: giving
+        # even REQUESTER the exact aggregate at N==2 would let it recover
+        # the other platform's exact debt by subtraction (REQUESTER
+        # already knows its own contribution and the new loan) -- the
+        # risk here does not depend on who the reveal target is, only on
+        # whether the exact number ever becomes public at all.
+        if N_PLATFORMS == 2:
+            print_ln('esposizione_totale: fascia %s (0=comoda..3=oltre policy)',
+                      lev_tier.reveal())
+        else:
+            print_ln('esposizione_totale_usd: %s', exposure.reveal())
+        return
+
+    reject, approve = decide_public(flags, r_any_invalid)
+
+    r_max_ltv = max_ltv_bps.reveal()
+    r_liq_threshold = liq_threshold_bps.reveal()
+    r_score = total_score.reveal()
+
+    print_ln('--- valori calcolati ---')
+    print_ln('policy_version: %s', POLICY_VERSION)
+    print_ln('piattaforme: %s', N_PLATFORMS)
+
+    # N=2: revealing the exact aggregate would let the requester recover
+    # the other platform's exact debt by subtracting its own -- reveal
+    # only the leverage tier. N>=3: no single platform can isolate
+    # another's contribution from the sum, safe to reveal exactly.
+    if N_PLATFORMS == 2:
+        r_lev = lev_tier.reveal()
+        print_ln('esposizione_totale: fascia %s (0=comoda..3=oltre policy)', r_lev)
+    else:
+        r_exposure = exposure.reveal()
+        print_ln('esposizione_totale_usd: %s', r_exposure)
+
+    print_ln('max_ltv_bps: %s', r_max_ltv)
+    print_ln('liq_threshold_bps: %s', r_liq_threshold)
+    print_ln('punteggio_leva: %s', lev_score.reveal())
+    print_ln('punteggio_volatilita: %s', vol_score.reveal())
+    print_ln('punteggio_correlazione: %s', corr_score.reveal())
+    print_ln('punteggio_liquidita: %s', liq_score.reveal())
+    print_ln('punteggio_wallet: %s', wal_score.reveal())
+    print_ln('risk_score: %s', r_score)
+
+    @if_e(reject)
+    def _():
+        print_ln('esito: RIFIUTATO')
+        print_ln('motivazione: sopra la soglia di liquidazione o il LTV massimo, '
+                  'oppure segnali on-chain negativi, mercato troppo illiquido, '
+                  'volatilita estrema, o input di una piattaforma non valido')
+    @else_
+    def _():
+        @if_e(approve)
+        def _():
+            print_ln('esito: APPROVATO')
+            print_ln('motivazione: punteggio sopra soglia e leva ampiamente '
+                      'entro policy')
+        @else_
+        def _():
+            print_ln('esito: REVIEW MANUALE')
+            print_ln('motivazione: nessun motivo di rifiuto ma punteggio o '
+                      'margine di leva insufficienti per approvazione automatica')
+
+
+main()

@@ -6,6 +6,7 @@ Prep-Data/*
 logs/*
 Language-Definition/main.pdf
 keys/*
+Scripts/risk_data/keys/*
 
 # Personal CONFIG file #
 ##############################
@@ -98,6 +99,9 @@ local/
 # Logs and databases #
 ######################
 *.log
+# ...except the raw MPC run logs kept as evidence for results_all_algorithms/
+# (referenced directly in the published benchmark report, e.g. crash messages)
+!results_all_algorithms/**/*.log
 *.sql
 *.sqlite
 *.data

@@ -1,0 +1,82 @@
+{
+  "wallet_address": "0xclean0000000000000000000000000000000001",
+  "policy_version": 1,
+  "timestamp": "2026-08-09T16:15:47.718794+00:00",
+  "n_platforms": 5,
+  "requester_platform": 0,
+  "domain": "field",
+  "protocol": "semi",
+  "run_time_seconds": 2.63,
+  "data_sent_mb": 222.904,
+  "esito": "REVIEW MANUALE",
+  "risk_score": 65,
+  "mpc_output": {
+    "policy_version": "1",
+    "piattaforme": "5",
+    "esposizione_totale_usd": "70000",
+    "max_ltv_bps": "5000",
+    "liq_threshold_bps": "6000",
+    "punteggio_leva": "25",
+    "punteggio_volatilita": "10",
+    "punteggio_correlazione": "0",
+    "punteggio_liquidita": "15",
+    "punteggio_wallet": "15",
+    "risk_score": "65",
+    "esito": "REVIEW MANUALE",
+    "motivazione": "nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica",
+    "Compiler": "./compile.py -o field crypto_collateral_risk 5 0 0"
+  },
+  "public_context": {
+    "collateral_asset": "BTC",
+    "collateral_amount": 3.5,
+    "collateral_value_usd": 228190,
+    "spot_price_usd": 65197.0,
+    "price_provenance": "coingecko",
+    "benchmark_asset": "BTC",
+    "volatility_annualized": 0.3423634220271503,
+    "correlation_vs_benchmark": 1.0,
+    "liquidity_ratio": 53240.109759293904,
+    "wallet_provenance": "fixture",
+    "wallet_age_days": 730,
+    "wallet_flags": 0
+  },
+  "liquidation_price_usd": 33333.333333333336,
+  "liquidation_price_note": null,
+  "signable_payload": {
+    "wallet_address": "0xclean0000000000000000000000000000000001",
+    "esito": "REVIEW MANUALE",
+    "policy_version": 1,
+    "timestamp": "2026-08-09T16:15:47.718794+00:00",
+    "participants": [
+      {
+        "platform_id": 0,
+        "signature": "3044022033843f3a1368644e0196e40aca254f9e89f971b0ad5a64b0ec93e591490c4e0a02205c525ac904e21fc3f69acafca007e216ca0525addbac034e64875e01724a4b28"
+      },
+      {
+        "platform_id": 1,
+        "signature": "30450220480742b5c5a1db2a1d09cbae16a22c40fc96ad830858d120c83a3cd2738551650221009942109ad8fd0bedeeb94b634695d92b6b1b86633f53ae438ba5cc1d00d47689"
+      },
+      {
+        "platform_id": 2,
+        "signature": "3044022056b4b5699f56e7ffb96b25b1def319c3518afc8f7fc2e4fd06e2cc2a51d0e95702204d7fb38d2186405b7246548188900d6cea11ba4fde859650de5c7f4fc76e8cb3"
+      },
+      {
+        "platform_id": 3,
+        "signature": "304402203de5065b0bf16a1b26206dd9657576a0b710897e50210f79a162dc09fbc01a06022009aae952e0b50c82bc04dec320fa7686b3c079b4d04beee5e84fe97cbd4523e3"
+      },
+      {
+        "platform_id": 4,
+        "signature": "3046022100d023d17c4a4a084402b02059b36b1fefb1c3b619ef26452d5b9feac9fe344ffc022100e57d13fb3c9c5fb7de6209c286f7e432e0aa198e9227a1fb0c3b0921b1fbd7f5"
+      }
+    ]
+  },
+  "phase_breakdown": {
+    "online_time": 0.0107009,
+    "online_mb": 0.01174,
+    "online_rounds": 408,
+    "prep_time": 2.48204,
+    "prep_mb": 44.8506,
+    "prep_rounds": 9713,
+    "prep_pct": 99.6
+  }
+}

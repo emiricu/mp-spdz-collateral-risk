@@ -1,0 +1,10 @@
+{
+  "first_tx_timestamp": 1781042400,
+  "tx_count": 25,
+  "counterparties": [
+    "0xsomedex000000000000000000000000000013"
+  ],
+  "token_balances": {
+    "ETH": 1.0
+  }
+}

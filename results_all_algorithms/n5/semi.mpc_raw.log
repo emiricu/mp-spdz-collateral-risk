@@ -1,0 +1,54 @@
+Truncation error probability 2^-40
+Trying to run 128-bit computation (128-bit representation)
+No modulus found in Player-Data//5-Dp-128/Params-Data, generating 128-bit prime
+Using prime modulus 170141183460469231731687303715885907969
+Setup took 0.0798452 seconds.
+--- valori calcolati ---
+policy_version: 1
+piattaforme: 5
+esposizione_totale_usd: 70000
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+punteggio_leva: 25
+punteggio_volatilita: 10
+punteggio_correlazione: 0
+punteggio_liquidita: 15
+punteggio_wallet: 15
+risk_score: 65
+esito: REVIEW MANUALE
+motivazione: nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica
+Compiler: ./compile.py -o field crypto_collateral_risk 5 0 0
+	14 dabits of gfp left
+Detailed costs:
+          3966 ANDs
+         39424 ANDs in preprocessing
+            31 integer multiplications
+Spent 0.0107009 seconds (0.01174 MB, 408 rounds, 2.27739 CPU seconds) on the online phase and 2.48204 seconds (44.8506 MB, 9713 rounds, 2.27772 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Exchanging one-to-one 27.0147 MB in 464 rounds, taking 0.167004 seconds
+Receiving directly 0.46934 MB in 3064 rounds, taking 0.166196 seconds
+Receiving one-to-one 17.3778 MB in 1761 rounds, taking 0 seconds
+Sending directly 0.46934 MB in 3064 rounds, taking 0.0668306 seconds
+Sending one-to-one 17.3778 MB in 1761 rounds, taking 0 seconds
+Sending/receiving 0.000448 MB in 7 rounds, taking 0.00233431 seconds
+CPU time = 2.28217
+The following benchmarks are including preprocessing (offline phase).
+Time = 2.50034 seconds 
+Data sent = 44.8623 MB in ~10121 rounds (party 0 only)
+Global data sent = 222.904 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            31        Triples
+            34         daBits
+  Type bit
+          3966        Triples
+  edaBits
+             2 of length 40 (strict)
+            32 of length 41 (strict)
+            34 of length 64 (strict)
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi-party.x 0 -v field-crypto_collateral_risk-5-0-0 -pn 11206 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi-party.x 0 -v field-crypto_collateral_risk-5-0-0 -pn 11206 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi-party.x 1 -v field-crypto_collateral_risk-5-0-0 -pn 11206 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi-party.x 2 -v field-crypto_collateral_risk-5-0-0 -pn 11206 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi-party.x 3 -v field-crypto_collateral_risk-5-0-0 -pn 11206 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi-party.x 4 -v field-crypto_collateral_risk-5-0-0 -pn 11206 -h localhost -N 5

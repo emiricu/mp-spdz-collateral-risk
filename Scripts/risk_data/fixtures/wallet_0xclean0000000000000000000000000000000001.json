@@ -1,0 +1,13 @@
+{
+  "first_tx_timestamp": 1723154400,
+  "tx_count": 340,
+  "counterparties": [
+    "0xcoinbase00000000000000000000000000001",
+    "0xsomedex000000000000000000000000000010",
+    "0xsomeuser00000000000000000000000000011"
+  ],
+  "token_balances": {
+    "ETH": 12.4,
+    "USDC": 5000.0
+  }
+}

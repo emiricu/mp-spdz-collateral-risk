@@ -1,0 +1,55 @@
+Truncation error probability 2^-40
+Trying to run 64-bit computation
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_split(5)
+Setup took 0.0901841 seconds.
+--- valori calcolati ---
+policy_version: 1
+piattaforme: 5
+esposizione_totale_usd: 70000
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+punteggio_leva: 25
+punteggio_volatilita: 10
+punteggio_correlazione: 0
+punteggio_liquidita: 15
+punteggio_wallet: 15
+risk_score: 65
+esito: REVIEW MANUALE
+motivazione: nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica
+Compiler: ./compile.py -R 64 -o ring crypto_collateral_risk 5 0 0
+Detailed costs:
+          3900 ANDs
+            31 integer multiplications
+Spent 0.0218181 seconds (0.008056 MB, 408 rounds, 0.329717 CPU seconds) on the online phase and 0.358187 seconds (2.26782 MB, 4818 rounds, 0.330045 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Exchanging one-to-one 0.361376 MB in 80 rounds, taking 0.0193468 seconds
+Receiving directly 0.050808 MB in 2348 rounds, taking 0.0630129 seconds
+Receiving one-to-one 1.86356 MB in 224 rounds, taking 0 seconds
+Sending directly 0.050808 MB in 2348 rounds, taking 0.0524213 seconds
+Sending one-to-one 1.86356 MB in 224 rounds, taking 0 seconds
+Sending/receiving 0.000128 MB in 2 rounds, taking 0.00274847 seconds
+CPU time = 0.335591
+The following benchmarks are including preprocessing (offline phase).
+Time = 0.388491 seconds 
+Data sent = 2.27587 MB in ~5226 rounds (party 0 only)
+Global data sent = 11.2269 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            31        Triples
+            34         daBits
+  Type bit
+          3900        Triples
+  edaBits
+             2 of length 63
+            32 of length 64
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_split(5)
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi2k-party.x 0 -v ring-crypto_collateral_risk-5-0-0 -pn 13411 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi2k-party.x 0 -v ring-crypto_collateral_risk-5-0-0 -pn 13411 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi2k-party.x 1 -v ring-crypto_collateral_risk-5-0-0 -pn 13411 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi2k-party.x 2 -v ring-crypto_collateral_risk-5-0-0 -pn 13411 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi2k-party.x 3 -v ring-crypto_collateral_risk-5-0-0 -pn 13411 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi2k-party.x 4 -v ring-crypto_collateral_risk-5-0-0 -pn 13411 -h localhost -N 5

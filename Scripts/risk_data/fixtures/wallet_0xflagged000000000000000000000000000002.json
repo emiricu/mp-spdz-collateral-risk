@@ -1,0 +1,11 @@
+{
+  "first_tx_timestamp": 1751666400,
+  "tx_count": 18,
+  "counterparties": [
+    "0xtornadocash0000000000000000000000000099",
+    "0xsomeuser00000000000000000000000000012"
+  ],
+  "token_balances": {
+    "ETH": 3.1
+  }
+}

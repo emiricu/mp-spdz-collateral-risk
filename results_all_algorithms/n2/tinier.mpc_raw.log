@@ -1,0 +1,37 @@
+Using statistical security parameter 40
+Compiler: ./compile.py -B 64 -o binary crypto_collateral_risk 2 0 0
+--- valori calcolati ---
+policy_version: 1
+piattaforme: 2
+esposizione_totale: fascia 1 (0=comoda..3=oltre policy)
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+punteggio_leva: 25
+punteggio_volatilita: 10
+punteggio_correlazione: 0
+punteggio_liquidita: 15
+punteggio_wallet: 15
+risk_score: 65
+esito: REVIEW MANUALE
+motivazione: nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica
+  Type bit
+         28656        Triples
+           576   Input tuples (512 64)
+Spent 0.0233061 seconds (0.007489 MB, 374 rounds, 0.550346 CPU seconds) on the online phase and 0.620035 seconds (40.9313 MB, 804 rounds, 0.550418 CPU seconds) on the preprocessing/offline phase.
+	72 triples of Tinier left
+Broadcasting 0.001452 MB in 67 rounds, taking 0.00943779 seconds
+Exchanging one-to-one 34.6725 MB in 116 rounds, taking 0.0295076 seconds
+Partial broadcasting 0.004628 MB in 178 rounds, taking 0.0163934 seconds
+Receiving directly 0.237275 MB in 295 rounds, taking 0.0284673 seconds
+Receiving one-to-one 6.02743 MB in 113 rounds, taking 0.000500139 seconds
+Sending directly 0.237267 MB in 294 rounds, taking 0.00703419 seconds
+Sending one-to-one 6.02743 MB in 113 rounds, taking 8.9906e-05 seconds
+Sending to all 6.4e-05 MB in 1 rounds, taking 1.8127e-05 seconds
+Sending/receiving 3.2e-05 MB in 2 rounds, taking 0.000324585 seconds
+The following benchmarks are including preprocessing (offline phase).
+Time = 0.662306 seconds 
+Data sent = 40.9388 MB in ~1179 rounds (party 0 only)
+Global data sent = 81.8775 MB (all parties)
+Coordination took 0.00715556 seconds
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../tinier-party.x 0 -v binary-crypto_collateral_risk-2-0-0 -pn 10417 -h localhost -N 2
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../tinier-party.x 1 -v binary-crypto_collateral_risk-2-0-0 -pn 10417 -h localhost -N 2

@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-08-09T17:54:50.660884+00:00",
+  "protocol": "atlas",
+  "domain": "field",
+  "security": "semi-honest",
+  "n_platforms": 2,
+  "command": "/usr/bin/python3 Scripts/crypto_risk_run.py --wallet 0xclean0000000000000000000000000000000001 --platform-debts 10000,10000 --new-loan 50000 --collateral-asset BTC --collateral-amount 3.5 --domain field --protocol atlas --mode benchmark --timeout 150 --out /home/emilio/tesi/some-test-mp-spdz/results_all_algorithms/n2/atlas.json --raw-log /home/emilio/tesi/some-test-mp-spdz/results_all_algorithms/n2/atlas.mpc_raw.log --coingecko-api-key ***",
+  "status": "failed (returncode=1)",
+  "wall_clock_seconds": 1.36
+}

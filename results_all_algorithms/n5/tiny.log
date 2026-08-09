@@ -1,0 +1,45 @@
+compiling binary-crypto_collateral_risk-5-0-0 (domain=binary)...
+building: tiny-party.x
+make: 'tiny-party.x' is up to date.
+ 
+
+--- stderr ---
+arty 4
+No proper key material found in Player-Data//Mascot-Secrets-R-1-42935c0a98bcb4b5518c3f23206674a9fdfba2a7-P4-5, generating from scratch (cannot read from Player-Data//Mascot-Secrets-R-1-42935c0a98bcb4b5518c3f23206674a9fdfba2a7-P4-5)
+Compiler: ./compile.py -B 64 -o binary crypto_collateral_risk 5 0 0
+tiny-party.x: ./OT/OTMultiplier.hpp:134: void OTMultiplier<GC::TinySecret<40>>::init() [T = GC::TinySecret<40>]: Assertion `keyBits == ot_setup.base_receiver_inputs' failed.
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../tiny-party.x 0 -v binary-crypto_collateral_risk-5-0-0 -pn 10910 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../tiny-party.x 1 -v binary-crypto_collateral_risk-5-0-0 -pn 10910 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../tiny-party.x 2 -v binary-crypto_collateral_risk-5-0-0 -pn 10910 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../tiny-party.x 3 -v binary-crypto_collateral_risk-5-0-0 -pn 10910 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../tiny-party.x 4 -v binary-crypto_collateral_risk-5-0-0 -pn 10910 -h localhost -N 5
+/home/emilio/tesi/some-test-mp-spdz/Scripts/run-common.sh: line 94: 181468 Aborted                 (core dumped) $my_prefix $SPDZROOT/$bin $i $params 2>&1
+     181469 Done                    | { if test "$BENCH"; then
+    if test $i = $front_player; then
+        tee -a $log;
+    else
+        cat >> $log;
+    fi;
+else
+    if test $i = $front_player; then
+        tee $log;
+    else
+        cat > $log;
+    fi;
+fi; }
+/home/emilio/tesi/some-test-mp-spdz/Scripts/run-common.sh: line 94: 181480 Aborted                 (core dumped) $my_prefix $SPDZROOT/$bin $i $params 2>&1
+     181481 Done                    | { if test "$BENCH"; then
+    if test $i = $front_player; then
+        tee -a $log;
+    else
+        cat >> $log;
+    fi;
+else
+    if test $i = $front_player; then
+        tee $log;
+    else
+        cat > $log;
+    fi;
+fi; }
+
+MPC run failed: status=failed

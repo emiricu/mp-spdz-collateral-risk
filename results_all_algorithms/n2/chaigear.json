@@ -1,0 +1,70 @@
+{
+  "wallet_address": "0xclean0000000000000000000000000000000001",
+  "policy_version": 1,
+  "timestamp": "2026-08-09T16:06:32.556793+00:00",
+  "n_platforms": 2,
+  "requester_platform": 0,
+  "domain": "field",
+  "protocol": "chaigear",
+  "run_time_seconds": 42.05,
+  "data_sent_mb": 970.316,
+  "esito": "REVIEW MANUALE",
+  "risk_score": 65,
+  "mpc_output": {
+    "policy_version": "1",
+    "piattaforme": "2",
+    "esposizione_totale": "fascia 1 (0=comoda..3=oltre policy)",
+    "max_ltv_bps": "5000",
+    "liq_threshold_bps": "6000",
+    "punteggio_leva": "25",
+    "punteggio_volatilita": "10",
+    "punteggio_correlazione": "0",
+    "punteggio_liquidita": "15",
+    "punteggio_wallet": "15",
+    "risk_score": "65",
+    "esito": "REVIEW MANUALE",
+    "motivazione": "nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica",
+    "Compiler": "./compile.py -o field crypto_collateral_risk 2 0 0"
+  },
+  "public_context": {
+    "collateral_asset": "BTC",
+    "collateral_amount": 3.5,
+    "collateral_value_usd": 228109,
+    "spot_price_usd": 65174.0,
+    "price_provenance": "coingecko",
+    "benchmark_asset": "BTC",
+    "volatility_annualized": 0.3423420001460533,
+    "correlation_vs_benchmark": 1.0,
+    "liquidity_ratio": 53214.55680413718,
+    "wallet_provenance": "fixture",
+    "wallet_age_days": 730,
+    "wallet_flags": 0
+  },
+  "liquidation_price_usd": 40733.75,
+  "liquidation_price_note": null,
+  "signable_payload": {
+    "wallet_address": "0xclean0000000000000000000000000000000001",
+    "esito": "REVIEW MANUALE",
+    "policy_version": 1,
+    "timestamp": "2026-08-09T16:06:32.556793+00:00",
+    "participants": [
+      {
+        "platform_id": 0,
+        "signature": "304402200fd4150014c81b108230f5d0f7d85c217b67ac67bd52010cf5869533bfd5fd5302203c51b185c11f42e09cc011a8c52c5ba3c6014e19a938190bb46dbb632faae19b"
+      },
+      {
+        "platform_id": 1,
+        "signature": "3045022100ef2d05b718a754b86a248725e53e6db318b8bb4c31712cbc30aa26f150e5e555022028d159384ae5733b94ce47db338c0f8d676219af3a6b2064772746ba432bfa48"
+      }
+    ]
+  },
+  "phase_breakdown": {
+    "online_time": 0.0345644,
+    "online_mb": 0.003541,
+    "online_rounds": 157,
+    "prep_time": 41.723,
+    "prep_mb": 485.155,
+    "prep_rounds": 46891,
+    "prep_pct": 99.9
+  }
+}

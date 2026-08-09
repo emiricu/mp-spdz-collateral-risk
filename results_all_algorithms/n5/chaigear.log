@@ -1,0 +1,41 @@
+compiling field-crypto_collateral_risk-5-0-0 (domain=field)...
+building: chaigear-party.x
+make: 'chaigear-party.x' is up to date.
+ 
+
+--- stderr ---
+ecrets generation because no suitable material from a previous run was found (cannot read from Player-Data/ChaiGear-Secrets-20-212ce8bda15f7039e3cbd075fabacdea21cbd16a-P1-5)
+Setup took 40.1164 seconds.
+=== Party 2
+Trying to run 128-bit computation (128-bit representation)
+Running secrets generation because no suitable material from a previous run was found (cannot read from Player-Data/ChaiGear-Secrets-20-212ce8bda15f7039e3cbd075fabacdea21cbd16a-P2-5)
+Setup took 40.1168 seconds.
+=== Party 3
+Setup took 40.1142 seconds.
+Fatal communication error on vmi3452381: Receiving error (Connection reset by peer) when sending 4 bytes
+This is probably because another party encountered a problem.
+=== Party 4
+Setup took 40.114 seconds.
+Fatal communication error on vmi3452381: Receiving error (Connection reset by peer) when sending 4 bytes
+This is probably because another party encountered a problem.
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../chaigear-party.x 0 -v field-crypto_collateral_risk-5-0-0 -pn 12044 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../chaigear-party.x 1 -v field-crypto_collateral_risk-5-0-0 -pn 12044 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../chaigear-party.x 2 -v field-crypto_collateral_risk-5-0-0 -pn 12044 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../chaigear-party.x 3 -v field-crypto_collateral_risk-5-0-0 -pn 12044 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../chaigear-party.x 4 -v field-crypto_collateral_risk-5-0-0 -pn 12044 -h localhost -N 5
+/home/emilio/tesi/some-test-mp-spdz/Scripts/run-common.sh: line 94: 180266 Killed                  $my_prefix $SPDZROOT/$bin $i $params 2>&1
+     180267 Done                    | { if test "$BENCH"; then
+    if test $i = $front_player; then
+        tee -a $log;
+    else
+        cat >> $log;
+    fi;
+else
+    if test $i = $front_player; then
+        tee $log;
+    else
+        cat > $log;
+    fi;
+fi; }
+
+MPC run failed: status=failed

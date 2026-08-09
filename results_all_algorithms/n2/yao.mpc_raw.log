@@ -1,0 +1,27 @@
+Compiler: ./compile.py -G -B 64 -o yao crypto_collateral_risk 2 0 0
+--- valori calcolati ---
+policy_version: 1
+piattaforme: 2
+esposizione_totale: fascia 1 (0=comoda..3=oltre policy)
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+punteggio_leva: 25
+punteggio_volatilita: 10
+punteggio_correlazione: 0
+punteggio_liquidita: 15
+punteggio_wallet: 15
+risk_score: 65
+esito: REVIEW MANUALE
+motivazione: nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica
+Spent 0.0124525 seconds (0.9176 MB, 11 rounds, 0.00875327 CPU seconds) on the online phase and 2.0171e-05 seconds on the preprocessing/offline phase.
+Receiving directly 0.000136 MB in 2 rounds, taking 0.00420732 seconds
+Receiving one-to-one 0.00618 MB in 2 rounds, taking 0.00127191 seconds
+Sending by number 2.4e-05 MB in 3 rounds, taking 0.000109322 seconds
+Sending directly 0.917576 MB in 6 rounds, taking 0.000390583 seconds
+Sending one-to-one 0.005248 MB in 2 rounds, taking 0.000126607 seconds
+The following benchmarks are including preprocessing (offline phase).
+Time = 0.014169 seconds 
+Data sent = 0.922848 MB in ~16 rounds (party 0 only)
+Global data sent = 0.929164 MB (all parties)
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../yao-party.x 0 -v yao-crypto_collateral_risk-2-0-0 -pn 11522 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../yao-party.x 1 -v yao-crypto_collateral_risk-2-0-0 -pn 11522 -h localhost

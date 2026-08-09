@@ -1,0 +1,7 @@
+compiling field-crypto_collateral_risk-5-0-0 (domain=field)...
+building: malicious-shamir-party.x
+make: 'malicious-shamir-party.x' is up to date.
+ 
+wrote /home/emilio/tesi/some-test-mp-spdz/results_all_algorithms/n5/mal-shamir.json
+
+--- stderr ---

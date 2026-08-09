@@ -1,0 +1,67 @@
+compiling ring-crypto_collateral_risk-5-0-0 (domain=ring)...
+building: dealer-ring-party.x
+make: 'dealer-ring-party.x' is up to date.
+ 
+
+--- stderr ---
+llateral_risk-5-0-0 -pn 14825 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../dealer-ring-party.x 3 -v ring-crypto_collateral_risk-5-0-0 -pn 14825 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../dealer-ring-party.x 4 -v ring-crypto_collateral_risk-5-0-0 -pn 14825 -h localhost -N 5
+/home/emilio/tesi/some-test-mp-spdz/Scripts/run-common.sh: line 94: 186052 Segmentation fault      (core dumped) $my_prefix $SPDZROOT/$bin $i $params 2>&1
+     186053 Done                    | { if test "$BENCH"; then
+    if test $i = $front_player; then
+        tee -a $log;
+    else
+        cat >> $log;
+    fi;
+else
+    if test $i = $front_player; then
+        tee $log;
+    else
+        cat > $log;
+    fi;
+fi; }
+/home/emilio/tesi/some-test-mp-spdz/Scripts/run-common.sh: line 94: 186054 Segmentation fault      (core dumped) $my_prefix $SPDZROOT/$bin $i $params 2>&1
+     186056 Done                    | { if test "$BENCH"; then
+    if test $i = $front_player; then
+        tee -a $log;
+    else
+        cat >> $log;
+    fi;
+else
+    if test $i = $front_player; then
+        tee $log;
+    else
+        cat > $log;
+    fi;
+fi; }
+/home/emilio/tesi/some-test-mp-spdz/Scripts/run-common.sh: line 94: 186057 Segmentation fault      (core dumped) $my_prefix $SPDZROOT/$bin $i $params 2>&1
+     186059 Done                    | { if test "$BENCH"; then
+    if test $i = $front_player; then
+        tee -a $log;
+    else
+        cat >> $log;
+    fi;
+else
+    if test $i = $front_player; then
+        tee $log;
+    else
+        cat > $log;
+    fi;
+fi; }
+/home/emilio/tesi/some-test-mp-spdz/Scripts/run-common.sh: line 94: 186060 Segmentation fault      (core dumped) $my_prefix $SPDZROOT/$bin $i $params 2>&1
+     186062 Done                    | { if test "$BENCH"; then
+    if test $i = $front_player; then
+        tee -a $log;
+    else
+        cat >> $log;
+    fi;
+else
+    if test $i = $front_player; then
+        tee $log;
+    else
+        cat > $log;
+    fi;
+fi; }
+
+MPC run failed: status=failed

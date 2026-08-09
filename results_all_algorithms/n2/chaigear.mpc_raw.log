@@ -1,0 +1,68 @@
+Using statistical security parameter 40
+Trying to run 128-bit computation (128-bit representation)
+Setup took 0.188209 seconds.
+--- valori calcolati ---
+policy_version: 1
+piattaforme: 2
+esposizione_totale: fascia 1 (0=comoda..3=oltre policy)
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+punteggio_leva: 25
+punteggio_volatilita: 10
+punteggio_correlazione: 0
+punteggio_liquidita: 15
+punteggio_wallet: 15
+risk_score: 65
+esito: REVIEW MANUALE
+motivazione: nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica
+Compiler: ./compile.py -o field crypto_collateral_risk 2 0 0
+	290 triples of Tinier left
+	1804 triples of SPDZ gfp left
+Significant amount of unused triples of SPDZ gfp distorting the benchmark. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	4296 squares of SPDZ gfp left
+Significant amount of unused squares of SPDZ gfp distorting the benchmark. For more accurate benchmarks, consider reducing the batch size with --batch-size.
+	~1022 edaBits of size 40 left
+Significant amount of unused edaBits of size 40. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	~998 edaBits of size 41 left
+Significant amount of unused edaBits of size 41. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	~996 edaBits of size 64 left
+Significant amount of unused edaBits of size 64. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	858 triples of Tinier left
+Significant amount of unused triples of Tinier distorting the benchmark. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+Detailed costs:
+          3268 integer inputs
+            28 integer multiplications
+        134923 integer openings
+Spent 0.0345644 seconds (0.003541 MB, 157 rounds, 34.6917 CPU seconds) on the online phase and 41.723 seconds (485.155 MB, 46891 rounds, 34.6921 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Broadcasting 0.233932 MB in 10613 rounds, taking 0.893073 seconds
+Exchanging one-to-one 184.485 MB in 600 rounds, taking 0.149599 seconds
+Partial broadcasting 0.291876 MB in 11226 rounds, taking 0.876715 seconds
+Passing around 9.43738 MB in 3 rounds, taking 0.00375613 seconds
+Receiving directly 212.109 MB in 6625 rounds, taking 5.41601 seconds
+Receiving one-to-one 78.8122 MB in 3137 rounds, taking 0.367544 seconds
+Sending directly 138.299 MB in 6584 rounds, taking 0.216408 seconds
+Sending one-to-one 78.8122 MB in 3137 rounds, taking 0.115088 seconds
+Sending to all 73.81 MB in 41 rounds, taking 0.0536921 seconds
+Sending/receiving 0.081312 MB in 5082 rounds, taking 0.290058 seconds
+CPU time = 34.7066
+The following benchmarks are including preprocessing (offline phase).
+Time = 41.7755 seconds 
+Data sent = 485.158 MB in ~47048 rounds (party 0 only)
+Global data sent = 970.316 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            28        Triples
+            28         daBits
+             9   Input tuples (8 1)
+  Type bit
+          3246        Triples
+  edaBits
+             2 of length 40 (strict)
+            26 of length 41 (strict)
+            28 of length 64 (strict)
+Coordination took 0.00560322 seconds
+Coordination took 0.736304 seconds
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../chaigear-party.x 0 -v field-crypto_collateral_risk-2-0-0 -pn 14580 -h localhost -N 2
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../chaigear-party.x 0 -v field-crypto_collateral_risk-2-0-0 -pn 14580 -h localhost -N 2
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../chaigear-party.x 1 -v field-crypto_collateral_risk-2-0-0 -pn 14580 -h localhost -N 2

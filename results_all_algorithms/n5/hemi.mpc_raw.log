@@ -1,0 +1,59 @@
+Truncation error probability 2^-40
+Using statistical security parameter 40
+Trying to run 128-bit computation (128-bit representation)
+Generating parameters for security 0 and field size ~2^128 because no suitable material from a previous run was found (cannot read from Player-Data/PairwiseParams-gfp-128-0-40-0-1000-0-0-P0-5)
+Setup took 0.0878022 seconds.
+--- valori calcolati ---
+policy_version: 1
+piattaforme: 5
+esposizione_totale_usd: 70000
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+punteggio_leva: 25
+punteggio_volatilita: 10
+punteggio_correlazione: 0
+punteggio_liquidita: 15
+punteggio_wallet: 15
+risk_score: 65
+esito: REVIEW MANUALE
+motivazione: nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica
+Compiler: ./compile.py -o field crypto_collateral_risk 5 0 0
+	4897 triples of gfp left
+Significant amount of unused triples of gfp distorting the benchmark. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	14 dabits of gfp left
+Detailed costs:
+          3966 ANDs
+         39424 ANDs in preprocessing
+            31 integer multiplications
+Spent 0.0102856 seconds (0.01174 MB, 408 rounds, 0.612764 CPU seconds) on the online phase and 0.673931 seconds (8.44129 MB, 6216 rounds, 0.613106 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Broadcasting 0.786572 MB in 1 rounds, taking 0.0103601 seconds
+Exchanging one-to-one 0.021952 MB in 68 rounds, taking 0.0113142 seconds
+Passing around 3.14629 MB in 4 rounds, taking 0.0287913 seconds
+Receiving directly 0.46934 MB in 3064 rounds, taking 0.0555637 seconds
+Receiving one-to-one 1.66872 MB in 208 rounds, taking 0 seconds
+Sending directly 0.46934 MB in 3064 rounds, taking 0.0626912 seconds
+Sending one-to-one 1.66872 MB in 208 rounds, taking 0 seconds
+Sending/receiving 0.000448 MB in 7 rounds, taking 0.00445403 seconds
+CPU time = 0.616233
+The following benchmarks are including preprocessing (offline phase).
+Time = 0.690727 seconds 
+Data sent = 8.45303 MB in ~6624 rounds (party 0 only)
+Global data sent = 40.8571 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            31        Triples
+            34         daBits
+  Type bit
+          3966        Triples
+  edaBits
+             2 of length 40 (strict)
+            32 of length 41 (strict)
+            34 of length 64 (strict)
+This protocol doesn't scale well with the number of parties, have you considered using Temi instead?
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../hemi-party.x 0 -v field-crypto_collateral_risk-5-0-0 -pn 18358 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../hemi-party.x 0 -v field-crypto_collateral_risk-5-0-0 -pn 18358 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../hemi-party.x 1 -v field-crypto_collateral_risk-5-0-0 -pn 18358 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../hemi-party.x 2 -v field-crypto_collateral_risk-5-0-0 -pn 18358 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../hemi-party.x 3 -v field-crypto_collateral_risk-5-0-0 -pn 18358 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../hemi-party.x 4 -v field-crypto_collateral_risk-5-0-0 -pn 18358 -h localhost -N 5
