@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-08-10T20:21:41.847940+00:00",
+  "protocol": "cowgear",
+  "domain": "field",
+  "security": "covert (HE)",
+  "n_platforms": 5,
+  "mode": "production",
+  "command": "/usr/bin/python3 Scripts/crypto_risk_run.py --wallet 0xclean0000000000000000000000000000000001 --platform-debts 4000,4000,4000,4000,4000 --new-loan 50000 --collateral-asset BTC --collateral-amount 3.5 --domain field --protocol cowgear --mode production --timeout 1200 --out /home/emilio/tesi/some-test-mp-spdz/results_produzione/n5/cowgear.json --raw-log /home/emilio/tesi/some-test-mp-spdz/results_produzione/n5/cowgear.mpc_raw.log --coingecko-api-key ***",
+  "status": "ok",
+  "wall_clock_seconds": 776.62
+}

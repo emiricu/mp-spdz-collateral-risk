@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-08-10T19:29:33.882439+00:00",
+  "protocol": "mal-ccd",
+  "domain": "binary",
+  "security": "malicious",
+  "n_platforms": 2,
+  "mode": "production",
+  "command": "/usr/bin/python3 Scripts/crypto_risk_run.py --wallet 0xclean0000000000000000000000000000000001 --platform-debts 10000,10000 --new-loan 50000 --collateral-asset BTC --collateral-amount 3.5 --domain binary --protocol mal-ccd --mode production --timeout 600 --out /home/emilio/tesi/some-test-mp-spdz/results_produzione/n2/mal-ccd.json --raw-log /home/emilio/tesi/some-test-mp-spdz/results_produzione/n2/mal-ccd.mpc_raw.log --coingecko-api-key ***",
+  "status": "failed (returncode=1)",
+  "wall_clock_seconds": 0.23
+}

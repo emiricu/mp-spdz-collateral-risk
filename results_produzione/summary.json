@@ -1,0 +1,362 @@
+[
+  {
+    "protocol": "mascot",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "malicious (OT)",
+    "n_platforms": 2,
+    "status": "ok"
+  },
+  {
+    "protocol": "mama",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "malicious (OT)",
+    "n_platforms": 2,
+    "status": "ok"
+  },
+  {
+    "protocol": "semi",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "semi-honest (OT)",
+    "n_platforms": 2,
+    "status": "ok"
+  },
+  {
+    "protocol": "shamir",
+    "domain": "field",
+    "majority": "honest",
+    "security": "semi-honest",
+    "n_platforms": 2,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "mal-shamir",
+    "domain": "field",
+    "majority": "honest",
+    "security": "malicious",
+    "n_platforms": 2,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "sy-shamir",
+    "domain": "field",
+    "majority": "honest",
+    "security": "malicious",
+    "n_platforms": 2,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "atlas",
+    "domain": "field",
+    "majority": "honest",
+    "security": "semi-honest",
+    "n_platforms": 2,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "hemi",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "semi-honest (HE)",
+    "n_platforms": 2,
+    "status": "ok"
+  },
+  {
+    "protocol": "temi",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "semi-honest (HE)",
+    "n_platforms": 2,
+    "status": "ok"
+  },
+  {
+    "protocol": "soho",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "semi-honest (HE)",
+    "n_platforms": 2,
+    "status": "ok"
+  },
+  {
+    "protocol": "lowgear",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "malicious (HE)",
+    "n_platforms": 2,
+    "status": "ok"
+  },
+  {
+    "protocol": "highgear",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "malicious (HE)",
+    "n_platforms": 2,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "cowgear",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "covert (HE)",
+    "n_platforms": 2,
+    "status": "ok"
+  },
+  {
+    "protocol": "chaigear",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "covert (HE)",
+    "n_platforms": 2,
+    "status": "ok"
+  },
+  {
+    "protocol": "semi2k",
+    "domain": "ring",
+    "majority": "dishonest",
+    "security": "semi-honest",
+    "n_platforms": 2,
+    "status": "ok"
+  },
+  {
+    "protocol": "spdz2k",
+    "domain": "ring",
+    "majority": "dishonest",
+    "security": "malicious",
+    "n_platforms": 2,
+    "status": "ok"
+  },
+  {
+    "protocol": "dealer-ring",
+    "domain": "ring",
+    "majority": "dealer",
+    "security": "semi-honest",
+    "n_platforms": 2,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "semi-bin",
+    "domain": "binary",
+    "majority": "dishonest",
+    "security": "semi-honest",
+    "n_platforms": 2,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "tiny",
+    "domain": "binary",
+    "majority": "dishonest",
+    "security": "malicious",
+    "n_platforms": 2,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "tinier",
+    "domain": "binary",
+    "majority": "dishonest",
+    "security": "malicious (cut-and-choose)",
+    "n_platforms": 2,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "ccd",
+    "domain": "binary",
+    "majority": "honest",
+    "security": "semi-honest",
+    "n_platforms": 2,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "mal-ccd",
+    "domain": "binary",
+    "majority": "honest",
+    "security": "malicious",
+    "n_platforms": 2,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "yao",
+    "domain": "yao",
+    "majority": "dishonest",
+    "security": "malicious (2p GC)",
+    "n_platforms": 2,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "mascot",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "malicious (OT)",
+    "n_platforms": 5,
+    "status": "ok"
+  },
+  {
+    "protocol": "mama",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "malicious (OT)",
+    "n_platforms": 5,
+    "status": "ok"
+  },
+  {
+    "protocol": "semi",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "semi-honest (OT)",
+    "n_platforms": 5,
+    "status": "ok"
+  },
+  {
+    "protocol": "shamir",
+    "domain": "field",
+    "majority": "honest",
+    "security": "semi-honest",
+    "n_platforms": 5,
+    "status": "ok"
+  },
+  {
+    "protocol": "mal-shamir",
+    "domain": "field",
+    "majority": "honest",
+    "security": "malicious",
+    "n_platforms": 5,
+    "status": "ok"
+  },
+  {
+    "protocol": "sy-shamir",
+    "domain": "field",
+    "majority": "honest",
+    "security": "malicious",
+    "n_platforms": 5,
+    "status": "ok"
+  },
+  {
+    "protocol": "atlas",
+    "domain": "field",
+    "majority": "honest",
+    "security": "semi-honest",
+    "n_platforms": 5,
+    "status": "ok"
+  },
+  {
+    "protocol": "hemi",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "semi-honest (HE)",
+    "n_platforms": 5,
+    "status": "ok"
+  },
+  {
+    "protocol": "temi",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "semi-honest (HE)",
+    "n_platforms": 5,
+    "status": "ok"
+  },
+  {
+    "protocol": "soho",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "semi-honest (HE)",
+    "n_platforms": 5,
+    "status": "ok"
+  },
+  {
+    "protocol": "lowgear",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "malicious (HE)",
+    "n_platforms": 5,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "highgear",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "malicious (HE)",
+    "n_platforms": 5,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "cowgear",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "covert (HE)",
+    "n_platforms": 5,
+    "status": "ok"
+  },
+  {
+    "protocol": "chaigear",
+    "domain": "field",
+    "majority": "dishonest",
+    "security": "covert (HE)",
+    "n_platforms": 5,
+    "status": "ok"
+  },
+  {
+    "protocol": "semi2k",
+    "domain": "ring",
+    "majority": "dishonest",
+    "security": "semi-honest",
+    "n_platforms": 5,
+    "status": "ok"
+  },
+  {
+    "protocol": "spdz2k",
+    "domain": "ring",
+    "majority": "dishonest",
+    "security": "malicious",
+    "n_platforms": 5,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "dealer-ring",
+    "domain": "ring",
+    "majority": "dealer",
+    "security": "semi-honest",
+    "n_platforms": 5,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "semi-bin",
+    "domain": "binary",
+    "majority": "dishonest",
+    "security": "semi-honest",
+    "n_platforms": 5,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "tiny",
+    "domain": "binary",
+    "majority": "dishonest",
+    "security": "malicious",
+    "n_platforms": 5,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "tinier",
+    "domain": "binary",
+    "majority": "dishonest",
+    "security": "malicious (cut-and-choose)",
+    "n_platforms": 5,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "ccd",
+    "domain": "binary",
+    "majority": "honest",
+    "security": "semi-honest",
+    "n_platforms": 5,
+    "status": "failed (returncode=1)"
+  },
+  {
+    "protocol": "mal-ccd",
+    "domain": "binary",
+    "majority": "honest",
+    "security": "malicious",
+    "n_platforms": 5,
+    "status": "failed (returncode=1)"
+  }
+]

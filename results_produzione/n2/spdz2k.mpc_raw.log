@@ -1,0 +1,54 @@
+Using SPDZ2k security parameter 64
+Using statistical security parameter 40
+Trying to run 64-bit computation
+Setup took 0.110427 seconds.
+policy_version: 1
+esito_code: 1
+risk_score: 65
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+esposizione_totale: fascia 1 (0=comoda..3=oltre policy)
+Compiler: ./compile.py -R 64 -o ring crypto_collateral_risk 2 0 2
+	254 triples of Tinier left
+	~1022 loose edaBits of size 63 left
+Significant amount of unused edaBits of size 63. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	~998 loose edaBits of size 64 left
+Significant amount of unused edaBits of size 64. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	912 triples of Tinier left
+Significant amount of unused triples of Tinier distorting the benchmark. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+Detailed costs:
+             8 integer inputs
+            36 integer multiplications
+         16542 integer openings
+Spent 0.118629 seconds (0.003621 MB, 191 rounds, 96.1517 CPU seconds) on the online phase and 173.638 seconds (320.802 MB, 262494 rounds, 96.1551 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Broadcasting 1.16609 MB in 46255 rounds, taking 22.3036 seconds
+Exchanging one-to-one 163.851 MB in 552 rounds, taking 0.876221 seconds
+Partial broadcasting 2.18078 MB in 83876 rounds, taking 32.989 seconds
+Receiving directly 2.40066 MB in 23967 rounds, taking 11.363 seconds
+Receiving one-to-one 543.837 MB in 37758 rounds, taking 30.1592 seconds
+Sending directly 2.09035 MB in 23953 rounds, taking 8.43097 seconds
+Sending one-to-one 153.02 MB in 23347 rounds, taking 5.34811 seconds
+Sending to all 0.310427 MB in 14 rounds, taking 0.000742559 seconds
+Sending/receiving 0.367408 MB in 22963 rounds, taking 8.15376 seconds
+CPU time = 96.1739
+The following benchmarks are including preprocessing (offline phase).
+Time = 173.79 seconds 
+Data sent = 320.806 MB in ~262685 rounds (party 0 only)
+Global data sent = 1032.43 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            36        Triples
+            28         daBits
+            34          Opens
+             9   Input tuples (8 1)
+  Type bit
+          3192        Triples
+  edaBits
+             2 of length 63
+            26 of length 64
+Coordination took 11.9323 seconds
+Coordination took 2.69854 seconds
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../spdz2k-party.x 0 -v ring-crypto_collateral_risk-2-0-2 -pn 14403 -h localhost -N 2
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../spdz2k-party.x 0 -v ring-crypto_collateral_risk-2-0-2 -pn 14403 -h localhost -N 2
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../spdz2k-party.x 1 -v ring-crypto_collateral_risk-2-0-2 -pn 14403 -h localhost -N 2

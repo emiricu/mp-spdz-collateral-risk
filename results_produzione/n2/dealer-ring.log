@@ -1,0 +1,17 @@
+compiling ring-crypto_collateral_risk-2-0-2 (domain=ring)...
+building: dealer-ring-party.x
+make: 'dealer-ring-party.x' is up to date.
+ 
+
+--- stderr ---
+Truncation error probability 2^-40
+Trying to run 64-bit computation
+Need at least 3 players for this protocol.
+=== Party 1
+Truncation error probability 2^-40
+Trying to run 64-bit computation
+Need at least 3 players for this protocol.
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../dealer-ring-party.x 0 -v ring-crypto_collateral_risk-2-0-2 -pn 17770 -h localhost -N 2
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../dealer-ring-party.x 1 -v ring-crypto_collateral_risk-2-0-2 -pn 17770 -h localhost -N 2
+
+MPC run failed: status=failed

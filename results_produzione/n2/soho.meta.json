@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-08-10T19:12:48.003204+00:00",
+  "protocol": "soho",
+  "domain": "field",
+  "security": "semi-honest (HE)",
+  "n_platforms": 2,
+  "mode": "production",
+  "command": "/usr/bin/python3 Scripts/crypto_risk_run.py --wallet 0xclean0000000000000000000000000000000001 --platform-debts 10000,10000 --new-loan 50000 --collateral-asset BTC --collateral-amount 3.5 --domain field --protocol soho --mode production --timeout 150 --out /home/emilio/tesi/some-test-mp-spdz/results_produzione/n2/soho.json --raw-log /home/emilio/tesi/some-test-mp-spdz/results_produzione/n2/soho.mpc_raw.log --coingecko-api-key ***",
+  "status": "ok",
+  "wall_clock_seconds": 3.56
+}

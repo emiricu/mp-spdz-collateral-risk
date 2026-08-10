@@ -2,9 +2,23 @@
 """
 Full-catalogue run: every protocol valid at N=2 and N=5, same scenario as
 Scripts/run_scaling_study.py (same wallet, loan, collateral, total
-aggregate debt -- only the split and the protocol/domain change), mode
-benchmark. One output file per (protocol, N) combination, as proof
-backing results_all_algorithms/report.html's charts.
+aggregate debt -- only the split and the protocol/domain change). One
+output file per (protocol, N) combination, as proof backing the
+published benchmark report's charts.
+
+--mode benchmark (default) writes results_all_algorithms/ -- the
+cross-domain correctness sweep (includes binary-domain protocols:
+yao/ccd/mal-ccd/semi-bin/tinier/tiny), already run and NOT meant to be
+re-run casually (it's the evidence that the risk computation gives the
+same answer regardless of protocol).
+
+--mode production writes results_produzione/ -- the real-deployment
+sweep. mode=2 needs secret-arithmetic composition to hide the 5
+sub-scores/7 flags from all but the final result, which mpc_bench's own
+compile_domain() refuses for the binary domain (see its ValueError/
+sys.exit message) -- binary-domain protocols are still ATTEMPTED here
+(not skipped), so that refusal is captured as an explicit, fast,
+documented exclusion rather than silently omitted from the sweep.
 
 A protocol is "valid" at N if it scales to arbitrary N (per
 mpc_bench.PROTOCOLS), or is hard-wired to exactly that N (only yao, at
@@ -14,10 +28,10 @@ is scalable protocols only).
 Live price (CoinGecko, $COINGECKO_API_KEY), fixture wallet history -- see
 crypto_risk_run.py's module docstring for why.
 
-Usage: python3 Scripts/run_all_algorithms.py [--resume]
+Usage: python3 Scripts/run_all_algorithms.py [--mode benchmark|production] [--resume]
   --resume: skip (protocol, N) pairs that already have a status=ok file
-Writes results_all_algorithms/n<N>/<protocol>.json (+ .log, .meta.json)
-and results_all_algorithms/summary.json.
+Writes results_all_algorithms|results_produzione/n<N>/<protocol>.json
+(+ .log, .meta.json) and .../summary.json.
 """
 import argparse
 import datetime
@@ -28,7 +42,10 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent
-OUT_ROOT = REPO_ROOT / 'results_all_algorithms'
+OUT_ROOT_BY_MODE = {
+    'benchmark': REPO_ROOT / 'results_all_algorithms',
+    'production': REPO_ROOT / 'results_produzione',
+}
 
 sys.path.insert(0, str(Path(__file__).parent))
 import mpc_bench  # noqa: E402
@@ -69,8 +86,8 @@ def valid_protocols(n):
     return out
 
 
-def run_one(protocol, domain, security, n, resume):
-    out_dir = OUT_ROOT / f'n{n}'
+def run_one(protocol, domain, security, n, resume, mode, out_root):
+    out_dir = out_root / f'n{n}'
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f'{protocol}.json'
     log_path = out_dir / f'{protocol}.log'
@@ -98,7 +115,7 @@ def run_one(protocol, domain, security, n, resume):
         '--new-loan', str(NEW_LOAN),
         '--collateral-asset', COLLATERAL_ASSET,
         '--collateral-amount', str(COLLATERAL_AMOUNT),
-        '--domain', domain, '--protocol', protocol, '--mode', 'benchmark',
+        '--domain', domain, '--protocol', protocol, '--mode', mode,
         '--timeout', str(timeout),
         '--out', str(out_path),
         '--raw-log', str(raw_path),
@@ -126,7 +143,7 @@ def run_one(protocol, domain, security, n, resume):
 
     meta = {
         'timestamp': timestamp, 'protocol': protocol, 'domain': domain,
-        'security': security, 'n_platforms': n,
+        'security': security, 'n_platforms': n, 'mode': mode,
         'command': ' '.join(a if a != api_key else '***' for a in cmd) if api_key else ' '.join(cmd),
         'status': status, 'wall_clock_seconds': round(wall, 2),
     }
@@ -137,18 +154,20 @@ def run_one(protocol, domain, security, n, resume):
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument('--mode', choices=sorted(OUT_ROOT_BY_MODE), default='benchmark')
     ap.add_argument('--resume', action='store_true')
     args = ap.parse_args()
+    out_root = OUT_ROOT_BY_MODE[args.mode]
 
-    OUT_ROOT.mkdir(exist_ok=True)
+    out_root.mkdir(exist_ok=True)
     summary = []
     for n in N_VALUES:
-        print(f'\n##### N={n} #####')
+        print(f'\n##### N={n} (mode={args.mode}) #####')
         for name, binary, domain, majority, security, scales, fixed_n in valid_protocols(n):
-            status = run_one(name, domain, security, n, args.resume)
+            status = run_one(name, domain, security, n, args.resume, args.mode, out_root)
             summary.append({'protocol': name, 'domain': domain, 'majority': majority,
                              'security': security, 'n_platforms': n, 'status': status})
-            (OUT_ROOT / 'summary.json').write_text(json.dumps(summary, indent=2))
+            (out_root / 'summary.json').write_text(json.dumps(summary, indent=2))
 
     print('\n=== riepilogo ===')
     for row in summary:

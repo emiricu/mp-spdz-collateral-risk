@@ -1,0 +1,37 @@
+Trying to run 128-bit computation (128-bit representation)
+No modulus found in Player-Data//5-Sp-128/Params-Data, generating 128-bit prime
+Using prime modulus 170141183460469231731687303715885907969
+Setup took 0.835847 seconds.
+policy_version: 1
+esito_code: 1
+risk_score: 65
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+esposizione_totale_usd: 70000
+Compiler: ./compile.py -o field crypto_collateral_risk 5 0 2
+Detailed costs:
+            39 integer multiplications
+Spent 0.114473 seconds (0.012132 MB, 70 rounds, 0.306088 CPU seconds) on the online phase and 0.749217 seconds (0.051428 MB, 365 rounds, 0.307022 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Sending to all 0.000946 MB in 15 rounds, taking 0.0315935 seconds
+Sending/receiving 0.059776 MB in 420 rounds, taking 0.814246 seconds
+CPU time = 0.309444
+The following benchmarks are including preprocessing (offline phase).
+Time = 0.876068 seconds 
+Data sent = 0.06356 MB in ~435 rounds (party 0 only)
+Global data sent = 0.287348 MB (all parties)
+Communication time accounts for more than 95 percent of total time (0.845839 seconds). This might be because of the computation and the network setting, but it could also be product of the optimization trade-off during compilation. See https://mp-spdz.readthedocs.io/en/latest/troubleshooting.html#high-number-of-rounds-or-slow-wan-execution
+Actual preprocessing cost of program:
+  Type int
+            34         daBits
+  edaBits
+             2 of length 40 (strict)
+            32 of length 41 (strict)
+            34 of length 64 (strict)
+This protocol doesn't scale well with the number of parties, have you considered using ATLAS instead?
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../shamir-party.x 0 -v field-crypto_collateral_risk-5-0-2 -pn 13368 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../shamir-party.x 0 -v field-crypto_collateral_risk-5-0-2 -pn 13368 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../shamir-party.x 1 -v field-crypto_collateral_risk-5-0-2 -pn 13368 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../shamir-party.x 2 -v field-crypto_collateral_risk-5-0-2 -pn 13368 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../shamir-party.x 3 -v field-crypto_collateral_risk-5-0-2 -pn 13368 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../shamir-party.x 4 -v field-crypto_collateral_risk-5-0-2 -pn 13368 -h localhost -N 5

@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-08-10T21:37:19.798611+00:00",
+  "protocol": "chaigear",
+  "domain": "field",
+  "n_platforms": 5,
+  "mode": "benchmark",
+  "run_idx": 1,
+  "command": "/usr/bin/python3 Scripts/crypto_risk_run.py --wallet 0xclean0000000000000000000000000000000001 --platform-debts 4000,4000,4000,4000,4000 --new-loan 50000 --collateral-asset BTC --collateral-amount 3.5 --domain field --protocol chaigear --mode benchmark --timeout 1200 --out /home/emilio/tesi/some-test-mp-spdz/results_all_algorithms/n5/verify/chaigear_n5_verify_run1.json --raw-log /home/emilio/tesi/some-test-mp-spdz/results_all_algorithms/n5/verify/chaigear_n5_verify_run1.mpc_raw.log --coingecko-api-key ***",
+  "status": "ok",
+  "wall_clock_seconds": 902.75
+}

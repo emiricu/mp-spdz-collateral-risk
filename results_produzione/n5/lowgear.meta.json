@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-08-10T19:59:58.067979+00:00",
+  "protocol": "lowgear",
+  "domain": "field",
+  "security": "malicious (HE)",
+  "n_platforms": 5,
+  "mode": "production",
+  "command": "/usr/bin/python3 Scripts/crypto_risk_run.py --wallet 0xclean0000000000000000000000000000000001 --platform-debts 4000,4000,4000,4000,4000 --new-loan 50000 --collateral-asset BTC --collateral-amount 3.5 --domain field --protocol lowgear --mode production --timeout 1200 --out /home/emilio/tesi/some-test-mp-spdz/results_produzione/n5/lowgear.json --raw-log /home/emilio/tesi/some-test-mp-spdz/results_produzione/n5/lowgear.mpc_raw.log --coingecko-api-key ***",
+  "status": "failed (returncode=1)",
+  "wall_clock_seconds": 1202.13
+}

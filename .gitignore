@@ -100,8 +100,10 @@ local/
 ######################
 *.log
 # ...except the raw MPC run logs kept as evidence for results_all_algorithms/
-# (referenced directly in the published benchmark report, e.g. crash messages)
+# and results_produzione/ (referenced directly in the published benchmark
+# reports, e.g. crash messages)
 !results_all_algorithms/**/*.log
+!results_produzione/**/*.log
 *.sql
 *.sqlite
 *.data

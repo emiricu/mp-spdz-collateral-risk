@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-08-10T19:11:10.699213+00:00",
+  "protocol": "mama",
+  "domain": "field",
+  "security": "malicious (OT)",
+  "n_platforms": 2,
+  "mode": "production",
+  "command": "/usr/bin/python3 Scripts/crypto_risk_run.py --wallet 0xclean0000000000000000000000000000000001 --platform-debts 10000,10000 --new-loan 50000 --collateral-asset BTC --collateral-amount 3.5 --domain field --protocol mama --mode production --timeout 600 --out /home/emilio/tesi/some-test-mp-spdz/results_produzione/n2/mama.json --raw-log /home/emilio/tesi/some-test-mp-spdz/results_produzione/n2/mama.mpc_raw.log --coingecko-api-key ***",
+  "status": "ok",
+  "wall_clock_seconds": 80.01
+}

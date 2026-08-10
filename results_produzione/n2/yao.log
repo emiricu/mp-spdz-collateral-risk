@@ -1,0 +1,19 @@
+compiling yao-crypto_collateral_risk-2-0-2 (domain=yao)...
+Default bit length for compilation: 64
+Compiling file Programs/Source/crypto_collateral_risk.mpc
+ Traceback (most recent call last):
+  File "/home/emilio/tesi/some-test-mp-spdz/./compile.py", line 41, in <module>
+    main(compiler)
+  File "/home/emilio/tesi/some-test-mp-spdz/./compile.py", line 36, in main
+    compilation(compiler)
+  File "/home/emilio/tesi/some-test-mp-spdz/./compile.py", line 19, in compilation
+    prog = compiler.compile_file()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/emilio/tesi/some-test-mp-spdz/Compiler/compilerLib.py", line 537, in compile_file
+    exec(compile(infile.read(), infile.name, "exec"), self.VARS)
+  File "Programs/Source/crypto_collateral_risk.mpc", line 112, in <module>
+    raise CompilerError(
+Compiler.exceptions.CompilerError: mode=2 (strict/production) requires the field or ring domain, not binary: both modes depend on composing the decision in secret arithmetic before any reveal, which is not proven safe in the binary domain (see decide_public's docstring), and mode=1 additionally needs reveal_to(), which Compiler/GC/types.py raises CompilerError for unconditionally on binary-circuit types. Compile with mode=0 for binary, or drop -B/-G for mode=1/2.
+
+
+--- stderr ---

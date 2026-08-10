@@ -1,0 +1,50 @@
+Truncation error probability 2^-40
+Using statistical security parameter 40
+Trying to run 128-bit computation (128-bit representation)
+Setup took 0.398081 seconds.
+policy_version: 1
+esito_code: 1
+risk_score: 65
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+esposizione_totale_usd: 70000
+Compiler: ./compile.py -o field crypto_collateral_risk 5 0 2
+	4889 triples of gfp left
+Significant amount of unused triples of gfp distorting the benchmark. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	14 dabits of gfp left
+Detailed costs:
+          3966 ANDs
+         39424 ANDs in preprocessing
+            39 integer multiplications
+Spent 0.254737 seconds (0.01206 MB, 456 rounds, 2.48263 CPU seconds) on the online phase and 5.85175 seconds (8.44129 MB, 6216 rounds, 2.48385 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Broadcasting 0.786572 MB in 1 rounds, taking 0.0323044 seconds
+Exchanging one-to-one 0.021952 MB in 68 rounds, taking 0.0846122 seconds
+Passing around 3.14629 MB in 4 rounds, taking 0.0823007 seconds
+Receiving directly 0.46966 MB in 3088 rounds, taking 1.08636 seconds
+Receiving one-to-one 1.66872 MB in 208 rounds, taking 0 seconds
+Sending directly 0.46966 MB in 3088 rounds, taking 1.04339 seconds
+Sending one-to-one 1.66872 MB in 208 rounds, taking 0 seconds
+Sending/receiving 0.000448 MB in 7 rounds, taking 0.071042 seconds
+CPU time = 2.51664
+The following benchmarks are including preprocessing (offline phase).
+Time = 6.18309 seconds 
+Data sent = 8.45335 MB in ~6672 rounds (party 0 only)
+Global data sent = 40.8578 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            39        Triples
+            34         daBits
+  Type bit
+          3966        Triples
+  edaBits
+             2 of length 40 (strict)
+            32 of length 41 (strict)
+            34 of length 64 (strict)
+This protocol doesn't scale well with the number of parties, have you considered using Temi instead?
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../hemi-party.x 0 -v field-crypto_collateral_risk-5-0-2 -pn 10403 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../hemi-party.x 0 -v field-crypto_collateral_risk-5-0-2 -pn 10403 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../hemi-party.x 1 -v field-crypto_collateral_risk-5-0-2 -pn 10403 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../hemi-party.x 2 -v field-crypto_collateral_risk-5-0-2 -pn 10403 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../hemi-party.x 3 -v field-crypto_collateral_risk-5-0-2 -pn 10403 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../hemi-party.x 4 -v field-crypto_collateral_risk-5-0-2 -pn 10403 -h localhost -N 5

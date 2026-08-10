@@ -367,6 +367,14 @@ def merge_production(mpc_result, scaled, derived, raw, args, elapsed, data_mb):
         mpc_result, scaled, args)
     shared_payload['liquidation_price_usd'] = liquidation_price_usd
     shared_payload['liquidation_price_note'] = liquidation_price_note
+    # Orchestrator-side telemetry, appended after 'participants' and NOT
+    # part of what gets signed (see build_onchain_payload) -- run time and
+    # data volume are facts about this specific execution, not about the
+    # loan decision itself. merge_benchmark's return already carries the
+    # same two fields; production silently dropped them until now even
+    # though compile_and_run() always computes them.
+    shared_payload['run_time_seconds'] = elapsed
+    shared_payload['data_sent_mb'] = data_mb
     shared_payload['onchain_payload'] = build_onchain_payload(shared_payload)
     # Mirror the real signatures produced for the on-chain tuple back onto
     # each participant entry -- same tuple, same signature, two views.
