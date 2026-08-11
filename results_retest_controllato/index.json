@@ -1,0 +1,434 @@
+[
+  {
+    "tag": "mascot_2_benchmark_run1",
+    "protocol": "mascot",
+    "n_platforms": 2,
+    "mode": "benchmark",
+    "rep": 1,
+    "status": "ok",
+    "wall_clock_seconds": 73.07
+  },
+  {
+    "tag": "mascot_2_production_run1",
+    "protocol": "mascot",
+    "n_platforms": 2,
+    "mode": "production",
+    "rep": 1,
+    "status": "ok",
+    "wall_clock_seconds": 67.91
+  },
+  {
+    "tag": "mama_2_benchmark_run1",
+    "protocol": "mama",
+    "n_platforms": 2,
+    "mode": "benchmark",
+    "rep": 1,
+    "status": "ok",
+    "wall_clock_seconds": 100.32
+  },
+  {
+    "tag": "mama_2_production_run1",
+    "protocol": "mama",
+    "n_platforms": 2,
+    "mode": "production",
+    "rep": 1,
+    "status": "ok",
+    "wall_clock_seconds": 61.27
+  },
+  {
+    "tag": "mascot_3_benchmark_run1",
+    "protocol": "mascot",
+    "n_platforms": 3,
+    "mode": "benchmark",
+    "rep": 1,
+    "status": "ok",
+    "wall_clock_seconds": 236.31
+  },
+  {
+    "tag": "mascot_3_production_run1",
+    "protocol": "mascot",
+    "n_platforms": 3,
+    "mode": "production",
+    "rep": 1,
+    "status": "ok",
+    "wall_clock_seconds": 212.37
+  },
+  {
+    "tag": "mama_3_benchmark_run1",
+    "protocol": "mama",
+    "n_platforms": 3,
+    "mode": "benchmark",
+    "rep": 1,
+    "status": "ok",
+    "wall_clock_seconds": 238.06
+  },
+  {
+    "tag": "mama_3_production_run1",
+    "protocol": "mama",
+    "n_platforms": 3,
+    "mode": "production",
+    "rep": 1,
+    "status": "ok",
+    "wall_clock_seconds": 216.7
+  },
+  {
+    "tag": "mascot_4_benchmark_run1",
+    "protocol": "mascot",
+    "n_platforms": 4,
+    "mode": "benchmark",
+    "rep": 1,
+    "status": "ok",
+    "wall_clock_seconds": 468.13
+  },
+  {
+    "tag": "mascot_4_production_run1",
+    "protocol": "mascot",
+    "n_platforms": 4,
+    "mode": "production",
+    "rep": 1,
+    "status": "ok",
+    "wall_clock_seconds": 591.54
+  },
+  {
+    "tag": "mama_4_benchmark_run1",
+    "protocol": "mama",
+    "n_platforms": 4,
+    "mode": "benchmark",
+    "rep": 1,
+    "status": "ok",
+    "wall_clock_seconds": 546.96
+  },
+  {
+    "tag": "mama_4_production_run1",
+    "protocol": "mama",
+    "n_platforms": 4,
+    "mode": "production",
+    "rep": 1,
+    "status": "ok",
+    "wall_clock_seconds": 476.07
+  },
+  {
+    "tag": "mascot_5_benchmark_run1",
+    "protocol": "mascot",
+    "n_platforms": 5,
+    "mode": "benchmark",
+    "rep": 1,
+    "status": "ok",
+    "wall_clock_seconds": 764.3
+  },
+  {
+    "tag": "mascot_5_production_run1",
+    "protocol": "mascot",
+    "n_platforms": 5,
+    "mode": "production",
+    "rep": 1,
+    "status": "ok",
+    "wall_clock_seconds": 841.75
+  },
+  {
+    "tag": "mama_5_benchmark_run1",
+    "protocol": "mama",
+    "n_platforms": 5,
+    "mode": "benchmark",
+    "rep": 1,
+    "status": "ok",
+    "wall_clock_seconds": 852.7
+  },
+  {
+    "tag": "mama_5_production_run1",
+    "protocol": "mama",
+    "n_platforms": 5,
+    "mode": "production",
+    "rep": 1,
+    "status": "ok",
+    "wall_clock_seconds": 1058.84
+  },
+  {
+    "tag": "mascot_2_benchmark_run2",
+    "protocol": "mascot",
+    "n_platforms": 2,
+    "mode": "benchmark",
+    "rep": 2,
+    "status": "ok",
+    "wall_clock_seconds": 67.0
+  },
+  {
+    "tag": "mascot_2_production_run2",
+    "protocol": "mascot",
+    "n_platforms": 2,
+    "mode": "production",
+    "rep": 2,
+    "status": "ok",
+    "wall_clock_seconds": 53.0
+  },
+  {
+    "tag": "mama_2_benchmark_run2",
+    "protocol": "mama",
+    "n_platforms": 2,
+    "mode": "benchmark",
+    "rep": 2,
+    "status": "ok",
+    "wall_clock_seconds": 72.47
+  },
+  {
+    "tag": "mama_2_production_run2",
+    "protocol": "mama",
+    "n_platforms": 2,
+    "mode": "production",
+    "rep": 2,
+    "status": "ok",
+    "wall_clock_seconds": 64.92
+  },
+  {
+    "tag": "mascot_3_benchmark_run2",
+    "protocol": "mascot",
+    "n_platforms": 3,
+    "mode": "benchmark",
+    "rep": 2,
+    "status": "ok",
+    "wall_clock_seconds": 262.36
+  },
+  {
+    "tag": "mascot_3_production_run2",
+    "protocol": "mascot",
+    "n_platforms": 3,
+    "mode": "production",
+    "rep": 2,
+    "status": "ok",
+    "wall_clock_seconds": 242.04
+  },
+  {
+    "tag": "mama_3_benchmark_run2",
+    "protocol": "mama",
+    "n_platforms": 3,
+    "mode": "benchmark",
+    "rep": 2,
+    "status": "ok",
+    "wall_clock_seconds": 265.8
+  },
+  {
+    "tag": "mama_3_production_run2",
+    "protocol": "mama",
+    "n_platforms": 3,
+    "mode": "production",
+    "rep": 2,
+    "status": "ok",
+    "wall_clock_seconds": 218.27
+  },
+  {
+    "tag": "mascot_4_benchmark_run2",
+    "protocol": "mascot",
+    "n_platforms": 4,
+    "mode": "benchmark",
+    "rep": 2,
+    "status": "ok",
+    "wall_clock_seconds": 350.99
+  },
+  {
+    "tag": "mascot_4_production_run2",
+    "protocol": "mascot",
+    "n_platforms": 4,
+    "mode": "production",
+    "rep": 2,
+    "status": "ok",
+    "wall_clock_seconds": 347.14
+  },
+  {
+    "tag": "mama_4_benchmark_run2",
+    "protocol": "mama",
+    "n_platforms": 4,
+    "mode": "benchmark",
+    "rep": 2,
+    "status": "ok",
+    "wall_clock_seconds": 464.49
+  },
+  {
+    "tag": "mama_4_production_run2",
+    "protocol": "mama",
+    "n_platforms": 4,
+    "mode": "production",
+    "rep": 2,
+    "status": "ok",
+    "wall_clock_seconds": 489.26
+  },
+  {
+    "tag": "mascot_5_benchmark_run2",
+    "protocol": "mascot",
+    "n_platforms": 5,
+    "mode": "benchmark",
+    "rep": 2,
+    "status": "ok",
+    "wall_clock_seconds": 682.02
+  },
+  {
+    "tag": "mascot_5_production_run2",
+    "protocol": "mascot",
+    "n_platforms": 5,
+    "mode": "production",
+    "rep": 2,
+    "status": "ok",
+    "wall_clock_seconds": 773.81
+  },
+  {
+    "tag": "mama_5_benchmark_run2",
+    "protocol": "mama",
+    "n_platforms": 5,
+    "mode": "benchmark",
+    "rep": 2,
+    "status": "failed (returncode=1)",
+    "wall_clock_seconds": 1204.76
+  },
+  {
+    "tag": "mama_5_production_run2",
+    "protocol": "mama",
+    "n_platforms": 5,
+    "mode": "production",
+    "rep": 2,
+    "status": "failed (returncode=1)",
+    "wall_clock_seconds": 1208.04
+  },
+  {
+    "tag": "mascot_2_benchmark_run3",
+    "protocol": "mascot",
+    "n_platforms": 2,
+    "mode": "benchmark",
+    "rep": 3,
+    "status": "ok",
+    "wall_clock_seconds": 84.23
+  },
+  {
+    "tag": "mascot_2_production_run3",
+    "protocol": "mascot",
+    "n_platforms": 2,
+    "mode": "production",
+    "rep": 3,
+    "status": "ok",
+    "wall_clock_seconds": 69.02
+  },
+  {
+    "tag": "mama_2_benchmark_run3",
+    "protocol": "mama",
+    "n_platforms": 2,
+    "mode": "benchmark",
+    "rep": 3,
+    "status": "ok",
+    "wall_clock_seconds": 58.43
+  },
+  {
+    "tag": "mama_2_production_run3",
+    "protocol": "mama",
+    "n_platforms": 2,
+    "mode": "production",
+    "rep": 3,
+    "status": "ok",
+    "wall_clock_seconds": 60.12
+  },
+  {
+    "tag": "mascot_3_benchmark_run3",
+    "protocol": "mascot",
+    "n_platforms": 3,
+    "mode": "benchmark",
+    "rep": 3,
+    "status": "ok",
+    "wall_clock_seconds": 175.03
+  },
+  {
+    "tag": "mascot_3_production_run3",
+    "protocol": "mascot",
+    "n_platforms": 3,
+    "mode": "production",
+    "rep": 3,
+    "status": "ok",
+    "wall_clock_seconds": 193.68
+  },
+  {
+    "tag": "mama_3_benchmark_run3",
+    "protocol": "mama",
+    "n_platforms": 3,
+    "mode": "benchmark",
+    "rep": 3,
+    "status": "ok",
+    "wall_clock_seconds": 242.4
+  },
+  {
+    "tag": "mama_3_production_run3",
+    "protocol": "mama",
+    "n_platforms": 3,
+    "mode": "production",
+    "rep": 3,
+    "status": "ok",
+    "wall_clock_seconds": 216.87
+  },
+  {
+    "tag": "mascot_4_benchmark_run3",
+    "protocol": "mascot",
+    "n_platforms": 4,
+    "mode": "benchmark",
+    "rep": 3,
+    "status": "ok",
+    "wall_clock_seconds": 496.61
+  },
+  {
+    "tag": "mascot_4_production_run3",
+    "protocol": "mascot",
+    "n_platforms": 4,
+    "mode": "production",
+    "rep": 3,
+    "status": "ok",
+    "wall_clock_seconds": 416.27
+  },
+  {
+    "tag": "mama_4_benchmark_run3",
+    "protocol": "mama",
+    "n_platforms": 4,
+    "mode": "benchmark",
+    "rep": 3,
+    "status": "ok",
+    "wall_clock_seconds": 482.59
+  },
+  {
+    "tag": "mama_4_production_run3",
+    "protocol": "mama",
+    "n_platforms": 4,
+    "mode": "production",
+    "rep": 3,
+    "status": "ok",
+    "wall_clock_seconds": 631.31
+  },
+  {
+    "tag": "mascot_5_benchmark_run3",
+    "protocol": "mascot",
+    "n_platforms": 5,
+    "mode": "benchmark",
+    "rep": 3,
+    "status": "ok",
+    "wall_clock_seconds": 863.5
+  },
+  {
+    "tag": "mascot_5_production_run3",
+    "protocol": "mascot",
+    "n_platforms": 5,
+    "mode": "production",
+    "rep": 3,
+    "status": "ok",
+    "wall_clock_seconds": 714.68
+  },
+  {
+    "tag": "mama_5_benchmark_run3",
+    "protocol": "mama",
+    "n_platforms": 5,
+    "mode": "benchmark",
+    "rep": 3,
+    "status": "ok",
+    "wall_clock_seconds": 1130.53
+  },
+  {
+    "tag": "mama_5_production_run3",
+    "protocol": "mama",
+    "n_platforms": 5,
+    "mode": "production",
+    "rep": 3,
+    "status": "failed (returncode=1)",
+    "wall_clock_seconds": 1206.86
+  }
+]

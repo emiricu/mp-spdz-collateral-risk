@@ -1,0 +1,50 @@
+{
+  "wallet_address": "0xclean0000000000000000000000000000000001",
+  "policy_version": 1,
+  "timestamp": "2026-08-11T14:06:46.059138+00:00",
+  "n_platforms": 3,
+  "esito": "APPROVATO",
+  "risk_score": 73,
+  "max_ltv_bps": 6500,
+  "liq_threshold_bps": 7500,
+  "esposizione_totale_usd": 70000,
+  "esposizione_fascia": null,
+  "participants": [
+    {
+      "platform_id": 0,
+      "signature": "30460221008170842f6bd9805f1e9f3c75224de58d73e346fa3d353f8a6f383da145daf793022100fbb8a629500b385af4c349e20425ad0e5dc6f37e22550ec96be0e7b75933561e"
+    },
+    {
+      "platform_id": 1,
+      "signature": "3046022100fdf95a0a0fc4906bdf90c0b45ed18ee0d5c709f355ae5101785932a05d5be2a0022100da20adc3d8db3c53811af3fc064a3ed2b47f206739528826a96693aa54f7d915"
+    },
+    {
+      "platform_id": 2,
+      "signature": "304502210087e863205f3b399a8276a2af8a56470682b5225039dcdf1717e9248ff4cb8c98022070bdeeb3b954cb0660e5030de59e1d4022bccca5cf7e62709681b3082f9870ae"
+    }
+  ],
+  "liquidation_price_usd": 26666.666666666664,
+  "liquidation_price_note": null,
+  "run_time_seconds": 209.95,
+  "data_sent_mb": 15603.1,
+  "onchain_payload": {
+    "wallet_address": "0xclean0000000000000000000000000000000001",
+    "esito": "APPROVATO",
+    "policy_version": 1,
+    "timestamp": "2026-08-11T14:06:46.059138+00:00",
+    "signatures": [
+      "30460221008170842f6bd9805f1e9f3c75224de58d73e346fa3d353f8a6f383da145daf793022100fbb8a629500b385af4c349e20425ad0e5dc6f37e22550ec96be0e7b75933561e",
+      "3046022100fdf95a0a0fc4906bdf90c0b45ed18ee0d5c709f355ae5101785932a05d5be2a0022100da20adc3d8db3c53811af3fc064a3ed2b47f206739528826a96693aa54f7d915",
+      "304502210087e863205f3b399a8276a2af8a56470682b5225039dcdf1717e9248ff4cb8c98022070bdeeb3b954cb0660e5030de59e1d4022bccca5cf7e62709681b3082f9870ae"
+    ]
+  },
+  "phase_breakdown": {
+    "online_time": 0.211403,
+    "online_mb": 0.00762,
+    "online_rounds": 286,
+    "prep_time": 209.116,
+    "prep_mb": 5207.46,
+    "prep_rounds": 100362,
+    "prep_pct": 99.9
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "wallet_address": "0xclean0000000000000000000000000000000001",
+  "policy_version": 1,
+  "timestamp": "2026-08-11T16:08:27.078626+00:00",
+  "n_platforms": 3,
+  "esito": "APPROVATO",
+  "risk_score": 73,
+  "max_ltv_bps": 6500,
+  "liq_threshold_bps": 7500,
+  "esposizione_totale_usd": 70000,
+  "esposizione_fascia": null,
+  "participants": [
+    {
+      "platform_id": 0,
+      "signature": "304402201ae91de7ddd82057c79edf2528037374783e257221dbefab461708024f2f3fac02202469a0b4267a0b297d66f7d64fefccd7f5f4e2cfcb204ae13327f404e433f80e"
+    },
+    {
+      "platform_id": 1,
+      "signature": "304502203a60ac8886e31545ae311c9b1699bbe882df5646f0bc9ffca8b8785710bd9611022100b11ebac11de863845fb65c6669cf2fc939fea1999f31d708bc3b3dd25ac1160c"
+    },
+    {
+      "platform_id": 2,
+      "signature": "3045022100acc40de46183c3e38cd0621408989e099da9118538a7030b3479ce428ac1896202206353e5cbd7b3de6c40feec9a9b4d18178673ee431e2e35a81d59c364b10978a5"
+    }
+  ],
+  "liquidation_price_usd": 26666.666666666664,
+  "liquidation_price_note": null,
+  "run_time_seconds": 216.07,
+  "data_sent_mb": 20795.9,
+  "onchain_payload": {
+    "wallet_address": "0xclean0000000000000000000000000000000001",
+    "esito": "APPROVATO",
+    "policy_version": 1,
+    "timestamp": "2026-08-11T16:08:27.078626+00:00",
+    "signatures": [
+      "304402201ae91de7ddd82057c79edf2528037374783e257221dbefab461708024f2f3fac02202469a0b4267a0b297d66f7d64fefccd7f5f4e2cfcb204ae13327f404e433f80e",
+      "304502203a60ac8886e31545ae311c9b1699bbe882df5646f0bc9ffca8b8785710bd9611022100b11ebac11de863845fb65c6669cf2fc939fea1999f31d708bc3b3dd25ac1160c",
+      "3045022100acc40de46183c3e38cd0621408989e099da9118538a7030b3479ce428ac1896202206353e5cbd7b3de6c40feec9a9b4d18178673ee431e2e35a81d59c364b10978a5"
+    ]
+  },
+  "phase_breakdown": {
+    "online_time": 0.160634,
+    "online_mb": 0.00762,
+    "online_rounds": 286,
+    "prep_time": 215.394,
+    "prep_mb": 6938.94,
+    "prep_rounds": 102293,
+    "prep_pct": 99.9
+  }
+}

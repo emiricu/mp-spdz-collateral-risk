@@ -1,0 +1,60 @@
+{
+  "wallet_address": "0xclean0000000000000000000000000000000001",
+  "policy_version": 1,
+  "timestamp": "2026-08-11T15:15:49.601411+00:00",
+  "n_platforms": 5,
+  "esito": "APPROVATO",
+  "risk_score": 73,
+  "max_ltv_bps": 6500,
+  "liq_threshold_bps": 7500,
+  "esposizione_totale_usd": 70000,
+  "esposizione_fascia": null,
+  "participants": [
+    {
+      "platform_id": 0,
+      "signature": "3046022100fa26fae920e6604f9154ca4501e552613e4f100e004ca2be0ff9cd376d71f5a6022100e452219b7a43a4158ab71b54efad8eeff652c81cd2127af524a4af1f67ddf5bd"
+    },
+    {
+      "platform_id": 1,
+      "signature": "304502207ce953fb15a2e3c57b04c5707eb8aae555296052179087b2af043893f1304929022100b3a58ef6667b8cf55a0fd326e369ce04b9340840552a49d270397b52d7a5eae7"
+    },
+    {
+      "platform_id": 2,
+      "signature": "30440220147ad0925c3ccd11653c1cd0625d548d20d1efce6fc1be923e787aef74ac76c902201f0db4561d8ceb532fc7b2e8dbd3dd1881c5bddf4a77d80051b59249dac5eba4"
+    },
+    {
+      "platform_id": 3,
+      "signature": "304402207f74fc0ebdbc920e305ea5e1016248852060cc98cc936f78bf4087f64c1aadd302204cbd85a7d6d759d6d2a45f07cf17d7faf3f3e5c7e514eefd1a456bd797309e84"
+    },
+    {
+      "platform_id": 4,
+      "signature": "304402204fb49794993728242fc0e574b56bbcd6ea98bfe7e0807798cc6483ce374cc139022053f242f0232e0f2d8d1436667e3f6c53fb7913b88de805c0ef94bd8cd0fcda65"
+    }
+  ],
+  "liquidation_price_usd": 26666.666666666664,
+  "liquidation_price_note": null,
+  "run_time_seconds": 839.36,
+  "data_sent_mb": 91713.2,
+  "onchain_payload": {
+    "wallet_address": "0xclean0000000000000000000000000000000001",
+    "esito": "APPROVATO",
+    "policy_version": 1,
+    "timestamp": "2026-08-11T15:15:49.601411+00:00",
+    "signatures": [
+      "3046022100fa26fae920e6604f9154ca4501e552613e4f100e004ca2be0ff9cd376d71f5a6022100e452219b7a43a4158ab71b54efad8eeff652c81cd2127af524a4af1f67ddf5bd",
+      "304502207ce953fb15a2e3c57b04c5707eb8aae555296052179087b2af043893f1304929022100b3a58ef6667b8cf55a0fd326e369ce04b9340840552a49d270397b52d7a5eae7",
+      "30440220147ad0925c3ccd11653c1cd0625d548d20d1efce6fc1be923e787aef74ac76c902201f0db4561d8ceb532fc7b2e8dbd3dd1881c5bddf4a77d80051b59249dac5eba4",
+      "304402207f74fc0ebdbc920e305ea5e1016248852060cc98cc936f78bf4087f64c1aadd302204cbd85a7d6d759d6d2a45f07cf17d7faf3f3e5c7e514eefd1a456bd797309e84",
+      "304402204fb49794993728242fc0e574b56bbcd6ea98bfe7e0807798cc6483ce374cc139022053f242f0232e0f2d8d1436667e3f6c53fb7913b88de805c0ef94bd8cd0fcda65"
+    ]
+  },
+  "phase_breakdown": {
+    "online_time": 0.51442,
+    "online_mb": 0.016232,
+    "online_rounds": 516,
+    "prep_time": 837.132,
+    "prep_mb": 18384.3,
+    "prep_rounds": 263015,
+    "prep_pct": 99.9
+  }
+}

@@ -1,0 +1,7 @@
+compiling field-crypto_collateral_risk-5-0-0 (domain=field)...
+building: mama-party.x
+make: 'mama-party.x' is up to date.
+ 
+wrote /home/emilio/tesi/some-test-mp-spdz/results_retest_controllato/mama_5_benchmark_run3.json
+
+--- stderr ---

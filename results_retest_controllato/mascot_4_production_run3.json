@@ -1,0 +1,55 @@
+{
+  "wallet_address": "0xclean0000000000000000000000000000000001",
+  "policy_version": 1,
+  "timestamp": "2026-08-11T18:14:00.391753+00:00",
+  "n_platforms": 4,
+  "esito": "APPROVATO",
+  "risk_score": 73,
+  "max_ltv_bps": 6500,
+  "liq_threshold_bps": 7500,
+  "esposizione_totale_usd": 70000,
+  "esposizione_fascia": null,
+  "participants": [
+    {
+      "platform_id": 0,
+      "signature": "3046022100cd1079c2f7f94b07a9f61314c015071f2b94e250eb64ec7ab4ed02ca672507a9022100b250b3787d1e2c4018a7e400737dae5b763324509e96b584e8bb9491dc2ae9cb"
+    },
+    {
+      "platform_id": 1,
+      "signature": "3045022100efc313328ef324ce15d3e4565595f0cf904aacf71c87c1e39769ffe9881160e5022000b9c35eba60eec2c9810a0b4b7ddbda4fe9665563162e8951ce36e82995e9b6"
+    },
+    {
+      "platform_id": 2,
+      "signature": "304402206156d3cc721fe633a5e7ac12803191a0e55cff85e15bc2a09503c3ec35cee88b0220763238cd09518ff48d9a2edf5f1915b957a311f30089e81b3d8e49760f37a961"
+    },
+    {
+      "platform_id": 3,
+      "signature": "304402205f8bd83e402449a63aac16ed0f83067c21c6059a476ecf789881a8a525a0f66702204f7925b2c5ccfd2fb5587e4d66dde94273b67948895ad45de857cd224a8d735d"
+    }
+  ],
+  "liquidation_price_usd": 26666.666666666664,
+  "liquidation_price_note": null,
+  "run_time_seconds": 413.95,
+  "data_sent_mb": 40422.6,
+  "onchain_payload": {
+    "wallet_address": "0xclean0000000000000000000000000000000001",
+    "esito": "APPROVATO",
+    "policy_version": 1,
+    "timestamp": "2026-08-11T18:14:00.391753+00:00",
+    "signatures": [
+      "3046022100cd1079c2f7f94b07a9f61314c015071f2b94e250eb64ec7ab4ed02ca672507a9022100b250b3787d1e2c4018a7e400737dae5b763324509e96b584e8bb9491dc2ae9cb",
+      "3045022100efc313328ef324ce15d3e4565595f0cf904aacf71c87c1e39769ffe9881160e5022000b9c35eba60eec2c9810a0b4b7ddbda4fe9665563162e8951ce36e82995e9b6",
+      "304402206156d3cc721fe633a5e7ac12803191a0e55cff85e15bc2a09503c3ec35cee88b0220763238cd09518ff48d9a2edf5f1915b957a311f30089e81b3d8e49760f37a961",
+      "304402205f8bd83e402449a63aac16ed0f83067c21c6059a476ecf789881a8a525a0f66702204f7925b2c5ccfd2fb5587e4d66dde94273b67948895ad45de857cd224a8d735d"
+    ]
+  },
+  "phase_breakdown": {
+    "online_time": 0.390831,
+    "online_mb": 0.011811,
+    "online_rounds": 401,
+    "prep_time": 412.643,
+    "prep_mb": 10125.0,
+    "prep_rounds": 171128,
+    "prep_pct": 99.9
+  }
+}

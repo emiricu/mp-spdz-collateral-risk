@@ -7,17 +7,23 @@ per-platform Input-P<i>-0 files, runs the MPC computation via
 mpc_bench's own compile/build/run machinery, and merges the revealed
 output with the public context into one JSON result.
 
-Price data is ALWAYS live (CoinGecko), never provided by a participating
-platform: if the requesting platform could self-report the collateral
-price, it could inflate or deflate it to bias the outcome in its own
-favor (make a risky loan look safe, or vice versa to hurt a competitor)
--- exactly the manipulation vector price oracles like Chainlink exist to
-remove in DeFi generally. CoinGecko aggregates across many exchanges, so
-no single participating platform controls it. Fetched at the start of
-each run and cached for 2 minutes (see risk_data/cache.py) -- fresh
-enough to reflect near-real-time price, cheap enough not to hammer the
-API when several runs (e.g. a scaling study across N) happen back to
-back.
+Price data is ALWAYS live (CoinGecko) by default, never provided by a
+participating platform: if the requesting platform could self-report the
+collateral price, it could inflate or deflate it to bias the outcome in
+its own favor (make a risky loan look safe, or vice versa to hurt a
+competitor) -- exactly the manipulation vector price oracles like
+Chainlink exist to remove in DeFi generally. CoinGecko aggregates across
+many exchanges, so no single participating platform controls it. Fetched
+at the start of each run and cached for 2 minutes (see risk_data/cache.py)
+-- fresh enough to reflect near-real-time price, cheap enough not to
+hammer the API when several runs (e.g. a scaling study across N) happen
+back to back.
+
+--price-source fixture is a narrow, explicit opt-out of the above,
+meant only for controlled timing comparisons (e.g. re-testing the same
+protocol/N under benchmark vs production mode back-to-back) where price
+drift between runs would be a confounding variable, not a feature. Never
+the default, never used for anything that produces a real decision.
 
 Wallet on-chain history (age, tx count, KYC-exchange/mixer signals) is
 still read from the fixture layer, NOT live: the same manipulation
@@ -103,9 +109,13 @@ PRICE_CACHE_TTL_SECONDS = 120  # ~2 minutes -- see module docstring
 # Step 1: gather -- price is always live (anti-manipulation, see module
 # docstring); wallet history is fixture-only for now (no Etherscan key)
 # ---------------------------------------------------------------------------
-def gather(collateral_asset, wallet_address, cache_dir, coingecko_api_key=None):
-    price_cache = cache.Cache(cache_dir, ttl_seconds=PRICE_CACHE_TTL_SECONDS)
-    price_oracle = oracles.CoinGeckoOracle(cache=price_cache, api_key=coingecko_api_key)
+def gather(collateral_asset, wallet_address, cache_dir, coingecko_api_key=None,
+           price_source='live'):
+    if price_source == 'fixture':
+        price_oracle = oracles.FixtureOracle()
+    else:
+        price_cache = cache.Cache(cache_dir, ttl_seconds=PRICE_CACHE_TTL_SECONDS)
+        price_oracle = oracles.CoinGeckoOracle(cache=price_cache, api_key=coingecko_api_key)
     wallet_analyzer = wallets.FixtureWalletAnalyzer()
 
     address_book = wallets.AddressBook.from_fixture()
@@ -461,6 +471,10 @@ def main():
     p.add_argument('--coingecko-api-key', default=os.environ.get('COINGECKO_API_KEY'),
                     help='optional, raises the rate limit; the free tier works without one '
                          '(default: $COINGECKO_API_KEY)')
+    p.add_argument('--price-source', default='live', choices=['live', 'fixture'],
+                    help="'live' (default): CoinGecko, see module docstring for why. "
+                         "'fixture': frozen registered price, only for controlled timing "
+                         "comparisons where price drift must not be a confound.")
     p.add_argument('--domain', default='field', choices=sorted(mpc_bench.DOMAIN_COMPILE))
     p.add_argument('--protocol', default='semi')
     p.add_argument('--mode', default='benchmark', choices=['benchmark', 'production'],
@@ -494,7 +508,8 @@ def main():
     mode = {'benchmark': mpc_bench.MODE_BENCHMARK,
              'production': mpc_bench.MODE_PRODUCTION}[args.mode]
 
-    raw = gather(args.collateral_asset, args.wallet, args.cache_dir, args.coingecko_api_key)
+    raw = gather(args.collateral_asset, args.wallet, args.cache_dir, args.coingecko_api_key,
+                 price_source=args.price_source)
     derived = derive(raw, args.collateral_amount)
     scaled = scale_and_guard(derived)
     n_platforms = write_inputs(platform_debts, args.requester, new_loan_usd, scaled)

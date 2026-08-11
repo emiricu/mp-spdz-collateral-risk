@@ -99,11 +99,12 @@ local/
 # Logs and databases #
 ######################
 *.log
-# ...except the raw MPC run logs kept as evidence for results_all_algorithms/
-# and results_produzione/ (referenced directly in the published benchmark
-# reports, e.g. crash messages)
+# ...except the raw MPC run logs kept as evidence for results_all_algorithms/,
+# results_produzione/ and results_retest_controllato/ (referenced directly in
+# the published benchmark reports, e.g. crash messages)
 !results_all_algorithms/**/*.log
 !results_produzione/**/*.log
+!results_retest_controllato/**/*.log
 *.sql
 *.sqlite
 *.data

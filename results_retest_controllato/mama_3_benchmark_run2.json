@@ -1,0 +1,74 @@
+{
+  "wallet_address": "0xclean0000000000000000000000000000000001",
+  "policy_version": 1,
+  "timestamp": "2026-08-11T16:04:48.778860+00:00",
+  "n_platforms": 3,
+  "requester_platform": 0,
+  "domain": "field",
+  "protocol": "mama",
+  "run_time_seconds": 263.28,
+  "data_sent_mb": 20795.9,
+  "esito": "APPROVATO",
+  "risk_score": 73,
+  "mpc_output": {
+    "policy_version": "1",
+    "piattaforme": "3",
+    "esposizione_totale_usd": "70000",
+    "max_ltv_bps": "6500",
+    "liq_threshold_bps": "7500",
+    "punteggio_leva": "25",
+    "punteggio_volatilita": "18",
+    "punteggio_correlazione": "0",
+    "punteggio_liquidita": "15",
+    "punteggio_wallet": "15",
+    "risk_score": "73",
+    "esito": "APPROVATO",
+    "motivazione": "punteggio sopra soglia e leva ampiamente entro policy",
+    "Compiler": "./compile.py -o field crypto_collateral_risk 3 0 0"
+  },
+  "public_context": {
+    "collateral_asset": "BTC",
+    "collateral_amount": 3.5,
+    "collateral_value_usd": 210000,
+    "spot_price_usd": 60000.0,
+    "price_provenance": "fixture",
+    "benchmark_asset": "BTC",
+    "volatility_annualized": 0.2193861543392651,
+    "correlation_vs_benchmark": 1.0,
+    "liquidity_ratio": 119047.61904761905,
+    "wallet_provenance": "fixture",
+    "wallet_age_days": 732,
+    "wallet_flags": 0
+  },
+  "liquidation_price_usd": 26666.666666666664,
+  "liquidation_price_note": null,
+  "signable_payload": {
+    "wallet_address": "0xclean0000000000000000000000000000000001",
+    "esito": "APPROVATO",
+    "policy_version": 1,
+    "timestamp": "2026-08-11T16:04:48.778860+00:00",
+    "participants": [
+      {
+        "platform_id": 0,
+        "signature": "304402200f796972b058d2eadd878c51401d4fd582abcda41730c6c3a4c73683d80c95e1022049ca008d6ba271e743e3bd10ae1751681fa535c4b119380cbfd5ba761d5c7f96"
+      },
+      {
+        "platform_id": 1,
+        "signature": "304502200a31aaff7bf57c684ba6509e6d21cd24795966a8d3eab45b82c0d14cd792bf1f022100f93496f9003e19f8b5ac9b95840fd07c4594c73be91a7185cef62bb313960034"
+      },
+      {
+        "platform_id": 2,
+        "signature": "3046022100d128e1a3f102c897ca06a09a2c840028305fd9b6f7da5d1b99279a113d8d95c5022100cc0dd6eb2cdc4acdf800c37812720271688b9df17523a8173a44971e933710b4"
+      }
+    ]
+  },
+  "phase_breakdown": {
+    "online_time": 0.205914,
+    "online_mb": 0.007356,
+    "online_rounds": 260,
+    "prep_time": 262.64,
+    "prep_mb": 6938.94,
+    "prep_rounds": 102293,
+    "prep_pct": 99.9
+  }
+}

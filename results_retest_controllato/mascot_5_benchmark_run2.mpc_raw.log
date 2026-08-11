@@ -1,0 +1,67 @@
+Using statistical security parameter 40
+Trying to run 128-bit computation (128-bit representation)
+No modulus found in Player-Data//5-p-128/Params-Data, generating 128-bit prime
+Using prime modulus 170141183460469231731687303715885907969
+Setup took 1.42736 seconds.
+--- valori calcolati ---
+policy_version: 1
+piattaforme: 5
+esposizione_totale_usd: 70000
+max_ltv_bps: 6500
+liq_threshold_bps: 7500
+punteggio_leva: 25
+punteggio_volatilita: 18
+punteggio_correlazione: 0
+punteggio_liquidita: 15
+punteggio_wallet: 15
+risk_score: 73
+esito: APPROVATO
+motivazione: punteggio sopra soglia e leva ampiamente entro policy
+Compiler: ./compile.py -o field crypto_collateral_risk 5 0 0
+	206 triples of Tinier left
+	~1022 edaBits of size 40 left
+Significant amount of unused edaBits of size 40. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	~992 edaBits of size 41 left
+Significant amount of unused edaBits of size 41. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	~990 edaBits of size 64 left
+Significant amount of unused edaBits of size 64. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	138 triples of Tinier left
+Detailed costs:
+         12850 integer inputs
+            31 integer multiplications
+        500820 integer openings
+Spent 0.492892 seconds (0.015704 MB, 466 rounds, 450.541 CPU seconds) on the online phase and 676.56 seconds (18383.7 MB, 263017 rounds, 450.542 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Broadcasting 0.604504 MB in 27385 rounds, taking 95.0608 seconds
+Exchanging one-to-one 15006.4 MB in 11672 rounds, taking 131.509 seconds
+Partial broadcasting 0.784732 MB in 30182 rounds, taking 100.714 seconds
+Receiving directly 72.7178 MB in 68928 rounds, taking 24.0375 seconds
+Receiving one-to-one 3301.32 MB in 21927 rounds, taking 13.5423 seconds
+Sending directly 69.4371 MB in 68520 rounds, taking 15.6457 seconds
+Sending one-to-one 3301.38 MB in 21927 rounds, taking 2.1575 seconds
+Sending to all 0.820287 MB in 102 rounds, taking 0.0365018 seconds
+Sending/receiving 0.82176 MB in 12840 rounds, taking 40.449 seconds
+CPU time = 450.818
+The following benchmarks are including preprocessing (offline phase).
+Time = 677.546 seconds 
+Data sent = 18383.7 MB in ~263483 rounds (party 0 only)
+Global data sent = 91710.1 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            31        Triples
+            34         daBits
+            12   Input tuples (8 1 1 1 1)
+  Type bit
+          3966        Triples
+  edaBits
+             2 of length 40 (strict)
+            32 of length 41 (strict)
+            34 of length 64 (strict)
+Coordination took 1.40401 seconds
+Coordination took 52.0421 seconds
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../mascot-party.x 0 -v field-crypto_collateral_risk-5-0-0 -pn 15164 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../mascot-party.x 0 -v field-crypto_collateral_risk-5-0-0 -pn 15164 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../mascot-party.x 1 -v field-crypto_collateral_risk-5-0-0 -pn 15164 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../mascot-party.x 2 -v field-crypto_collateral_risk-5-0-0 -pn 15164 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../mascot-party.x 3 -v field-crypto_collateral_risk-5-0-0 -pn 15164 -h localhost -N 5
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../mascot-party.x 4 -v field-crypto_collateral_risk-5-0-0 -pn 15164 -h localhost -N 5
