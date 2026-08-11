@@ -1,0 +1,43 @@
+Using statistical security parameter 40
+Trying to run 128-bit computation (128-bit representation)
+No modulus found in Player-Data//3-SYMSp-128/Params-Data, generating 128-bit prime
+Using prime modulus 170141183460469231731687303715885907969
+Setup took 0.314515 seconds.
+policy_version: 1
+esito_code: 1
+risk_score: 65
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+esposizione_totale_usd: 70000
+Compiler: ./compile.py -o field crypto_collateral_risk 3 0 2
+	~1022 edaBits of size 40 left
+Significant amount of unused edaBits of size 40. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	~996 edaBits of size 41 left
+Significant amount of unused edaBits of size 41. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	~994 edaBits of size 64 left
+Significant amount of unused edaBits of size 64. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+Detailed costs:
+            37 integer multiplications
+Spent 0.178969 seconds (0.1156 MB, 101 rounds, 7.31875 CPU seconds) on the online phase and 10.079 seconds (155.597 MB, 993 rounds, 7.31911 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Broadcasting 0.000472 MB in 21 rounds, taking 0.209197 seconds
+Partial broadcasting 53.7772 MB in 634 rounds, taking 2.76122 seconds
+Sending/receiving 48.2506 MB in 450 rounds, taking 2.36014 seconds
+CPU time = 7.34233
+The following benchmarks are including preprocessing (offline phase).
+Time = 10.2968 seconds 
+Data sent = 155.806 MB in ~1105 rounds (party 0 only)
+Global data sent = 460.93 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            30         daBits
+  Type bit
+          3486        Triples
+  edaBits
+             2 of length 40 (strict)
+            28 of length 41 (strict)
+            30 of length 64 (strict)
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../sy-shamir-party.x 0 -v field-crypto_collateral_risk-3-0-2 -pn 19938 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../sy-shamir-party.x 0 -v field-crypto_collateral_risk-3-0-2 -pn 19938 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../sy-shamir-party.x 1 -v field-crypto_collateral_risk-3-0-2 -pn 19938 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../sy-shamir-party.x 2 -v field-crypto_collateral_risk-3-0-2 -pn 19938 -h localhost -N 3

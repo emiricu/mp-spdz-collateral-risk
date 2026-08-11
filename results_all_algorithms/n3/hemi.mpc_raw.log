@@ -1,0 +1,55 @@
+Truncation error probability 2^-40
+Using statistical security parameter 40
+Trying to run 128-bit computation (128-bit representation)
+Setup took 0.377627 seconds.
+--- valori calcolati ---
+policy_version: 1
+piattaforme: 3
+esposizione_totale_usd: 70000
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+punteggio_leva: 25
+punteggio_volatilita: 10
+punteggio_correlazione: 0
+punteggio_liquidita: 15
+punteggio_wallet: 15
+risk_score: 65
+esito: REVIEW MANUALE
+motivazione: nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica
+Compiler: ./compile.py -o field crypto_collateral_risk 3 0 0
+	6903 triples of gfp left
+Significant amount of unused triples of gfp distorting the benchmark. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	24 dabits of gfp left
+Detailed costs:
+          3486 ANDs
+         19328 ANDs in preprocessing
+            29 integer multiplications
+Spent 0.0278243 seconds (0.005614 MB, 204 rounds, 1.66411 CPU seconds) on the online phase and 3.5264 seconds (3.68514 MB, 1532 rounds, 1.66461 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Broadcasting 0.786572 MB in 1 rounds, taking 0.0010235 seconds
+Exchanging one-to-one 0.00584 MB in 22 rounds, taking 0.0137647 seconds
+Passing around 1.57314 MB in 2 rounds, taking 0.0831356 seconds
+Receiving directly 0.096062 MB in 796 rounds, taking 0.636485 seconds
+Receiving one-to-one 0.442338 MB in 56 rounds, taking 0 seconds
+Sending directly 0.096062 MB in 796 rounds, taking 0.44786 seconds
+Sending one-to-one 0.442338 MB in 56 rounds, taking 0 seconds
+Sending/receiving 0.000224 MB in 7 rounds, taking 0.0238297 seconds
+CPU time = 1.66795
+The following benchmarks are including preprocessing (offline phase).
+Time = 3.5678 seconds 
+Data sent = 3.69075 MB in ~1736 rounds (party 0 only)
+Global data sent = 10.9762 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            29        Triples
+            30         daBits
+  Type bit
+          3486        Triples
+  edaBits
+             2 of length 40 (strict)
+            28 of length 41 (strict)
+            30 of length 64 (strict)
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../hemi-party.x 0 -v field-crypto_collateral_risk-3-0-0 -pn 10007 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../hemi-party.x 0 -v field-crypto_collateral_risk-3-0-0 -pn 10007 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../hemi-party.x 1 -v field-crypto_collateral_risk-3-0-0 -pn 10007 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../hemi-party.x 2 -v field-crypto_collateral_risk-3-0-0 -pn 10007 -h localhost -N 3

@@ -1,0 +1,50 @@
+{
+  "wallet_address": "0xclean0000000000000000000000000000000001",
+  "policy_version": 1,
+  "timestamp": "2026-08-11T10:25:47.741287+00:00",
+  "n_platforms": 3,
+  "esito": "REVIEW MANUALE",
+  "risk_score": 65,
+  "max_ltv_bps": 5000,
+  "liq_threshold_bps": 6000,
+  "participants": [
+    {
+      "platform_id": 0,
+      "signature": "304402206d42af697345483f30f45e8ac28b6cd59ac7e52ca199b26f9945373db06164af022037a0a97b9d45ca7d1776eb53a862393e40f1dd4664268cb3d36f3932736b1964"
+    },
+    {
+      "platform_id": 1,
+      "signature": "3046022100c353f3cbf3021209ec7a1a5d712d5d783908dffb7ba796ca533156dbc7ad28c1022100a4c245f73e0745a338f4296477d0e70412988b5c392702df47f8148a437bd77c"
+    },
+    {
+      "platform_id": 2,
+      "signature": "30460221008473749190e55545e8ba98f46f89eb429b13878caf3068999c2ee6f4d039a9f3022100eb637ef0cbb2f656446519c255c21869265131878fb752c9bab4daf92312431b"
+    }
+  ],
+  "liquidation_price_usd": 33333.333333333336,
+  "liquidation_price_note": null,
+  "run_time_seconds": 269.13,
+  "data_sent_mb": 15603.1,
+  "onchain_payload": {
+    "wallet_address": "0xclean0000000000000000000000000000000001",
+    "esito": "REVIEW MANUALE",
+    "policy_version": 1,
+    "timestamp": "2026-08-11T10:25:47.741287+00:00",
+    "signatures": [
+      "304402206d42af697345483f30f45e8ac28b6cd59ac7e52ca199b26f9945373db06164af022037a0a97b9d45ca7d1776eb53a862393e40f1dd4664268cb3d36f3932736b1964",
+      "3046022100c353f3cbf3021209ec7a1a5d712d5d783908dffb7ba796ca533156dbc7ad28c1022100a4c245f73e0745a338f4296477d0e70412988b5c392702df47f8148a437bd77c",
+      "30460221008473749190e55545e8ba98f46f89eb429b13878caf3068999c2ee6f4d039a9f3022100eb637ef0cbb2f656446519c255c21869265131878fb752c9bab4daf92312431b"
+    ]
+  },
+  "phase_breakdown": {
+    "online_time": 0.235288,
+    "online_mb": 0.00762,
+    "online_rounds": 286,
+    "prep_time": 268.151,
+    "prep_mb": 5207.46,
+    "prep_rounds": 100362,
+    "prep_pct": 99.9
+  },
+  "esposizione_totale_usd": 70000,
+  "esposizione_fascia": null
+}

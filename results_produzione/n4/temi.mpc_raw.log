@@ -1,0 +1,45 @@
+Truncation error probability 2^-40
+Using statistical security parameter 40
+Trying to run 128-bit computation (128-bit representation)
+Setup took 0.49841 seconds.
+policy_version: 1
+esito_code: 1
+risk_score: 65
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+esposizione_totale_usd: 70000
+Compiler: ./compile.py -o field crypto_collateral_risk 4 0 2
+	6330 triples of gfp left
+Significant amount of unused triples of gfp distorting the benchmark. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+Detailed costs:
+          3726 ANDs
+         28992 ANDs in preprocessing
+            38 integer multiplications
+Spent 0.0872008 seconds (0.008853 MB, 342 rounds, 0.941942 CPU seconds) on the online phase and 1.7651 seconds (6.96201 MB, 3385 rounds, 0.945841 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Exchanging one-to-one 0.01248 MB in 42 rounds, taking 0.0578349 seconds
+Receiving directly 6.00667 MB in 1719 rounds, taking 0.407867 seconds
+Receiving one-to-one 0.951378 MB in 120 rounds, taking 0 seconds
+Sending directly 6.00667 MB in 1719 rounds, taking 0.318085 seconds
+Sending one-to-one 0.951378 MB in 120 rounds, taking 0 seconds
+Sending/receiving 0.000336 MB in 7 rounds, taking 0.0267275 seconds
+CPU time = 0.973529
+The following benchmarks are including preprocessing (offline phase).
+Time = 1.89448 seconds 
+Data sent = 6.97086 MB in ~3727 rounds (party 0 only)
+Global data sent = 15.8701 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            38        Triples
+            32         daBits
+  Type bit
+          3726        Triples
+  edaBits
+             2 of length 40 (strict)
+            30 of length 41 (strict)
+            32 of length 64 (strict)
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../temi-party.x 0 -v field-crypto_collateral_risk-4-0-2 -pn 15094 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../temi-party.x 0 -v field-crypto_collateral_risk-4-0-2 -pn 15094 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../temi-party.x 1 -v field-crypto_collateral_risk-4-0-2 -pn 15094 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../temi-party.x 2 -v field-crypto_collateral_risk-4-0-2 -pn 15094 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../temi-party.x 3 -v field-crypto_collateral_risk-4-0-2 -pn 15094 -h localhost -N 4

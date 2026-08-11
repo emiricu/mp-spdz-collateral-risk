@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-08-11T10:03:24.342563+00:00",
+  "protocol": "mal-shamir",
+  "domain": "field",
+  "security": "malicious",
+  "n_platforms": 3,
+  "mode": "benchmark",
+  "command": "/usr/bin/python3 Scripts/crypto_risk_run.py --wallet 0xclean0000000000000000000000000000000001 --platform-debts 6667,6667,6666 --new-loan 50000 --collateral-asset BTC --collateral-amount 3.5 --domain field --protocol mal-shamir --mode benchmark --timeout 800 --out /home/emilio/tesi/some-test-mp-spdz/results_all_algorithms/n3/mal-shamir.json --raw-log /home/emilio/tesi/some-test-mp-spdz/results_all_algorithms/n3/mal-shamir.mpc_raw.log --coingecko-api-key ***",
+  "status": "ok",
+  "wall_clock_seconds": 16.17
+}

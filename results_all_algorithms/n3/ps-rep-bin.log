@@ -1,0 +1,7 @@
+compiling binary-crypto_collateral_risk-3-0-0 (domain=binary)...
+building: ps-rep-bin-party.x
+make: 'ps-rep-bin-party.x' is up to date.
+ 
+wrote /home/emilio/tesi/some-test-mp-spdz/results_all_algorithms/n3/ps-rep-bin.json
+
+--- stderr ---

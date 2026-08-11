@@ -1,0 +1,3 @@
+
+--- stderr ---
+mode=2 (strict/production) is not supported in the binary domain -- both modes compose the decision in secret arithmetic before any reveal, which is only proven safe in field/ring, and mode=1 additionally needs reveal_to(), unconditionally unavailable for binary-circuit types (Compiler/GC/types.py). Use --domain field or --domain ring for mode=1/2, or mode=0 (the only mode the automated sweeps below ever use) for binary.

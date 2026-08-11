@@ -1,0 +1,55 @@
+{
+  "wallet_address": "0xclean0000000000000000000000000000000001",
+  "policy_version": 1,
+  "timestamp": "2026-08-11T11:44:01.436498+00:00",
+  "n_platforms": 4,
+  "esito": "REVIEW MANUALE",
+  "risk_score": 65,
+  "max_ltv_bps": 5000,
+  "liq_threshold_bps": 6000,
+  "participants": [
+    {
+      "platform_id": 0,
+      "signature": "3045022100b4e0c7119c15bc0620f581cccea61d36993cfa222ae4411bc2b5d17aa2095d7202202eada262ecee206a1a27b66a6a5fa9d8c99fe81847910b7d0470e4c5f2d94a1b"
+    },
+    {
+      "platform_id": 1,
+      "signature": "3046022100ccd87657f9a9448843a31c909af7d583c37cc2b15c7a38deb2f45fc788d61d07022100a2ce4d34c2b489c126136cadda4c0a2c96e0a20bfaf753026db6b21d4355ad72"
+    },
+    {
+      "platform_id": 2,
+      "signature": "30450221009ce90c2f5908397ba36a2fd0656bffc1f7c26651d05245473f458650379fa7a202204806768f3ebdb6246469b0174065fb01e9daf25d673e22aca01a9c90e7bdc5dc"
+    },
+    {
+      "platform_id": 3,
+      "signature": "30440220179615cd5737e4ee58186aaba4b18e7af5b64c80cf334aeb9fe1cd5dcc2fe0ab02205d88026aa708f3410062a71f47363471ab79135a1a5e58f63e47cd53b654a7f7"
+    }
+  ],
+  "liquidation_price_usd": 33333.333333333336,
+  "liquidation_price_note": null,
+  "run_time_seconds": 1.58,
+  "data_sent_mb": 0.08432,
+  "onchain_payload": {
+    "wallet_address": "0xclean0000000000000000000000000000000001",
+    "esito": "REVIEW MANUALE",
+    "policy_version": 1,
+    "timestamp": "2026-08-11T11:44:01.436498+00:00",
+    "signatures": [
+      "3045022100b4e0c7119c15bc0620f581cccea61d36993cfa222ae4411bc2b5d17aa2095d7202202eada262ecee206a1a27b66a6a5fa9d8c99fe81847910b7d0470e4c5f2d94a1b",
+      "3046022100ccd87657f9a9448843a31c909af7d583c37cc2b15c7a38deb2f45fc788d61d07022100a2ce4d34c2b489c126136cadda4c0a2c96e0a20bfaf753026db6b21d4355ad72",
+      "30450221009ce90c2f5908397ba36a2fd0656bffc1f7c26651d05245473f458650379fa7a202204806768f3ebdb6246469b0174065fb01e9daf25d673e22aca01a9c90e7bdc5dc",
+      "30440220179615cd5737e4ee58186aaba4b18e7af5b64c80cf334aeb9fe1cd5dcc2fe0ab02205d88026aa708f3410062a71f47363471ab79135a1a5e58f63e47cd53b654a7f7"
+    ]
+  },
+  "phase_breakdown": {
+    "online_time": 0.103072,
+    "online_mb": 0.010844,
+    "online_rounds": 70,
+    "prep_time": 0.840069,
+    "prep_mb": 0.020264,
+    "prep_rounds": 175,
+    "prep_pct": 89.1
+  },
+  "esposizione_totale_usd": 70000,
+  "esposizione_fascia": null
+}

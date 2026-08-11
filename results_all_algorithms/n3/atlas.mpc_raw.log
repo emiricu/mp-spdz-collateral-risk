@@ -1,0 +1,43 @@
+Trying to run 128-bit computation (128-bit representation)
+No modulus found in Player-Data//3-Sp-128/Params-Data, generating 128-bit prime
+Using prime modulus 170141183460469231731687303715885907969
+Setup took 1.47614 seconds.
+--- valori calcolati ---
+policy_version: 1
+piattaforme: 3
+esposizione_totale_usd: 70000
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+punteggio_leva: 25
+punteggio_volatilita: 10
+punteggio_correlazione: 0
+punteggio_liquidita: 15
+punteggio_wallet: 15
+risk_score: 65
+esito: REVIEW MANUALE
+motivazione: nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica
+Compiler: ./compile.py -o field crypto_collateral_risk 3 0 0
+Detailed costs:
+            29 integer multiplications
+Spent 0.281583 seconds (0.007062 MB, 106 rounds, 0.39243 CPU seconds) on the online phase and 1.32095 seconds (0.011962 MB, 336 rounds, 0.39306 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Partial broadcasting 9e-05 MB in 8 rounds, taking 0.0138368 seconds
+Sending to all 0.000752 MB in 7 rounds, taking 0.0126948 seconds
+Sending/receiving 0.01743 MB in 427 rounds, taking 1.54714 seconds
+CPU time = 0.394113
+The following benchmarks are including preprocessing (offline phase).
+Time = 1.60953 seconds 
+Data sent = 0.019024 MB in ~442 rounds (party 0 only)
+Global data sent = 0.050484 MB (all parties)
+Communication time accounts for more than 95 percent of total time (1.57367 seconds). This might be because of the computation and the network setting, but it could also be product of the optimization trade-off during compilation. See https://mp-spdz.readthedocs.io/en/latest/troubleshooting.html#high-number-of-rounds-or-slow-wan-execution
+Actual preprocessing cost of program:
+  Type int
+            30         daBits
+  edaBits
+             2 of length 40 (strict)
+            28 of length 41 (strict)
+            30 of length 64 (strict)
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../atlas-party.x 0 -v field-crypto_collateral_risk-3-0-0 -pn 11286 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../atlas-party.x 0 -v field-crypto_collateral_risk-3-0-0 -pn 11286 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../atlas-party.x 1 -v field-crypto_collateral_risk-3-0-0 -pn 11286 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../atlas-party.x 2 -v field-crypto_collateral_risk-3-0-0 -pn 11286 -h localhost -N 3

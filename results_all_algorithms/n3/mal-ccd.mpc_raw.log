@@ -1,0 +1,30 @@
+Using statistical security parameter 40
+Compiler: ./compile.py -B 64 -o binary crypto_collateral_risk 3 0 0
+--- valori calcolati ---
+policy_version: 1
+piattaforme: 3
+esposizione_totale_usd: 70000
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+punteggio_leva: 25
+punteggio_volatilita: 10
+punteggio_correlazione: 0
+punteggio_liquidita: 15
+punteggio_wallet: 15
+risk_score: 65
+esito: REVIEW MANUALE
+motivazione: nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica
+  Type bit
+         29545        Triples
+Spent 0.76233 seconds (0.958912 MB, 194 rounds, 0.437967 CPU seconds) on the online phase and 0.672841 seconds (1.8028 MB, 185 rounds, 0.43801 CPU seconds) on the preprocessing/offline phase.
+	455 triples of Shamir gf2n_ left
+Broadcasting 0.00132 MB in 61 rounds, taking 0.145338 seconds
+Partial broadcasting 0.957392 MB in 252 rounds, taking 0.915436 seconds
+Sending/receiving 0.844288 MB in 67 rounds, taking 0.332191 seconds
+The following benchmarks are including preprocessing (offline phase).
+Time = 1.48943 seconds 
+Data sent = 2.76171 MB in ~380 rounds (party 0 only)
+Global data sent = 8.27797 MB (all parties)
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../malicious-ccd-party.x 0 -v binary-crypto_collateral_risk-3-0-0 -pn 16884 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../malicious-ccd-party.x 1 -v binary-crypto_collateral_risk-3-0-0 -pn 16884 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../malicious-ccd-party.x 2 -v binary-crypto_collateral_risk-3-0-0 -pn 16884 -h localhost -N 3

@@ -1,0 +1,52 @@
+Using statistical security parameter 40
+Trying to run 128-bit computation (128-bit representation)
+No modulus found in Player-Data//4-SYMSp-128/Params-Data, generating 128-bit prime
+Using prime modulus 170141183460469231731687303715885907969
+Setup took 0.771096 seconds.
+--- valori calcolati ---
+policy_version: 1
+piattaforme: 4
+esposizione_totale_usd: 70000
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+punteggio_leva: 25
+punteggio_volatilita: 10
+punteggio_correlazione: 0
+punteggio_liquidita: 15
+punteggio_wallet: 15
+risk_score: 65
+esito: REVIEW MANUALE
+motivazione: nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica
+Compiler: ./compile.py -o field crypto_collateral_risk 4 0 0
+	~1022 edaBits of size 40 left
+Significant amount of unused edaBits of size 40. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	~994 edaBits of size 41 left
+Significant amount of unused edaBits of size 41. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	~992 edaBits of size 64 left
+Significant amount of unused edaBits of size 64. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+Detailed costs:
+            30 integer multiplications
+Spent 0.150842 seconds (0.12504 MB, 84 rounds, 10.2429 CPU seconds) on the online phase and 16.0759 seconds (192.291 MB, 993 rounds, 10.2432 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Broadcasting 0.000472 MB in 21 rounds, taking 0.289844 seconds
+Partial broadcasting 53.7852 MB in 633 rounds, taking 5.34939 seconds
+Sending/receiving 84.9673 MB in 434 rounds, taking 3.15316 seconds
+CPU time = 10.2981
+The following benchmarks are including preprocessing (offline phase).
+Time = 16.3515 seconds 
+Data sent = 192.54 MB in ~1088 rounds (party 0 only)
+Global data sent = 695.316 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            32         daBits
+  Type bit
+          3726        Triples
+  edaBits
+             2 of length 40 (strict)
+            30 of length 41 (strict)
+            32 of length 64 (strict)
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../sy-shamir-party.x 0 -v field-crypto_collateral_risk-4-0-0 -pn 12243 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../sy-shamir-party.x 0 -v field-crypto_collateral_risk-4-0-0 -pn 12243 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../sy-shamir-party.x 1 -v field-crypto_collateral_risk-4-0-0 -pn 12243 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../sy-shamir-party.x 2 -v field-crypto_collateral_risk-4-0-0 -pn 12243 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../sy-shamir-party.x 3 -v field-crypto_collateral_risk-4-0-0 -pn 12243 -h localhost -N 4

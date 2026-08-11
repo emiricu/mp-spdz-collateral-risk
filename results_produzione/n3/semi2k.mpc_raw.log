@@ -1,0 +1,45 @@
+Truncation error probability 2^-40
+Trying to run 64-bit computation
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_split(3)
+Setup took 0.0941824 seconds.
+policy_version: 1
+esito_code: 1
+risk_score: 65
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+esposizione_totale_usd: 70000
+Compiler: ./compile.py -R 64 -o ring crypto_collateral_risk 3 0 2
+Detailed costs:
+          3428 ANDs
+            37 integer multiplications
+Spent 0.0655004 seconds (0.00398 MB, 228 rounds, 0.556778 CPU seconds) on the online phase and 1.15919 seconds (0.626032 MB, 1214 rounds, 0.558515 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Exchanging one-to-one 0.104576 MB in 28 rounds, taking 0.0238414 seconds
+Receiving directly 0.014284 MB in 642 rounds, taking 0.331231 seconds
+Receiving one-to-one 0.511088 MB in 64 rounds, taking 0 seconds
+Sending directly 0.014284 MB in 642 rounds, taking 0.242377 seconds
+Sending one-to-one 0.511088 MB in 64 rounds, taking 0 seconds
+Sending/receiving 6.4e-05 MB in 2 rounds, taking 0.00429526 seconds
+CPU time = 0.57093
+The following benchmarks are including preprocessing (offline phase).
+Time = 1.24322 seconds 
+Data sent = 0.630012 MB in ~1442 rounds (party 0 only)
+Global data sent = 1.87575 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            37        Triples
+            30         daBits
+  Type bit
+          3428        Triples
+  edaBits
+             2 of length 63
+            28 of length 64
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_split(3)
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi2k-party.x 0 -v ring-crypto_collateral_risk-3-0-2 -pn 17465 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi2k-party.x 0 -v ring-crypto_collateral_risk-3-0-2 -pn 17465 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi2k-party.x 1 -v ring-crypto_collateral_risk-3-0-2 -pn 17465 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi2k-party.x 2 -v ring-crypto_collateral_risk-3-0-2 -pn 17465 -h localhost -N 3

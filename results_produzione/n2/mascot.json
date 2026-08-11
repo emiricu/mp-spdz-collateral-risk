@@ -39,5 +39,7 @@
     "prep_pct": 99.9
   },
   "run_time_seconds": 83.3709,
-  "data_sent_mb": 2663.56
+  "data_sent_mb": 2663.56,
+  "esposizione_totale_usd": null,
+  "esposizione_fascia": 1
 }

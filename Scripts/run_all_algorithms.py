@@ -56,7 +56,14 @@ COLLATERAL_ASSET = 'BTC'
 COLLATERAL_AMOUNT = 3.5
 TOTAL_EXISTING_DEBT = 20000
 
-N_VALUES = [2, 5]
+# astra/trio: excluded from every sweep. Verified broken in this
+# environment for this program -- timed out even through
+# mpc_bench.run_protocol's own pipe-setup path (ensure_pipes), not just a
+# naive manual invocation. Never proven to work with
+# crypto_collateral_risk.mpc in this repo; not worth the time to debug
+# for a protocol family that isn't part of the honest-vs-dishonest
+# comparison this sweep exists for.
+EXCLUDED_PROTOCOLS = {'astra', 'trio'}
 
 # Timeout tuning: OT/HE malicious+covert protocols are the ones that
 # blew past a minute even at N=2 (lowgear 17s, cowgear 17s, chaigear
@@ -69,7 +76,12 @@ N_VALUES = [2, 5]
 # catalogue's shorter label, found the hard way on a first pass with the
 # narrower marker list below.
 HEAVY_SECURITY_MARKERS = ('malicious (OT)', 'malicious (HE)', 'covert (HE)', 'malicious')
-TIMEOUT_BY_N = {2: {'heavy': 600, 'default': 150}, 5: {'heavy': 1200, 'default': 400}}
+TIMEOUT_BY_N = {
+    2: {'heavy': 600, 'default': 150},
+    3: {'heavy': 800, 'default': 250},   # interpolated, not yet measured at N=3
+    4: {'heavy': 1000, 'default': 320},  # interpolated, not yet measured at N=4
+    5: {'heavy': 1200, 'default': 400},
+}
 
 
 def even_split(total, n):
@@ -81,6 +93,8 @@ def valid_protocols(n):
     out = []
     for p in mpc_bench.PROTOCOLS:
         name, binary, domain, majority, security, scales, fixed_n = p
+        if name in EXCLUDED_PROTOCOLS:
+            continue
         if scales or fixed_n == n:
             out.append(p)
     return out
@@ -155,22 +169,33 @@ def run_one(protocol, domain, security, n, resume, mode, out_root):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--mode', choices=sorted(OUT_ROOT_BY_MODE), default='benchmark')
+    ap.add_argument('--n-values', default='2,5',
+                     help='comma-separated N values to sweep, e.g. 3,4 -- merged into '
+                          'the existing summary.json, never overwriting other N entries')
     ap.add_argument('--resume', action='store_true')
     args = ap.parse_args()
     out_root = OUT_ROOT_BY_MODE[args.mode]
+    n_values = [int(x) for x in args.n_values.split(',')]
 
     out_root.mkdir(exist_ok=True)
-    summary = []
-    for n in N_VALUES:
+    summary_path = out_root / 'summary.json'
+    # Load-and-merge, keyed by (protocol, n_platforms): a fresh `summary = []`
+    # here would silently drop every N not in this run's --n-values from the
+    # published summary.json (e.g. wipe out the existing N=2/N=5 rows while
+    # adding N=3/N=4).
+    existing = json.loads(summary_path.read_text()) if summary_path.exists() else []
+    summary = {(r['protocol'], r['n_platforms']): r for r in existing}
+
+    for n in n_values:
         print(f'\n##### N={n} (mode={args.mode}) #####')
         for name, binary, domain, majority, security, scales, fixed_n in valid_protocols(n):
             status = run_one(name, domain, security, n, args.resume, args.mode, out_root)
-            summary.append({'protocol': name, 'domain': domain, 'majority': majority,
-                             'security': security, 'n_platforms': n, 'status': status})
-            (out_root / 'summary.json').write_text(json.dumps(summary, indent=2))
+            summary[(name, n)] = {'protocol': name, 'domain': domain, 'majority': majority,
+                                   'security': security, 'n_platforms': n, 'status': status}
+            summary_path.write_text(json.dumps(list(summary.values()), indent=2))
 
     print('\n=== riepilogo ===')
-    for row in summary:
+    for row in sorted(summary.values(), key=lambda r: (r['n_platforms'], r['protocol'])):
         print(f"N={row['n_platforms']:>2}  {row['protocol']:<15} {row['status']}")
 
 

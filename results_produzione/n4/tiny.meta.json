@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-08-11T14:49:05.837583+00:00",
+  "protocol": "tiny",
+  "domain": "binary",
+  "security": "malicious",
+  "n_platforms": 4,
+  "mode": "production",
+  "command": "/usr/bin/python3 Scripts/crypto_risk_run.py --wallet 0xclean0000000000000000000000000000000001 --platform-debts 5000,5000,5000,5000 --new-loan 50000 --collateral-asset BTC --collateral-amount 3.5 --domain binary --protocol tiny --mode production --timeout 1000 --out /home/emilio/tesi/some-test-mp-spdz/results_produzione/n4/tiny.json --raw-log /home/emilio/tesi/some-test-mp-spdz/results_produzione/n4/tiny.mpc_raw.log --coingecko-api-key ***",
+  "status": "failed (returncode=1)",
+  "wall_clock_seconds": 0.26
+}

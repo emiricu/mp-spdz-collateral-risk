@@ -1,0 +1,50 @@
+{
+  "wallet_address": "0xclean0000000000000000000000000000000001",
+  "policy_version": 1,
+  "timestamp": "2026-08-11T10:31:27.768120+00:00",
+  "n_platforms": 3,
+  "esito": "REVIEW MANUALE",
+  "risk_score": 65,
+  "max_ltv_bps": 5000,
+  "liq_threshold_bps": 6000,
+  "participants": [
+    {
+      "platform_id": 0,
+      "signature": "3045022100b19ba899c375f030bc5bdbba39916e6105d02028cde4aca3df9fbd60ecd1ed1c02202081b5c88099765decada23df4e88f039971909f1a5a938805ad1960c97ef6d3"
+    },
+    {
+      "platform_id": 1,
+      "signature": "3045022100e5f348d5877b48fd311e47b724f9ab4831f19841a76bbfbf5c053a59da3138b90220470b51a50ec0509f125bd30fe095e04bce7e42003b385d1cb2e2f52d56aa14bc"
+    },
+    {
+      "platform_id": 2,
+      "signature": "30450221009383c1beffbb15e169c6351f9a195dfa4de0bfabb9087ae7183601d8a12348dd022072b6696ef98a16e69ced471ec55c5b7a08f20afef53cd6eef68a8e0038508f6c"
+    }
+  ],
+  "liquidation_price_usd": 33333.333333333336,
+  "liquidation_price_note": null,
+  "run_time_seconds": 0.38,
+  "data_sent_mb": 0.030158,
+  "onchain_payload": {
+    "wallet_address": "0xclean0000000000000000000000000000000001",
+    "esito": "REVIEW MANUALE",
+    "policy_version": 1,
+    "timestamp": "2026-08-11T10:31:27.768120+00:00",
+    "signatures": [
+      "3045022100b19ba899c375f030bc5bdbba39916e6105d02028cde4aca3df9fbd60ecd1ed1c02202081b5c88099765decada23df4e88f039971909f1a5a938805ad1960c97ef6d3",
+      "3045022100e5f348d5877b48fd311e47b724f9ab4831f19841a76bbfbf5c053a59da3138b90220470b51a50ec0509f125bd30fe095e04bce7e42003b385d1cb2e2f52d56aa14bc",
+      "30450221009383c1beffbb15e169c6351f9a195dfa4de0bfabb9087ae7183601d8a12348dd022072b6696ef98a16e69ced471ec55c5b7a08f20afef53cd6eef68a8e0038508f6c"
+    ]
+  },
+  "phase_breakdown": {
+    "online_time": 0.032449,
+    "online_mb": 0.001882,
+    "online_rounds": 58,
+    "prep_time": 0.153332,
+    "prep_mb": 0.009656,
+    "prep_rounds": 171,
+    "prep_pct": 82.5
+  },
+  "esposizione_totale_usd": 70000,
+  "esposizione_fascia": null
+}

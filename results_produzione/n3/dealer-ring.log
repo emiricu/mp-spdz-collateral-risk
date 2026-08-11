@@ -1,0 +1,50 @@
+compiling ring-crypto_collateral_risk-3-0-2 (domain=ring)...
+building: dealer-ring-party.x
+make: 'dealer-ring-party.x' is up to date.
+ 
+
+--- stderr ---
+Truncation error probability 2^-40
+Trying to run 64-bit computation
+Setup took 0.396264 seconds.
+=== Party 1
+Truncation error probability 2^-40
+Trying to run 64-bit computation
+Setup took 0.382106 seconds.
+=== Party 2
+Setup took 0.394364 seconds.
+Fatal error in communication: read_some: stream truncated [asio.ssl.stream:1]
+This is probably because party 0 encountered a problem.
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../dealer-ring-party.x 0 -v ring-crypto_collateral_risk-3-0-2 -pn 12197 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../dealer-ring-party.x 1 -v ring-crypto_collateral_risk-3-0-2 -pn 12197 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../dealer-ring-party.x 2 -v ring-crypto_collateral_risk-3-0-2 -pn 12197 -h localhost -N 3
+/home/emilio/tesi/some-test-mp-spdz/Scripts/run-common.sh: line 94: 276883 Segmentation fault      (core dumped) $my_prefix $SPDZROOT/$bin $i $params 2>&1
+     276884 Done                    | { if test "$BENCH"; then
+    if test $i = $front_player; then
+        tee -a $log;
+    else
+        cat >> $log;
+    fi;
+else
+    if test $i = $front_player; then
+        tee $log;
+    else
+        cat > $log;
+    fi;
+fi; }
+/home/emilio/tesi/some-test-mp-spdz/Scripts/run-common.sh: line 94: 276885 Segmentation fault      (core dumped) $my_prefix $SPDZROOT/$bin $i $params 2>&1
+     276886 Done                    | { if test "$BENCH"; then
+    if test $i = $front_player; then
+        tee -a $log;
+    else
+        cat >> $log;
+    fi;
+else
+    if test $i = $front_player; then
+        tee $log;
+    else
+        cat > $log;
+    fi;
+fi; }
+
+MPC run failed: status=failed

@@ -1,0 +1,55 @@
+Using statistical security parameter 40
+Trying to run 64-bit computation
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_split(3)
+Setup took 0.848196 seconds.
+--- valori calcolati ---
+policy_version: 1
+piattaforme: 3
+esposizione_totale_usd: 70000
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+punteggio_leva: 25
+punteggio_volatilita: 10
+punteggio_correlazione: 0
+punteggio_liquidita: 15
+punteggio_wallet: 15
+risk_score: 65
+esito: REVIEW MANUALE
+motivazione: nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica
+Compiler: ./compile.py -R 64 -o ring crypto_collateral_risk 3 0 0
+	48768 triples of replicated secret left
+	62080 triples of replicated secret left
+Significant amount of unused triples of replicated secret distorting the benchmark. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+Detailed costs:
+          3428 ANDs
+            29 integer multiplications
+Spent 0.211907 seconds (0.055068 MB, 159 rounds, 0.173623 CPU seconds) on the online phase and 0.504825 seconds (0.2216 MB, 289 rounds, 0.174222 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Broadcasting 0.00166 MB in 59 rounds, taking 0.0940549 seconds
+Partial broadcasting 0.000156 MB in 6 rounds, taking 0.00959344 seconds
+Passing around 0.294472 MB in 427 rounds, taking 0.632763 seconds
+Receiving directly 0.001352 MB in 1 rounds, taking 0.00087565 seconds
+Sending directly 0.001352 MB in 1 rounds, taking 0.00255129 seconds
+CPU time = 0.188639
+The following benchmarks are including preprocessing (offline phase).
+Time = 0.766398 seconds 
+Data sent = 0.299456 MB in ~494 rounds (party 0 only)
+Global data sent = 0.89374 MB (all parties)
+Communication time accounts for more than 95 percent of total time (0.739838 seconds). This might be because of the computation and the network setting, but it could also be product of the optimization trade-off during compilation. See https://mp-spdz.readthedocs.io/en/latest/troubleshooting.html#high-number-of-rounds-or-slow-wan-execution
+Actual preprocessing cost of program:
+  Type int
+            30         daBits
+  Type bit
+          3428        Triples
+  edaBits
+             2 of length 63
+            28 of length 64
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_split(3)
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../sy-rep-ring-party.x 0 -v ring-crypto_collateral_risk-3-0-0 -pn 17439 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../sy-rep-ring-party.x 0 -v ring-crypto_collateral_risk-3-0-0 -pn 17439 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../sy-rep-ring-party.x 1 -v ring-crypto_collateral_risk-3-0-0 -pn 17439 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../sy-rep-ring-party.x 2 -v ring-crypto_collateral_risk-3-0-0 -pn 17439 -h localhost

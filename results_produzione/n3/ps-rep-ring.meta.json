@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-08-11T13:09:18.366210+00:00",
+  "protocol": "ps-rep-ring",
+  "domain": "ring",
+  "security": "malicious",
+  "n_platforms": 3,
+  "mode": "production",
+  "command": "/usr/bin/python3 Scripts/crypto_risk_run.py --wallet 0xclean0000000000000000000000000000000001 --platform-debts 6667,6667,6666 --new-loan 50000 --collateral-asset BTC --collateral-amount 3.5 --domain ring --protocol ps-rep-ring --mode production --timeout 800 --out /home/emilio/tesi/some-test-mp-spdz/results_produzione/n3/ps-rep-ring.json --raw-log /home/emilio/tesi/some-test-mp-spdz/results_produzione/n3/ps-rep-ring.mpc_raw.log --coingecko-api-key ***",
+  "status": "ok",
+  "wall_clock_seconds": 3.71
+}

@@ -1,0 +1,50 @@
+{
+  "wallet_address": "0xclean0000000000000000000000000000000001",
+  "policy_version": 1,
+  "timestamp": "2026-08-11T10:31:36.487754+00:00",
+  "n_platforms": 3,
+  "esito": "REVIEW MANUALE",
+  "risk_score": 65,
+  "max_ltv_bps": 5000,
+  "liq_threshold_bps": 6000,
+  "participants": [
+    {
+      "platform_id": 0,
+      "signature": "3045022100a0275dda98adf39e35a1950046baa0b7809e5c75cd281de82b5b8e77bd5710a1022006d975cd1bc41b2ffaa0c43045c200ad354fbd57cb4633caa9c0bc3817c995ab"
+    },
+    {
+      "platform_id": 1,
+      "signature": "304502200f21b33df82ec6646ad38c93fa2495a2587db9ffc956adf13df6f446c062fd2e022100fdddc7cc7c4be159005f3755d1f26c5dec20764ce1d63143c9bebe665a2739de"
+    },
+    {
+      "platform_id": 2,
+      "signature": "304502204966aa82be0f852e93ef63e353297387e97851c46f1df98399a1bf99d4c54f830221008bb594f334b93354d5cd207b44a8417d1fdf48e34e16298936ca6773229bf09c"
+    }
+  ],
+  "liquidation_price_usd": 33333.333333333336,
+  "liquidation_price_note": null,
+  "run_time_seconds": 2.27,
+  "data_sent_mb": 16.5747,
+  "onchain_payload": {
+    "wallet_address": "0xclean0000000000000000000000000000000001",
+    "esito": "REVIEW MANUALE",
+    "policy_version": 1,
+    "timestamp": "2026-08-11T10:31:36.487754+00:00",
+    "signatures": [
+      "3045022100a0275dda98adf39e35a1950046baa0b7809e5c75cd281de82b5b8e77bd5710a1022006d975cd1bc41b2ffaa0c43045c200ad354fbd57cb4633caa9c0bc3817c995ab",
+      "304502200f21b33df82ec6646ad38c93fa2495a2587db9ffc956adf13df6f446c062fd2e022100fdddc7cc7c4be159005f3755d1f26c5dec20764ce1d63143c9bebe665a2739de",
+      "304502204966aa82be0f852e93ef63e353297387e97851c46f1df98399a1bf99d4c54f830221008bb594f334b93354d5cd207b44a8417d1fdf48e34e16298936ca6773229bf09c"
+    ]
+  },
+  "phase_breakdown": {
+    "online_time": 0.131302,
+    "online_mb": 0.012944,
+    "online_rounds": 97,
+    "prep_time": 1.81745,
+    "prep_mb": 5.6219,
+    "prep_rounds": 848,
+    "prep_pct": 93.3
+  },
+  "esposizione_totale_usd": 70000,
+  "esposizione_fascia": null
+}

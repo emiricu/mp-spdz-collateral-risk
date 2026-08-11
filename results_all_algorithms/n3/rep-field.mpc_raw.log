@@ -1,0 +1,51 @@
+Truncation error probability 2^-40
+Trying to run 128-bit computation (128-bit representation)
+No modulus found in Player-Data//3-Rp-128/Params-Data, generating 128-bit prime
+Using prime modulus 170141183460469231731687303715885907969
+Setup took 0.640826 seconds.
+--- valori calcolati ---
+policy_version: 1
+piattaforme: 3
+esposizione_totale_usd: 70000
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+punteggio_leva: 25
+punteggio_volatilita: 10
+punteggio_correlazione: 0
+punteggio_liquidita: 15
+punteggio_wallet: 15
+risk_score: 65
+esito: REVIEW MANUALE
+motivazione: nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica
+Compiler: ./compile.py -o field crypto_collateral_risk 3 0 0
+	34 dabits of replicated gfp left
+Detailed costs:
+            30 AND rounds
+          3486 ANDs
+          9280 ANDs in preprocessing
+             8 integer inputs
+             9 integer multiplication rounds
+            29 integer multiplications
+            47 integer openings
+Spent 0.100088 seconds (0.00193 MB, 52 rounds, 0.320055 CPU seconds) on the online phase and 1.21755 seconds (0.009656 MB, 171 rounds, 0.323083 CPU seconds) on the preprocessing/offline phase.
+Spent 1.2409e-05 seconds on correlated randomness generation.
+Communication details:
+Passing around 0.00749 MB in 215 rounds, taking 1.19314 seconds
+Receiving directly 0.004096 MB in 4 rounds, taking 0.0842425 seconds
+Sending directly 0.004096 MB in 4 rounds, taking 0.0111049 seconds
+CPU time = 0.324265
+The following benchmarks are including preprocessing (offline phase).
+Time = 1.35866 seconds 
+Data sent = 0.011586 MB in ~223 rounds (party 0 only)
+Global data sent = 0.030302 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            30         daBits
+  edaBits
+             2 of length 40 (strict)
+            28 of length 41 (strict)
+            30 of length 64 (strict)
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../replicated-field-party.x 0 -v field-crypto_collateral_risk-3-0-0 -pn 18773 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../replicated-field-party.x 0 -v field-crypto_collateral_risk-3-0-0 -pn 18773 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../replicated-field-party.x 1 -v field-crypto_collateral_risk-3-0-0 -pn 18773 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../replicated-field-party.x 2 -v field-crypto_collateral_risk-3-0-0 -pn 18773 -h localhost

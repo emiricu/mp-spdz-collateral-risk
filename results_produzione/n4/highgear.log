@@ -1,0 +1,40 @@
+compiling field-crypto_collateral_risk-4-0-2 (domain=field)...
+building: highgear-party.x
+make: 'highgear-party.x' is up to date.
+ 
+
+--- stderr ---
+o suitable material from a previous run was found (cannot read from Player-Data/HighGear-Secrets-40-212ce8bda15f7039e3cbd075fabacdea21cbd16a-P0-4)
+Generate secret key by binomial
+=== Party 1
+Trying to run 128-bit computation (128-bit representation)
+Running secrets generation because no suitable material from a previous run was found (cannot read from Player-Data/HighGear-Secrets-40-212ce8bda15f7039e3cbd075fabacdea21cbd16a-P1-4)
+Generate secret key by binomial
+=== Party 2
+Trying to run 128-bit computation (128-bit representation)
+Running secrets generation because no suitable material from a previous run was found (cannot read from Player-Data/HighGear-Secrets-40-212ce8bda15f7039e3cbd075fabacdea21cbd16a-P2-4)
+Generate secret key by binomial
+=== Party 3
+Trying to run 128-bit computation (128-bit representation)
+Running secrets generation because no suitable material from a previous run was found (cannot read from Player-Data/HighGear-Secrets-40-212ce8bda15f7039e3cbd075fabacdea21cbd16a-P3-4)
+Generate secret key by binomial
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../highgear-party.x 0 -v field-crypto_collateral_risk-4-0-2 -pn 13685 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../highgear-party.x 1 -v field-crypto_collateral_risk-4-0-2 -pn 13685 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../highgear-party.x 2 -v field-crypto_collateral_risk-4-0-2 -pn 13685 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../highgear-party.x 3 -v field-crypto_collateral_risk-4-0-2 -pn 13685 -h localhost -N 4
+/home/emilio/tesi/some-test-mp-spdz/Scripts/run-common.sh: line 94: 281904 Killed                  $my_prefix $SPDZROOT/$bin $i $params 2>&1
+     281905 Done                    | { if test "$BENCH"; then
+    if test $i = $front_player; then
+        tee -a $log;
+    else
+        cat >> $log;
+    fi;
+else
+    if test $i = $front_player; then
+        tee $log;
+    else
+        cat > $log;
+    fi;
+fi; }
+
+MPC run failed: status=failed

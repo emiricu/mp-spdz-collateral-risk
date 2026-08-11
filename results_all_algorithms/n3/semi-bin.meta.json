@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-08-11T10:58:44.197925+00:00",
+  "protocol": "semi-bin",
+  "domain": "binary",
+  "security": "semi-honest",
+  "n_platforms": 3,
+  "mode": "benchmark",
+  "command": "/usr/bin/python3 Scripts/crypto_risk_run.py --wallet 0xclean0000000000000000000000000000000001 --platform-debts 6667,6667,6666 --new-loan 50000 --collateral-asset BTC --collateral-amount 3.5 --domain binary --protocol semi-bin --mode benchmark --timeout 250 --out /home/emilio/tesi/some-test-mp-spdz/results_all_algorithms/n3/semi-bin.json --raw-log /home/emilio/tesi/some-test-mp-spdz/results_all_algorithms/n3/semi-bin.mpc_raw.log --coingecko-api-key ***",
+  "status": "ok",
+  "wall_clock_seconds": 11.09
+}

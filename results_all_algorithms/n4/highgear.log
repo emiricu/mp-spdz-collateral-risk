@@ -1,0 +1,40 @@
+compiling field-crypto_collateral_risk-4-0-0 (domain=field)...
+building: highgear-party.x
+make: 'highgear-party.x' is up to date.
+ 
+
+--- stderr ---
+ reset by peer) when sending 4 bytes
+This is probably because another party encountered a problem.
+=== Party 1
+No proper key material found in Player-Data//Mascot-Secrets-p-331-39026d93bfc6c3c1179aacf5461ad33a2bfd601f-P1-4, generating from scratch (cannot read from Player-Data//Mascot-Secrets-p-331-39026d93bfc6c3c1179aacf5461ad33a2bfd601f-P1-4)
+No proper key material found in Player-Data//Mascot-Secrets-p-188-ebf168634079b6f331a2dcf8b55173ecad4caafd-P1-4, generating from scratch (cannot read from Player-Data//Mascot-Secrets-p-188-ebf168634079b6f331a2dcf8b55173ecad4caafd-P1-4)
+Generate secret key by binomial
+=== Party 2
+Generate secret key by binomial
+Fatal communication error on vmi3452381: Receiving error (Connection reset by peer) when sending 4 bytes
+This is probably because another party encountered a problem.
+=== Party 3
+Generate secret key by binomial
+Fatal communication error on vmi3452381: Receiving error (Connection reset by peer) when sending 4 bytes
+This is probably because another party encountered a problem.
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../highgear-party.x 0 -v field-crypto_collateral_risk-4-0-0 -pn 15060 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../highgear-party.x 1 -v field-crypto_collateral_risk-4-0-0 -pn 15060 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../highgear-party.x 2 -v field-crypto_collateral_risk-4-0-0 -pn 15060 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../highgear-party.x 3 -v field-crypto_collateral_risk-4-0-0 -pn 15060 -h localhost -N 4
+/home/emilio/tesi/some-test-mp-spdz/Scripts/run-common.sh: line 94: 264653 Killed                  $my_prefix $SPDZROOT/$bin $i $params 2>&1
+     264654 Done                    | { if test "$BENCH"; then
+    if test $i = $front_player; then
+        tee -a $log;
+    else
+        cat >> $log;
+    fi;
+else
+    if test $i = $front_player; then
+        tee $log;
+    else
+        cat > $log;
+    fi;
+fi; }
+
+MPC run failed: status=failed

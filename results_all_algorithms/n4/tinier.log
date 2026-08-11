@@ -1,0 +1,7 @@
+compiling binary-crypto_collateral_risk-4-0-0 (domain=binary)...
+building: tinier-party.x
+make: 'tinier-party.x' is up to date.
+ 
+wrote /home/emilio/tesi/some-test-mp-spdz/results_all_algorithms/n4/tinier.json
+
+--- stderr ---

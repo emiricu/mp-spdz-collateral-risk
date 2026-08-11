@@ -1,0 +1,43 @@
+Truncation error probability 2^-40
+Trying to run 128-bit computation (128-bit representation)
+No modulus found in Player-Data//3-Rp-128/Params-Data, generating 128-bit prime
+Using prime modulus 170141183460469231731687303715885907969
+Setup took 0.1147 seconds.
+policy_version: 1
+esito_code: 1
+risk_score: 65
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+esposizione_totale_usd: 70000
+Compiler: ./compile.py -o field crypto_collateral_risk 3 0 2
+	34 dabits of replicated gfp left
+Detailed costs:
+            30 AND rounds
+          3486 ANDs
+          9280 ANDs in preprocessing
+             8 integer inputs
+            15 integer multiplication rounds
+            37 integer multiplications
+            36 integer openings
+Spent 0.032449 seconds (0.001882 MB, 58 rounds, 0.0652263 CPU seconds) on the online phase and 0.153332 seconds (0.009656 MB, 171 rounds, 0.065678 CPU seconds) on the preprocessing/offline phase.
+Spent 2.1561e-05 seconds on correlated randomness generation.
+Communication details:
+Passing around 0.007442 MB in 221 rounds, taking 0.168864 seconds
+Receiving directly 0.004096 MB in 4 rounds, taking 0.00301896 seconds
+Sending directly 0.004096 MB in 4 rounds, taking 0.000726808 seconds
+CPU time = 0.0669197
+The following benchmarks are including preprocessing (offline phase).
+Time = 0.189163 seconds 
+Data sent = 0.011538 MB in ~229 rounds (party 0 only)
+Global data sent = 0.030158 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            30         daBits
+  edaBits
+             2 of length 40 (strict)
+            28 of length 41 (strict)
+            30 of length 64 (strict)
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../replicated-field-party.x 0 -v field-crypto_collateral_risk-3-0-2 -pn 11351 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../replicated-field-party.x 0 -v field-crypto_collateral_risk-3-0-2 -pn 11351 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../replicated-field-party.x 1 -v field-crypto_collateral_risk-3-0-2 -pn 11351 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../replicated-field-party.x 2 -v field-crypto_collateral_risk-3-0-2 -pn 11351 -h localhost

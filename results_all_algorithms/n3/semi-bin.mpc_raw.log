@@ -1,0 +1,33 @@
+Using statistical security parameter 40
+Compiler: ./compile.py -B 64 -o binary crypto_collateral_risk 3 0 0
+--- valori calcolati ---
+policy_version: 1
+piattaforme: 3
+esposizione_totale_usd: 70000
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+punteggio_leva: 25
+punteggio_volatilita: 10
+punteggio_correlazione: 0
+punteggio_liquidita: 15
+punteggio_wallet: 15
+risk_score: 65
+esito: REVIEW MANUALE
+motivazione: nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica
+  Type bit
+         29545        Triples
+Spent 0.928929 seconds (0.015942 MB, 769 rounds, 0.417849 CPU seconds) on the online phase and 0.123386 seconds (1.05999 MB, 26 rounds, 0.418024 CPU seconds) on the preprocessing/offline phase.
+	34432 triples of binary secret left
+Exchanging one-to-one 0.024584 MB in 10 rounds, taking 0.0107832 seconds
+Receiving directly 0.01591 MB in 384 rounds, taking 0.699537 seconds
+Receiving one-to-one 1.03541 MB in 8 rounds, taking 0 seconds
+Sending directly 0.01591 MB in 384 rounds, taking 0.205895 seconds
+Sending one-to-one 1.03541 MB in 8 rounds, taking 0 seconds
+Sending/receiving 3.2e-05 MB in 1 rounds, taking 0.00416876 seconds
+The following benchmarks are including preprocessing (offline phase).
+Time = 1.09382 seconds 
+Data sent = 1.07593 MB in ~796 rounds (party 0 only)
+Global data sent = 3.21189 MB (all parties)
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi-bin-party.x 0 -v binary-crypto_collateral_risk-3-0-0 -pn 12830 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi-bin-party.x 1 -v binary-crypto_collateral_risk-3-0-0 -pn 12830 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi-bin-party.x 2 -v binary-crypto_collateral_risk-3-0-0 -pn 12830 -h localhost -N 3

@@ -1,0 +1,8 @@
+compiling ring-crypto_collateral_risk-3-0-0 (domain=ring)...
+building: spdz2k-party.x
+make: 'spdz2k-party.x' is up to date.
+ 
+
+--- stderr ---
+
+MPC run failed: status=timeout

@@ -1,0 +1,43 @@
+Trying to run 128-bit computation (128-bit representation)
+No modulus found in Player-Data//4-Sp-128/Params-Data, generating 128-bit prime
+Using prime modulus 170141183460469231731687303715885907969
+Setup took 0.298409 seconds.
+--- valori calcolati ---
+policy_version: 1
+piattaforme: 4
+esposizione_totale_usd: 70000
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+punteggio_leva: 25
+punteggio_volatilita: 10
+punteggio_correlazione: 0
+punteggio_liquidita: 15
+punteggio_wallet: 15
+risk_score: 65
+esito: REVIEW MANUALE
+motivazione: nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica
+Compiler: ./compile.py -o field crypto_collateral_risk 4 0 0
+Detailed costs:
+            30 integer multiplications
+Spent 0.35226 seconds (0.011278 MB, 106 rounds, 0.286071 CPU seconds) on the online phase and 0.659948 seconds (0.020798 MB, 336 rounds, 0.287589 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Partial broadcasting 9.6e-05 MB in 8 rounds, taking 0.0275561 seconds
+Sending to all 0.000784 MB in 7 rounds, taking 0.0144606 seconds
+Sending/receiving 0.029628 MB in 427 rounds, taking 0.939882 seconds
+CPU time = 0.298751
+The following benchmarks are including preprocessing (offline phase).
+Time = 1.05515 seconds 
+Data sent = 0.032076 MB in ~442 rounds (party 0 only)
+Global data sent = 0.105972 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            32         daBits
+  edaBits
+             2 of length 40 (strict)
+            30 of length 41 (strict)
+            32 of length 64 (strict)
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../atlas-party.x 0 -v field-crypto_collateral_risk-4-0-0 -pn 11996 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../atlas-party.x 0 -v field-crypto_collateral_risk-4-0-0 -pn 11996 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../atlas-party.x 1 -v field-crypto_collateral_risk-4-0-0 -pn 11996 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../atlas-party.x 2 -v field-crypto_collateral_risk-4-0-0 -pn 11996 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../atlas-party.x 3 -v field-crypto_collateral_risk-4-0-0 -pn 11996 -h localhost -N 4

@@ -350,6 +350,19 @@ def merge_production(mpc_result, scaled, derived, raw, args, elapsed, data_mb):
               if 'esito_code' in mpc_result else None)
     n_platforms = len(args.platform_debts_list)
 
+    # decide_production() reveals the exposure itself (exact at N>=3, band
+    # only at N==2 -- same rule as decide_public, no exception) via
+    # 'esposizione_totale_usd'/'esposizione_totale' in the raw MPC output
+    # (Programs/Source/crypto_collateral_risk.mpc's own print_ln calls).
+    # This was parsed into mpc_result and already used internally by
+    # _liquidation_price_for(), but never surfaced in shared_payload --
+    # silently dropping data the protocol itself already made public to
+    # all N parties, the same class of gap run_time_seconds/data_sent_mb
+    # had above.
+    exposure_usd = (int(mpc_result['esposizione_totale_usd'])
+                     if 'esposizione_totale_usd' in mpc_result else None)
+    lev_tier = _extract_lev_tier(mpc_result) if exposure_usd is None else None
+
     shared_payload = {
         'wallet_address': args.wallet,
         'policy_version': int(mpc_result.get('policy_version', -1)),
@@ -360,6 +373,8 @@ def merge_production(mpc_result, scaled, derived, raw, args, elapsed, data_mb):
         'max_ltv_bps': int(mpc_result['max_ltv_bps']) if 'max_ltv_bps' in mpc_result else None,
         'liq_threshold_bps': (int(mpc_result['liq_threshold_bps'])
                                 if 'liq_threshold_bps' in mpc_result else None),
+        'esposizione_totale_usd': exposure_usd,
+        'esposizione_fascia': lev_tier,
         'participants': [{'platform_id': i, 'signature': None} for i in range(n_platforms)],
     }
 

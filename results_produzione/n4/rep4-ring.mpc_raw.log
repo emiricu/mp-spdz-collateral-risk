@@ -1,0 +1,43 @@
+Truncation error probability 2^-40
+Using statistical security parameter 40
+Trying to run 64-bit computation
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_split(4)
+Setup took 0.430631 seconds.
+policy_version: 1
+esito_code: 1
+risk_score: 65
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+esposizione_totale_usd: 70000
+Compiler: ./compile.py -R 64 -o ring crypto_collateral_risk 4 0 2
+Detailed costs:
+          3664 ANDs
+            38 integer multiplications
+Spent 0.228104 seconds (0.004044 MB, 94 rounds, 0.364325 CPU seconds) on the online phase and 1.16973 seconds (0.020928 MB, 422 rounds, 0.365808 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Partial broadcasting 0.000624 MB in 24 rounds, taking 0.0447854 seconds
+Passing around 0.00092 MB in 28 rounds, taking 0.0189875 seconds
+Sending directly 1.6e-05 MB in 1 rounds, taking 0.00126161 seconds
+Sending/receiving 0.022788 MB in 466 rounds, taking 1.30961 seconds
+CPU time = 0.372195
+The following benchmarks are including preprocessing (offline phase).
+Time = 1.43345 seconds 
+Data sent = 0.024972 MB in ~519 rounds (party 0 only)
+Global data sent = 0.118684 MB (all parties)
+Communication time accounts for more than 95 percent of total time (1.37465 seconds). This might be because of the computation and the network setting, but it could also be product of the optimization trade-off during compilation. See https://mp-spdz.readthedocs.io/en/latest/troubleshooting.html#high-number-of-rounds-or-slow-wan-execution
+Actual preprocessing cost of program:
+  Type int
+            32         daBits
+  edaBits
+             2 of length 63
+            30 of length 64
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_split(4)
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../rep4-ring-party.x 0 -v ring-crypto_collateral_risk-4-0-2 -pn 13768 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../rep4-ring-party.x 0 -v ring-crypto_collateral_risk-4-0-2 -pn 13768 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../rep4-ring-party.x 1 -v ring-crypto_collateral_risk-4-0-2 -pn 13768 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../rep4-ring-party.x 2 -v ring-crypto_collateral_risk-4-0-2 -pn 13768 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../rep4-ring-party.x 3 -v ring-crypto_collateral_risk-4-0-2 -pn 13768 -h localhost

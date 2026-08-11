@@ -1,0 +1,39 @@
+Using statistical security parameter 40
+Compiler: ./compile.py -B 64 -o binary crypto_collateral_risk 4 0 0
+--- valori calcolati ---
+policy_version: 1
+piattaforme: 4
+esposizione_totale_usd: 70000
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+punteggio_leva: 25
+punteggio_volatilita: 10
+punteggio_correlazione: 0
+punteggio_liquidita: 15
+punteggio_wallet: 15
+risk_score: 65
+esito: REVIEW MANUALE
+motivazione: nessun motivo di rifiuto ma punteggio o margine di leva insufficienti per approvazione automatica
+  Type bit
+         30434        Triples
+           704   Input tuples (512 64 64 64)
+Spent 0.562089 seconds (0.023826 MB, 1240 rounds, 4.18652 CPU seconds) on the online phase and 7.86582 seconds (131.56 MB, 2102 rounds, 4.18659 CPU seconds) on the preprocessing/offline phase.
+	346 triples of Tinier left
+Broadcasting 0.001628 MB in 75 rounds, taking 0.362424 seconds
+Exchanging one-to-one 111.447 MB in 372 rounds, taking 1.65276 seconds
+Partial broadcasting 0.005044 MB in 194 rounds, taking 0.783804 seconds
+Receiving directly 0.762492 MB in 987 rounds, taking 0.571805 seconds
+Receiving one-to-one 19.3699 MB in 363 rounds, taking 0.000808341 seconds
+Sending directly 0.762468 MB in 984 rounds, taking 0.403988 seconds
+Sending one-to-one 19.3699 MB in 363 rounds, taking 0.00184265 seconds
+Sending to all 6.4e-05 MB in 1 rounds, taking 0.000184035 seconds
+Sending/receiving 0.000192 MB in 4 rounds, taking 0.00256977 seconds
+The following benchmarks are including preprocessing (offline phase).
+Time = 8.53177 seconds 
+Data sent = 131.584 MB in ~3343 rounds (party 0 only)
+Global data sent = 524.811 MB (all parties)
+Coordination took 0.141068 seconds
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../tinier-party.x 0 -v binary-crypto_collateral_risk-4-0-0 -pn 10029 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../tinier-party.x 1 -v binary-crypto_collateral_risk-4-0-0 -pn 10029 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../tinier-party.x 2 -v binary-crypto_collateral_risk-4-0-0 -pn 10029 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../tinier-party.x 3 -v binary-crypto_collateral_risk-4-0-0 -pn 10029 -h localhost -N 4

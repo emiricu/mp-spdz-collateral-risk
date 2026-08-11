@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-08-11T11:00:21.375645+00:00",
+  "protocol": "mascot",
+  "domain": "field",
+  "security": "malicious (OT)",
+  "n_platforms": 4,
+  "mode": "benchmark",
+  "command": "/usr/bin/python3 Scripts/crypto_risk_run.py --wallet 0xclean0000000000000000000000000000000001 --platform-debts 5000,5000,5000,5000 --new-loan 50000 --collateral-asset BTC --collateral-amount 3.5 --domain field --protocol mascot --mode benchmark --timeout 1000 --out /home/emilio/tesi/some-test-mp-spdz/results_all_algorithms/n4/mascot.json --raw-log /home/emilio/tesi/some-test-mp-spdz/results_all_algorithms/n4/mascot.mpc_raw.log --coingecko-api-key ***",
+  "status": "ok",
+  "wall_clock_seconds": 762.16
+}

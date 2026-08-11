@@ -1,0 +1,45 @@
+Truncation error probability 2^-40
+Trying to run 128-bit computation (128-bit representation)
+No modulus found in Player-Data//3-Dp-128/Params-Data, generating 128-bit prime
+Using prime modulus 170141183460469231731687303715885907969
+Setup took 0.74075 seconds.
+policy_version: 1
+esito_code: 1
+risk_score: 65
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+esposizione_totale_usd: 70000
+Compiler: ./compile.py -o field crypto_collateral_risk 3 0 2
+	7 triples of gfp left
+	24 dabits of gfp left
+Detailed costs:
+          3486 ANDs
+         19328 ANDs in preprocessing
+            37 integer multiplications
+Spent 0.0462389 seconds (0.005774 MB, 228 rounds, 1.89467 CPU seconds) on the online phase and 5.04033 seconds (9.04115 MB, 2307 rounds, 1.89636 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Exchanging one-to-one 5.34709 MB in 112 rounds, taking 0.0806562 seconds
+Receiving directly 0.096222 MB in 808 rounds, taking 0.485564 seconds
+Receiving one-to-one 3.60339 MB in 400 rounds, taking 0 seconds
+Sending directly 0.096222 MB in 808 rounds, taking 0.371758 seconds
+Sending one-to-one 3.60339 MB in 400 rounds, taking 0 seconds
+Sending/receiving 0.000224 MB in 7 rounds, taking 0.0617644 seconds
+CPU time = 1.91215
+The following benchmarks are including preprocessing (offline phase).
+Time = 5.11066 seconds 
+Data sent = 9.04692 MB in ~2535 rounds (party 0 only)
+Global data sent = 27.0445 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            37        Triples
+            30         daBits
+  Type bit
+          3486        Triples
+  edaBits
+             2 of length 40 (strict)
+            28 of length 41 (strict)
+            30 of length 64 (strict)
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi-party.x 0 -v field-crypto_collateral_risk-3-0-2 -pn 12609 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi-party.x 0 -v field-crypto_collateral_risk-3-0-2 -pn 12609 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi-party.x 1 -v field-crypto_collateral_risk-3-0-2 -pn 12609 -h localhost -N 3
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../semi-party.x 2 -v field-crypto_collateral_risk-3-0-2 -pn 12609 -h localhost -N 3

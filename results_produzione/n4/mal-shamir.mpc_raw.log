@@ -1,0 +1,45 @@
+Using statistical security parameter 40
+Trying to run 128-bit computation (128-bit representation)
+No modulus found in Player-Data//4-MSp-128/Params-Data, generating 128-bit prime
+Using prime modulus 170141183460469231731687303715885907969
+Setup took 0.436363 seconds.
+policy_version: 1
+esito_code: 1
+risk_score: 65
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+esposizione_totale_usd: 70000
+Compiler: ./compile.py -o field crypto_collateral_risk 4 0 2
+	~1022 edaBits of size 40 left
+Significant amount of unused edaBits of size 40. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	~994 edaBits of size 41 left
+Significant amount of unused edaBits of size 41. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+	~992 edaBits of size 64 left
+Significant amount of unused edaBits of size 64. This protocol has a large minimum batch size, which makes this unavoidable for small programs.
+Detailed costs:
+            38 integer multiplications
+Spent 0.0996993 seconds (0.123744 MB, 59 rounds, 8.70372 CPU seconds) on the online phase and 14.2522 seconds (194.288 MB, 861 rounds, 8.7055 CPU seconds) on the preprocessing/offline phase.
+Communication details:
+Broadcasting 0.001772 MB in 71 rounds, taking 0.434255 seconds
+Partial broadcasting 56.0918 MB in 671 rounds, taking 5.0241 seconds
+Sending/receiving 82.2215 MB in 178 rounds, taking 2.80881 seconds
+CPU time = 8.71605
+The following benchmarks are including preprocessing (offline phase).
+Time = 14.389 seconds 
+Data sent = 194.411 MB in ~920 rounds (party 0 only)
+Global data sent = 705.408 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            38        Triples
+            32         daBits
+  Type bit
+          3726        Triples
+  edaBits
+             2 of length 40 (strict)
+            30 of length 41 (strict)
+            32 of length 64 (strict)
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../malicious-shamir-party.x 0 -v field-crypto_collateral_risk-4-0-2 -pn 15821 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../malicious-shamir-party.x 0 -v field-crypto_collateral_risk-4-0-2 -pn 15821 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../malicious-shamir-party.x 1 -v field-crypto_collateral_risk-4-0-2 -pn 15821 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../malicious-shamir-party.x 2 -v field-crypto_collateral_risk-4-0-2 -pn 15821 -h localhost -N 4
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../malicious-shamir-party.x 3 -v field-crypto_collateral_risk-4-0-2 -pn 15821 -h localhost -N 4

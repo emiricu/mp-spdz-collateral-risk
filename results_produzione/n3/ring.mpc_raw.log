@@ -1,0 +1,46 @@
+Truncation error probability 2^-40
+Trying to run 64-bit computation
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_split(3)
+Setup took 0.747642 seconds.
+policy_version: 1
+esito_code: 1
+risk_score: 65
+max_ltv_bps: 5000
+liq_threshold_bps: 6000
+esposizione_totale_usd: 70000
+Compiler: ./compile.py -R 64 -o ring crypto_collateral_risk 3 0 2
+	34 dabits of replicated Z2^64 left
+Detailed costs:
+            30 AND rounds
+          3428 ANDs
+          8128 ANDs in preprocessing
+             8 integer inputs
+            15 integer multiplication rounds
+            37 integer multiplications
+            36 integer openings
+Spent 0.0468294 seconds (0.001226 MB, 58 rounds, 0.0453343 CPU seconds) on the online phase and 0.378356 seconds (0.00368 MB, 140 rounds, 0.0627067 CPU seconds) on the preprocessing/offline phase.
+Spent 4.778e-06 seconds on correlated randomness generation.
+Communication details:
+Passing around 0.004394 MB in 196 rounds, taking 0.4055 seconds
+Receiving directly 0.000512 MB in 1 rounds, taking 0.000130484 seconds
+Sending directly 0.000512 MB in 1 rounds, taking 0.000302612 seconds
+CPU time = 0.0640115
+The following benchmarks are including preprocessing (offline phase).
+Time = 0.445854 seconds 
+Data sent = 0.004906 MB in ~198 rounds (party 0 only)
+Global data sent = 0.012566 MB (all parties)
+Actual preprocessing cost of program:
+  Type int
+            30         daBits
+  edaBits
+             2 of length 63
+            28 of length 64
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_split(3)
+Command line: /home/emilio/tesi/some-test-mp-spdz/Scripts/../replicated-ring-party.x 0 -v ring-crypto_collateral_risk-3-0-2 -pn 11703 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../replicated-ring-party.x 0 -v ring-crypto_collateral_risk-3-0-2 -pn 11703 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../replicated-ring-party.x 1 -v ring-crypto_collateral_risk-3-0-2 -pn 11703 -h localhost
+Running /home/emilio/tesi/some-test-mp-spdz/Scripts/../replicated-ring-party.x 2 -v ring-crypto_collateral_risk-3-0-2 -pn 11703 -h localhost
