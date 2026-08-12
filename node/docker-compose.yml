@@ -1,0 +1,64 @@
+# Deploy for ONE node/machine. Run the SAME file on both machines with a
+# different .env (see .env.example) -- PARTY_ID is what differentiates
+# the two deployments, not the compose file. See README.md for which
+# ports to open on the firewall BETWEEN the two machines.
+#
+#   docker compose --env-file .env up -d
+#
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    # No ports: published -- internal to this node only, never reachable
+    # from the other machine or outside this compose network.
+    volumes:
+      - redis-data:/data
+    command: ["redis-server", "--save", "60", "1"]
+
+  api:
+    image: collateral-node:local
+    restart: unless-stopped
+    command: ["api"]
+    depends_on:
+      - redis
+    environment:
+      PARTY_ID: "${PARTY_ID:?set PARTY_ID in .env}"
+      PEER_HOST: "${PEER_HOST:-localhost}"
+      PORT_BASE: "${PORT_BASE:-5000}"
+      HTTP_PORT: "${HTTP_PORT:-8000}"
+      POLICY_VERSION: "${POLICY_VERSION:-1}"
+      REDIS_URL: "redis://redis:6379/0"
+    ports:
+      - "${HTTP_PORT:-8000}:${HTTP_PORT:-8000}"
+    volumes:
+      - player-data:/usr/src/MP-SPDZ/Player-Data
+      - node-logs:/usr/src/MP-SPDZ/node_logs
+
+  worker:
+    image: collateral-node:local
+    restart: unless-stopped
+    command: ["worker"]
+    depends_on:
+      - redis
+    environment:
+      PARTY_ID: "${PARTY_ID:?set PARTY_ID in .env}"
+      PEER_HOST: "${PEER_HOST:-localhost}"
+      PORT_BASE: "${PORT_BASE:-5000}"
+      HTTP_PORT: "${HTTP_PORT:-8000}"
+      POLICY_VERSION: "${POLICY_VERSION:-1}"
+      REDIS_URL: "redis://redis:6379/0"
+    ports:
+      # MP-SPDZ's own protocol ports, opened by mascot-party.x itself
+      # starting at PORT_BASE -- exposed from the WORKER container (the
+      # process that actually execs mascot-party.x), not from api.
+      # Range covers PORT_BASE and PORT_BASE+1 (2 parties); see README
+      # for why a wider range may be worth opening on the firewall too.
+      - "${PORT_BASE:-5000}-${PORT_BASE_PLUS1:-5001}:${PORT_BASE:-5000}-${PORT_BASE_PLUS1:-5001}"
+    volumes:
+      - player-data:/usr/src/MP-SPDZ/Player-Data
+      - node-logs:/usr/src/MP-SPDZ/node_logs
+
+volumes:
+  redis-data:
+  player-data:
+  node-logs:
