@@ -7,8 +7,10 @@ richiedente, party 1 = controparte) formano la rete a N=2 usata da
 dominio `field`, `mode=2` (`decide_production`).
 
 Questo giro costruisce **solo i due nodi**, asincroni via coda, con
-callback HTTP diretta a fine calcolo. Backend "vero" e smart contract per
-la pubblicazione on-chain sono deliberatamente fuori scope qui.
+callback HTTP diretta a fine calcolo. Smart contract per la pubblicazione
+on-chain resta deliberatamente fuori scope. Un backend minimo e un
+frontend per lanciare un preventivo reale da browser esistono ora in
+`deploy/README.md` (demo pubblica, non un backend "di produzione").
 
 ## 1. Build
 

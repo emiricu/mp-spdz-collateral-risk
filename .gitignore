@@ -7,6 +7,8 @@ logs/*
 Language-Definition/main.pdf
 keys/*
 Scripts/risk_data/keys/*
+deploy/secrets/*
+deploy/certs/*
 
 # Personal CONFIG file #
 ##############################

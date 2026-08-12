@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>collateral.mpc — preventivo prestito crypto</title>
+<style>
+  :root {
+    --bg: #06080d;
+    --bg-grid: #0a0e16;
+    --surface: #10141d;
+    --surface-2: #161b27;
+    --border: #232a3a;
+    --border-bright: #34405a;
+    --ink: #E7ECF7;
+    --ink-muted: #8B93AB;
+    --ink-faint: #576079;
+    --mint: #2CFFB5;
+    --mint-dim: #16805E;
+    --violet: #8B7BFF;
+    --violet-dim: #4B3FA0;
+    --party0: #4FD1FF;
+    --party1: #FF9F4F;
+    --good: #2CFFB5;
+    --good-bg: #0E2A22;
+    --warn: #FFD166;
+    --warn-bg: #2E2612;
+    --bad: #FF6161;
+    --bad-bg: #2E1414;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(139,123,255,0.12), transparent 60%),
+      radial-gradient(1000px 500px at 100% 10%, rgba(44,255,181,0.08), transparent 55%),
+      var(--bg);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: var(--mono); }
+  a { color: var(--mint); }
+  ::selection { background: rgba(44,255,181,0.25); }
+
+  /* subtle animated scanline grid backdrop, cheap and off by default for reduced motion */
+  .grid-overlay {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 80%);
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; padding: 32px 20px 80px; }
+
+  header.top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 22px; margin-bottom: 28px; border-bottom: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; letter-spacing: -0.01em; }
+  .brand .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 12px var(--mint); }
+  .brand .sub { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); font-weight: 500; letter-spacing: 0.03em; }
+  .top-right { display: flex; align-items: center; gap: 14px; }
+  .pill {
+    font-family: var(--mono); font-size: 12px; color: var(--ink-muted);
+    border: 1px solid var(--border); border-radius: 100px; padding: 5px 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .pill .led { width: 6px; height: 6px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 6px var(--mint); }
+  button.ghost {
+    background: transparent; border: 1px solid var(--border); color: var(--ink-muted);
+    font-family: var(--sans); font-size: 13px; padding: 7px 14px; border-radius: 8px; cursor: pointer;
+  }
+  button.ghost:hover { border-color: var(--border-bright); color: var(--ink); }
+
+  h1 { font-size: 26px; letter-spacing: -0.015em; margin: 0 0 6px; text-wrap: balance; }
+  .lede { color: var(--ink-muted); font-size: 14.5px; max-width: 60ch; margin: 0 0 28px; }
+
+  .card {
+    background: linear-gradient(180deg, var(--surface), var(--surface-2));
+    border: 1px solid var(--border); border-radius: 16px; padding: 24px;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset, 0 20px 50px -30px rgba(0,0,0,0.6);
+  }
+
+  /* ---------------- login ---------------- */
+  #view-login { max-width: 400px; margin: 10vh auto 0; }
+  #view-login .card { text-align: center; }
+  #view-login .lock { font-size: 30px; margin-bottom: 6px; }
+  #view-login h1 { font-size: 20px; }
+  #view-login .lede { margin: 0 auto 22px; }
+  .field { text-align: left; margin-bottom: 14px; }
+  .field label {
+    display: block; font-family: var(--mono); font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--ink-faint); margin-bottom: 6px;
+  }
+  input[type="password"], input[type="text"], input[type="number"], select {
+    width: 100%; background: #0a0d14; border: 1px solid var(--border); border-radius: 9px;
+    color: var(--ink); font-family: var(--mono); font-size: 14px; padding: 11px 13px;
+    outline: none; transition: border-color 0.15s;
+  }
+  input:focus, select:focus { border-color: var(--mint); }
+  select { font-family: var(--sans); appearance: none; cursor: pointer;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%238B93AB'/></svg>");
+    background-repeat: no-repeat; background-position: right 14px center; }
+
+  button.primary {
+    width: 100%; background: linear-gradient(135deg, var(--mint), #17C793);
+    color: #04140D; font-weight: 700; font-size: 14.5px; border: none; border-radius: 10px;
+    padding: 13px; cursor: pointer; letter-spacing: 0.01em;
+    box-shadow: 0 8px 24px -8px rgba(44,255,181,0.45);
+    transition: transform 0.1s, box-shadow 0.15s;
+  }
+  button.primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 28px -8px rgba(44,255,181,0.6); }
+  button.primary:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+  .error-msg { color: var(--bad); font-size: 13px; margin-top: 10px; min-height: 1em; }
+
+  /* ---------------- dashboard ---------------- */
+  #view-app { display: none; }
+  .section-title {
+    font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--ink-faint); margin: 0 0 12px;
+  }
+
+  .party-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+  .party-card { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; background: #0b0f17; }
+  .party-card .pc-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-family: var(--mono); font-size: 12.5px; font-weight: 700; }
+  .party-card.p0 .pc-head { color: var(--party0); }
+  .party-card.p1 .pc-head { color: var(--party1); }
+  .party-card .pc-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .party-card.p0 .pc-dot { background: var(--party0); box-shadow: 0 0 8px var(--party0); }
+  .party-card.p1 .pc-dot { background: var(--party1); box-shadow: 0 0 8px var(--party1); }
+  .party-card .pc-note { font-size: 11.5px; color: var(--ink-faint); margin-top: 8px; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .row3 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; }
+
+  .slider-row { margin-bottom: 4px; }
+  .slider-row .sr-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .slider-row .sr-head label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-faint); }
+  .slider-row .sr-value { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--ink); }
+  input[type="range"] {
+    -webkit-appearance: none; width: 100%; height: 4px; border-radius: 3px;
+    background: var(--border-bright); outline: none; margin: 0;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+    background: var(--mint); cursor: pointer; box-shadow: 0 0 10px rgba(44,255,181,0.6);
+    border: 2px solid #04140D;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 16px; height: 16px; border-radius: 50%; background: var(--mint); cursor: pointer;
+    border: 2px solid #04140D; box-shadow: 0 0 10px rgba(44,255,181,0.6);
+  }
+
+  .submit-row { margin-top: 22px; display: flex; align-items: center; gap: 14px; }
+  .submit-row button.primary { width: auto; padding: 13px 26px; }
+  .rate-note { font-size: 12px; color: var(--ink-faint); }
+
+  /* ---------------- status / result ---------------- */
+  #status-area { margin-top: 22px; }
+  .status-card { border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; background: #0b0f17; }
+  .status-row { display: flex; align-items: center; gap: 12px; }
+  .spinner {
+    width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border-bright);
+    border-top-color: var(--mint); animation: spin 0.8s linear infinite; flex: none;
+  }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .status-label { font-family: var(--mono); font-size: 13.5px; color: var(--ink-muted); }
+  .status-sub { font-size: 12px; color: var(--ink-faint); margin-top: 4px; }
+
+  .result-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+  .esito-badge { font-family: var(--mono); font-weight: 700; font-size: 13px; padding: 6px 14px; border-radius: 100px; letter-spacing: 0.02em; }
+  .esito-badge.approvato { background: var(--good-bg); color: var(--good); }
+  .esito-badge.review { background: var(--warn-bg); color: var(--warn); }
+  .esito-badge.rifiutato { background: var(--bad-bg); color: var(--bad); }
+
+  .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .metric { background: #0b0f17; padding: 14px 16px; }
+  .metric .m-label { font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.05em; }
+  .metric .m-value { font-family: var(--mono); font-size: 19px; font-weight: 700; margin-top: 4px; }
+
+  .score-gauge { margin-top: 18px; }
+  .score-gauge .sg-head { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-faint); margin-bottom: 6px; font-family: var(--mono); }
+  .score-bar { height: 8px; border-radius: 5px; background: #0a0d14; border: 1px solid var(--border); overflow: hidden; }
+  .score-bar .fill { height: 100%; background: linear-gradient(90deg, var(--violet), var(--mint)); border-radius: 5px; transition: width 0.6s cubic-bezier(.2,.9,.3,1); }
+
+  .privacy-note {
+    margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px;
+    font-size: 12.5px; color: var(--ink-faint); display: flex; gap: 10px; align-items: flex-start;
+  }
+  .privacy-note .pn-mark { color: var(--violet); flex: none; font-size: 15px; }
+
+  footer.foot { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 11.5px; color: var(--ink-faint); text-align: center; }
+
+  @media (max-width: 620px) {
+    .party-grid, .row2, .row3 { grid-template-columns: 1fr; }
+    .submit-row { flex-direction: column; align-items: stretch; }
+  }
+</style>
+</head>
+<body>
+<div class="grid-overlay"></div>
+
+<div class="wrap">
+
+  <!-- ============ LOGIN ============ -->
+  <div id="view-login">
+    <div class="card">
+      <div class="lock">&#128274;</div>
+      <h1>collateral.mpc</h1>
+      <p class="lede">Prototipo di tesi &mdash; valutazione del rischio di sottocollateralizzazione tra due piattaforme di lending, via calcolo multiparty sicuro (MP-SPDZ, protocollo <code class="mono">mascot</code>).</p>
+      <form id="login-form">
+        <div class="field">
+          <label for="login-password">Password di accesso</label>
+          <input type="password" id="login-password" autocomplete="current-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required>
+        </div>
+        <button class="primary" type="submit" id="login-btn">Entra</button>
+        <div class="error-msg" id="login-error"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ APP ============ -->
+  <div id="view-app">
+    <header class="top">
+      <div class="brand">
+        <span class="dot"></span>
+        collateral.mpc
+        <span class="sub">mascot &middot; field &middot; N=2 &middot; produzione</span>
+      </div>
+      <div class="top-right">
+        <span class="pill"><span class="led"></span>2/2 nodi online</span>
+        <button class="ghost" id="logout-btn">Esci</button>
+      </div>
+    </header>
+
+    <h1>Richiedi un preventivo di prestito</h1>
+    <p class="lede">Ogni richiesta esegue un calcolo reale a due parti: nessuna delle due piattaforme rivela mai il proprio importo di esposizione all'altra, solo il risultato aggregato viene condiviso.</p>
+
+    <div class="card">
+      <div class="section-title">Esposizione privata per piattaforma (mai condivisa in chiaro tra le due)</div>
+      <div class="party-grid">
+        <div class="party-card p0">
+          <div class="pc-head"><span class="pc-dot"></span>Piattaforma A &mdash; richiedente (party 0)</div>
+          <div class="slider-row">
+            <div class="sr-head"><label>Debito esistente</label><span class="sr-value mono" id="val-p0">$10,000</span></div>
+            <input type="range" id="slider-p0" min="0" max="100000" step="1000" value="10000">
+          </div>
+          <div class="pc-note">Riceve la richiesta del cliente, conosce prezzo/collateral/storico wallet.</div>
+        </div>
+        <div class="party-card p1">
+          <div class="pc-head"><span class="pc-dot"></span>Piattaforma B &mdash; controparte (party 1)</div>
+          <div class="slider-row">
+            <div class="sr-head"><label>Debito esistente</label><span class="sr-value mono" id="val-p1">$10,000</span></div>
+            <input type="range" id="slider-p1" min="0" max="100000" step="1000" value="10000">
+          </div>
+          <div class="pc-note">Contribuisce solo il proprio dato di esposizione, nient'altro.</div>
+        </div>
+      </div>
+
+      <div class="section-title">Termini del prestito</div>
+      <div class="row3" style="margin-bottom:16px;">
+        <div class="slider-row">
+          <div class="sr-head"><label>Nuovo prestito richiesto</label><span class="sr-value mono" id="val-loan">$50,000</span></div>
+          <input type="range" id="slider-loan" min="1000" max="300000" step="1000" value="50000">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>Wallet cliente (demo)</label>
+          <select id="select-wallet">
+            <option value="clean">0xclean&hellip; (pulito)</option>
+            <option value="borderline">0xborderline&hellip; (limite)</option>
+            <option value="flagged">0xflagged&hellip; (segnalato)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row3">
+        <div class="slider-row">
+          <div class="sr-head"><label>Collateral (BTC)</label><span class="sr-value mono" id="val-collateral">3.50 BTC</span></div>
+          <input type="range" id="slider-collateral" min="0.1" max="20" step="0.1" value="3.5">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>Asset</label>
+          <select id="select-asset">
+            <option value="BTC">BTC</option>
+            <option value="ETH">ETH</option>
+            <option value="SOL">SOL</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="submit-row">
+        <button class="primary" id="submit-btn">Richiedi preventivo</button>
+        <span class="rate-note" id="rate-note">Max 3 richieste/ora per indirizzo &mdash; ogni calcolo impegna entrambi i nodi per ~40&ndash;90s.</span>
+      </div>
+    </div>
+
+    <div id="status-area"></div>
+
+    <footer class="foot">
+      Calcolo eseguito realmente su due container MPC indipendenti (party 0 / party 1), canali cifrati (<code class="mono">-e</code>), N=2 &mdash; a questo N viene rivelata solo la fascia di leva aggregata, mai l'importo esatto della controparte.
+    </footer>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  const $ = (id) => document.getElementById(id);
+  const loginView = $('view-login');
+  const appView = $('view-app');
+
+  async function api(path, opts) {
+    const res = await fetch(path, Object.assign({ headers: { 'Content-Type': 'application/json' } }, opts));
+    let body = null;
+    try { body = await res.json(); } catch (e) { /* no body */ }
+    if (!res.ok) {
+      const msg = (body && body.detail) ? body.detail : ('errore ' + res.status);
+      throw new Error(msg);
+    }
+    return body;
+  }
+
+  function fmtUsd(n) { return '$' + Number(n).toLocaleString('en-US'); }
+
+  // ---- login ----
+  $('login-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = $('login-btn');
+    const err = $('login-error');
+    err.textContent = '';
+    btn.disabled = true;
+    try {
+      await api('/api/login', { method: 'POST', body: JSON.stringify({ password: $('login-password').value }) });
+      showApp();
+    } catch (ex) {
+      err.textContent = ex.message;
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  $('logout-btn').addEventListener('click', async function() {
+    await api('/api/logout', { method: 'POST' });
+    location.reload();
+  });
+
+  function showApp() {
+    loginView.style.display = 'none';
+    appView.style.display = 'block';
+  }
+
+  (async function checkSession() {
+    try {
+      const who = await api('/api/whoami');
+      if (who.authed) showApp();
+    } catch (e) { /* stay on login */ }
+  })();
+
+  // ---- sliders ----
+  function bindSlider(sliderId, valueId, fmt) {
+    const s = $(sliderId), v = $(valueId);
+    const update = () => { v.textContent = fmt(s.value); };
+    s.addEventListener('input', update);
+    update();
+  }
+  bindSlider('slider-p0', 'val-p0', (x) => fmtUsd(x));
+  bindSlider('slider-p1', 'val-p1', (x) => fmtUsd(x));
+  bindSlider('slider-loan', 'val-loan', (x) => fmtUsd(x));
+  bindSlider('slider-collateral', 'val-collateral', (x) => Number(x).toFixed(2) + ' ' + $('select-asset').value);
+  $('select-asset').addEventListener('change', function() {
+    $('val-collateral').textContent = Number($('slider-collateral').value).toFixed(2) + ' ' + this.value;
+  });
+
+  // ---- submit + poll ----
+  const statusArea = $('status-area');
+  const submitBtn = $('submit-btn');
+  let pollTimer = null;
+
+  function esitoBadgeClass(esito) {
+    if (esito === 'APPROVATO') return 'approvato';
+    if (esito === 'RIFIUTATO') return 'rifiutato';
+    return 'review';
+  }
+
+  function renderInProgress(stato) {
+    statusArea.innerHTML =
+      '<div class="status-card"><div class="status-row">' +
+        '<div class="spinner"></div>' +
+        '<div><div class="status-label">' + (stato === 'in coda' ? 'In coda&hellip;' : 'Calcolo MPC in corso&hellip;') + '</div>' +
+        '<div class="status-sub">Entrambe le piattaforme stanno eseguendo il protocollo insieme. Non chiudere questa pagina.</div></div>' +
+      '</div></div>';
+  }
+
+  function renderResult(q) {
+    const cls = esitoBadgeClass(q.esito);
+    const scorePct = Math.max(0, Math.min(100, q.risk_score || 0));
+    statusArea.innerHTML =
+      '<div class="status-card">' +
+        '<div class="result-head">' +
+          '<span class="esito-badge ' + cls + '">' + q.esito + '</span>' +
+          '<span class="status-sub mono">durata: ' + (q.party0 && q.party0.durata_secondi ? q.party0.durata_secondi + 's' : '&mdash;') + '</span>' +
+        '</div>' +
+        '<div class="metric-grid">' +
+          '<div class="metric"><div class="m-label">Risk score</div><div class="m-value">' + q.risk_score + '/100</div></div>' +
+          '<div class="metric"><div class="m-label">Max LTV</div><div class="m-value">' + (q.max_ltv_bps/100).toFixed(1) + '%</div></div>' +
+          '<div class="metric"><div class="m-label">Soglia liquidazione</div><div class="m-value">' + (q.liq_threshold_bps/100).toFixed(1) + '%</div></div>' +
+          '<div class="metric"><div class="m-label">Fascia esposizione</div><div class="m-value">' + q.fascia_esposizione + '/3</div></div>' +
+        '</div>' +
+        '<div class="score-gauge">' +
+          '<div class="sg-head"><span>0</span><span>risk score</span><span>100</span></div>' +
+          '<div class="score-bar"><div class="fill" style="width:' + scorePct + '%"></div></div>' +
+        '</div>' +
+        '<div class="privacy-note"><span class="pn-mark">&#9673;</span>' +
+        '<span>A N=2 solo la fascia di esposizione aggregata viene rivelata (mai l\'importo esatto): rivelare l\'importo esatto al richiedente gli permetterebbe di dedurre per sottrazione l\'esposizione esatta della controparte, dato che conosce gi&agrave; il proprio contributo e il nuovo prestito.</span></div>' +
+      '</div>';
+  }
+
+  function renderError(msg) {
+    statusArea.innerHTML =
+      '<div class="status-card"><div class="status-row">' +
+      '<div><div class="status-label" style="color:var(--bad)">Richiesta fallita</div>' +
+      '<div class="status-sub">' + msg + '</div></div></div></div>';
+  }
+
+  submitBtn.addEventListener('click', async function() {
+    if (pollTimer) clearInterval(pollTimer);
+    submitBtn.disabled = true;
+    const payload = {
+      wallet: $('select-wallet').value,
+      new_loan_usd: parseInt($('slider-loan').value, 10),
+      collateral_asset: $('select-asset').value,
+      collateral_amount: parseFloat($('slider-collateral').value),
+      existing_debt_p0: parseInt($('slider-p0').value, 10),
+      existing_debt_p1: parseInt($('slider-p1').value, 10),
+    };
+    renderInProgress('in coda');
+    try {
+      const sub = await api('/api/preventivo', { method: 'POST', body: JSON.stringify(payload) });
+      renderInProgress('in corso');
+      pollTimer = setInterval(async function() {
+        try {
+          const q = await api('/api/stato/' + sub.request_id);
+          if (q.stato === 'completato') {
+            clearInterval(pollTimer);
+            renderResult(q);
+            submitBtn.disabled = false;
+          } else if (q.stato === 'fallito') {
+            clearInterval(pollTimer);
+            renderError(q.errore || 'errore sconosciuto');
+            submitBtn.disabled = false;
+          } else {
+            renderInProgress(q.stato);
+          }
+        } catch (ex) {
+          clearInterval(pollTimer);
+          renderError(ex.message);
+          submitBtn.disabled = false;
+        }
+      }, 3000);
+    } catch (ex) {
+      renderError(ex.message);
+      submitBtn.disabled = false;
+    }
+  });
+})();
+</script>
+</body>
+</html>
