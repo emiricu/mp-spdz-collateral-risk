@@ -105,7 +105,14 @@ endif
 
 BOOST = -lboost_thread $(MY_BOOST)
 
-CFLAGS += $(ARCH) $(MY_CFLAGS) $(GDEBUG) -Wextra -Wall $(OPTIM) -I$(ROOT) -I$(ROOT)/deps -pthread $(PROF) $(DEBUG) $(MOD) $(GF2N_LONG) $(PREP_DIR) $(SSL_DIR) $(SECURE) -std=c++20 -Werror -Wno-overloaded-virtual
+# -Wno-error=restrict: GCC 12 (Debian bookworm's default, used by the
+# Docker build -- see Dockerfile) has a false-positive -Wrestrict on
+# Processor/ExternalClients.cpp's `"..." + std::move(str)` under
+# -Werror; verified this codebase compiles clean on GCC 13 (this
+# machine's native g++, used for every non-Docker build/benchmark in
+# this repo) with the identical source, so this is a GCC-12-specific
+# diagnostic quirk, not a real bug being papered over.
+CFLAGS += $(ARCH) $(MY_CFLAGS) $(GDEBUG) -Wextra -Wall $(OPTIM) -I$(ROOT) -I$(ROOT)/deps -pthread $(PROF) $(DEBUG) $(MOD) $(GF2N_LONG) $(PREP_DIR) $(SSL_DIR) $(SECURE) -std=c++20 -Werror -Wno-overloaded-virtual -Wno-error=restrict
 CFLAGS += $(BREW_CFLAGS)
 CPPFLAGS = $(CFLAGS)
 LD = $(CXX)

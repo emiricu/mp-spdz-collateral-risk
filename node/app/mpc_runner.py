@@ -67,14 +67,13 @@ def run_party(request_id, raw_log_dir=None):
     stdout for party 0 and stays silent for every other party (verified
     directly against this exact binary/program, not assumed from docs)
     -- without it, party 1 would have nothing to parse or report."""
-    host_arg = 'localhost' if config.IS_REQUESTER else config.PEER_HOST
     cmd = [
         f'./{"mascot-party.x"}',
         '-p', str(config.PARTY_ID),
         '-N', str(config.N_PLATFORMS),
         config.PROG_NAME,
         '-pn', str(config.PORT_BASE),
-        '-h', host_arg,
+        '-h', config.PARTY0_HOST,  # required on both parties -- see config.py
         '-e',           # encrypted channels -- see node/README.md for
                          # the certificate exchange this requires
         '-OF', '.',      # stdout on every party, not just party 0

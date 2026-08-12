@@ -4,7 +4,7 @@
 # logs whatever callbacks it receives, all on one machine over a single
 # Docker network. The real deployment is node/docker-compose.yml run
 # separately on two physically distinct machines with node/.env's
-# PEER_HOST pointing at the other machine's real address -- this file
+# PARTY0_HOST pointing at the other machine's real address -- this file
 # exists only so the async submit -> callback flow (and its failure/
 # retry path) can be verified end-to-end without needing two machines or
 # a real backend yet.
@@ -61,7 +61,7 @@ services:
     depends_on: [node0-redis]
     environment:
       PARTY_ID: "0"
-      PEER_HOST: "node1-worker"
+      PARTY0_HOST: "node0-worker"
       PORT_BASE: "5000"
       HTTP_PORT: "8000"
       REDIS_URL: "redis://node0-redis:6379/0"
@@ -81,7 +81,7 @@ services:
         condition: service_completed_successfully
     environment:
       PARTY_ID: "0"
-      PEER_HOST: "node1-worker"
+      PARTY0_HOST: "node0-worker"
       PORT_BASE: "5000"
       REDIS_URL: "redis://node0-redis:6379/0"
     volumes:
@@ -98,7 +98,7 @@ services:
     depends_on: [node1-redis]
     environment:
       PARTY_ID: "1"
-      PEER_HOST: "node0-worker"
+      PARTY0_HOST: "node0-worker"
       PORT_BASE: "5000"
       HTTP_PORT: "8000"
       REDIS_URL: "redis://node1-redis:6379/0"
@@ -118,7 +118,7 @@ services:
         condition: service_completed_successfully
     environment:
       PARTY_ID: "1"
-      PEER_HOST: "node0-worker"
+      PARTY0_HOST: "node0-worker"
       PORT_BASE: "5000"
       REDIS_URL: "redis://node1-redis:6379/0"
     volumes:

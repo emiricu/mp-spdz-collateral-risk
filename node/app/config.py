@@ -21,17 +21,27 @@ REQUESTER = 0  # party 0 is always the requesting platform (compiled into
 IS_REQUESTER = PARTY_ID == REQUESTER
 
 # -h/--hostname passed to mascot-party.x means "host where party 0 runs
-# to coordinate startup" (verified via mascot-party.x --help) -- party 0
-# never dials out to this value itself (it's the listener, bound on
-# 0.0.0.0 regardless), so PEER_HOST is only load-bearing for party 1. See
-# node/README.md.
-PEER_HOST = os.environ.get('PEER_HOST', 'localhost')
-if PARTY_ID == 1 and not os.environ.get('PEER_HOST'):
+# to coordinate startup". Verified directly (not just from --help) that
+# this is required on BOTH parties, including party 0 itself: even party
+# 0 connects to this address AS A CLIENT to register with its own
+# just-started coordination server (Networking/Server.cpp's
+# start_networking -> Names::setup_names -> set_up_client_socket), and
+# the IP getsockname() reports on THAT connection is what gets announced
+# to the other party for the real data-channel connection afterwards.
+# Passing 'localhost' for party 0 makes it announce 127.0.0.1 -- fine on
+# one host, unreachable from a genuinely separate machine or container,
+# and the run hangs forever after the initial handshake with no error
+# message (reproduced and fixed empirically, not assumed from docs).
+# So PARTY0_HOST must be party 0's own externally-reachable address, set
+# on BOTH machines -- on party 0's machine it's "myself" (its own
+# hostname/IP as seen by party 1), on party 1's machine it's "party 0".
+PARTY0_HOST = os.environ.get('PARTY0_HOST')
+if not PARTY0_HOST:
     raise RuntimeError(
-        "PEER_HOST is required for PARTY_ID=1 -- must resolve to party "
-        "0's reachable address (its public/private network hostname or "
-        "IP when the two nodes run on separate machines, never "
-        "'localhost' in that case)")
+        "PARTY0_HOST is required on BOTH nodes -- party 0's own "
+        "externally-reachable hostname/IP (never 'localhost' once the "
+        "two nodes are on separate machines or containers, including on "
+        "party 0's own machine -- see node/README.md)")
 
 PORT_BASE = _require_int('PORT_BASE', default=5000)
 HTTP_PORT = _require_int('HTTP_PORT', default=8000)

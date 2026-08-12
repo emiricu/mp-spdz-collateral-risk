@@ -23,7 +23,7 @@ services:
       - redis
     environment:
       PARTY_ID: "${PARTY_ID:?set PARTY_ID in .env}"
-      PEER_HOST: "${PEER_HOST:-localhost}"
+      PARTY0_HOST: "${PARTY0_HOST:?set PARTY0_HOST in .env}"
       PORT_BASE: "${PORT_BASE:-5000}"
       HTTP_PORT: "${HTTP_PORT:-8000}"
       POLICY_VERSION: "${POLICY_VERSION:-1}"
@@ -42,7 +42,7 @@ services:
       - redis
     environment:
       PARTY_ID: "${PARTY_ID:?set PARTY_ID in .env}"
-      PEER_HOST: "${PEER_HOST:-localhost}"
+      PARTY0_HOST: "${PARTY0_HOST:?set PARTY0_HOST in .env}"
       PORT_BASE: "${PORT_BASE:-5000}"
       HTTP_PORT: "${HTTP_PORT:-8000}"
       POLICY_VERSION: "${POLICY_VERSION:-1}"

@@ -8,7 +8,7 @@
 #   docker build --tag mpspdz:buildenv \                                      #
 #     --target buildenv \                                                     #
 #     --build-arg arch=native \                                               #
-#     --build-arg cxx=clang++-11 \                                            #
+#     --build-arg cxx=g++ \                                                   #
 #     --build-arg use_ntl=0 \                                                 #
 #     --build-arg prep_dir="Player-Data" \                                    #
 #     --build-arg ssl_dir="Player-Data"                                       #
@@ -36,12 +36,19 @@
 #   $ ./compile.py -R 64 tutorial                                             #
 #                                                                             #
 ###############################################################################
-FROM python:3.10.3-bullseye as buildenv
+# bookworm, not the original bullseye: verified directly that this
+# codebase's C++20 <barrier> header (Processor/ThreadQueues.h) fails to
+# compile on bullseye with EITHER clang++-11 ("fatal error: 'barrier'
+# file not found") OR bullseye's own default g++-10 ("barrier: No such
+# file or directory") -- bullseye tops out at GCC 10 in both its main
+# archive and bullseye-backports, and GCC's libstdc++ only gained
+# <barrier> in GCC 11. bookworm ships GCC 12 by default, which has it.
+FROM python:3.10-bookworm as buildenv
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
                 automake \
                 build-essential \
-                clang-11 \
+                clang \
 		cmake \
                 git \
                 libboost-dev \
@@ -65,7 +72,14 @@ RUN pip install --upgrade pip ipython
 COPY . .
 
 ARG arch=
-ARG cxx=clang++-11
+# g++ (bookworm's default, GCC 12), not the original clang++-11 default
+# -- that binary no longer exists after the bullseye->bookworm bump
+# above. g++ is also what the rest of this repo's own pipeline already
+# uses outside Docker (Scripts/mpc_bench.py, every benchmark run in
+# results_all_algorithms/ and results_produzione/), so this keeps the
+# default consistent with what's actually validated elsewhere, not a
+# new, untested choice.
+ARG cxx=g++
 ARG use_ntl=0
 ARG prep_dir="Player-Data"
 ARG ssl_dir="Player-Data"

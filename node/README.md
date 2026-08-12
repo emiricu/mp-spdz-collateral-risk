@@ -35,10 +35,24 @@ compila:
 | Variabile | Macchina party 0 | Macchina party 1 |
 |---|---|---|
 | `PARTY_ID` | `0` | `1` |
-| `PEER_HOST` | non usato (party 0 &egrave; sempre l'ascoltatore MP-SPDZ) | indirizzo raggiungibile della macchina party 0 |
+| `PARTY0_HOST` | il proprio indirizzo raggiungibile (**mai** `localhost`) | indirizzo raggiungibile della macchina party 0 |
 | `PORT_BASE` / `PORT_BASE_PLUS1` | `5000` / `5001` (deve combaciare tra le due macchine) | idem |
 | `HTTP_PORT` | porta dell'API di questo nodo | idem |
 | `POLICY_VERSION` | `1` (deve combaciare) | idem |
+
+**`PARTY0_HOST` va impostato su entrambe le macchine, incluso il valore
+sulla macchina di party 0 stesso.** Non &egrave; ovvio, verificato
+direttamente (non solo dedotto da `--help`): l'handshake di startup di
+MP-SPDZ fa s&igrave; che **anche party 0** si connetta, come client, al
+proprio indirizzo `-h` per registrarsi presso il proprio coordinatore
+appena avviato; l'indirizzo IP che annuncia da quella connessione
+(via `getsockname()`) &egrave; poi quello che party 1 user&agrave; per
+il canale dati vero e proprio. Con `-h localhost` su party 0, l'indirizzo
+annunciato sarebbe `127.0.0.1` &mdash; irraggiungibile da una macchina
+(o container) diversa: il run si blocca indefinitamente subito dopo
+l'handshake iniziale, senza alcun messaggio d'errore. Riprodotto e
+risolto empiricamente durante il test end-to-end di questo giro, non
+assunto dalla documentazione del framework.
 
 Poi, su ciascuna macchina:
 
