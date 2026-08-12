@@ -1,0 +1,33 @@
+{
+  "rep": 3,
+  "request_id": "repeat-3-1786523680",
+  "party0": {
+    "request_id": "repeat-3-1786523680",
+    "stato": "completato",
+    "aggiornato_il": 1786523734.6810405,
+    "party_id": 0,
+    "durata_secondi": 46.11,
+    "esito": "REVIEW MANUALE",
+    "risk_score": 65,
+    "max_ltv_bps": 5000,
+    "liq_threshold_bps": 6000,
+    "fascia_esposizione": 1
+  },
+  "party1": {
+    "request_id": "repeat-3-1786523680",
+    "stato": "completato",
+    "aggiornato_il": 1786523734.684829,
+    "party_id": 1,
+    "durata_secondi": 46.41,
+    "esito": "REVIEW MANUALE",
+    "risk_score": 65,
+    "max_ltv_bps": 5000,
+    "liq_threshold_bps": 6000,
+    "fascia_esposizione": 1
+  },
+  "callback_party_ids_received": [
+    0,
+    1
+  ],
+  "callback_ok": true
+}

@@ -1,0 +1,53 @@
+{
+  "rep": 3,
+  "request_id": "strangers-3-1786538346",
+  "party0_host": "169.58.44.182",
+  "salute0": {
+    "ok": true,
+    "dettagli": {
+      "processo": true,
+      "redis": true,
+      "binario_mascot": true,
+      "programma_compilato": true,
+      "certificato_locale": true,
+      "certificato_peer": true,
+      "party_id": 0
+    }
+  },
+  "salute1": {
+    "ok": true,
+    "dettagli": {
+      "processo": true,
+      "redis": true,
+      "binario_mascot": true,
+      "programma_compilato": true,
+      "certificato_locale": true,
+      "certificato_peer": true,
+      "party_id": 1
+    }
+  },
+  "party0": {
+    "request_id": "strangers-3-1786538346",
+    "stato": "completato",
+    "aggiornato_il": 1786538398.6830192,
+    "party_id": 0,
+    "durata_secondi": 51.19,
+    "esito": "REVIEW MANUALE",
+    "risk_score": 65,
+    "max_ltv_bps": 5000,
+    "liq_threshold_bps": 6000,
+    "fascia_esposizione": 1
+  },
+  "party1": {
+    "request_id": "strangers-3-1786538346",
+    "stato": "completato",
+    "aggiornato_il": 1786538398.677769,
+    "party_id": 1,
+    "durata_secondi": 51.62,
+    "esito": "REVIEW MANUALE",
+    "risk_score": 65,
+    "max_ltv_bps": 5000,
+    "liq_threshold_bps": 6000,
+    "fascia_esposizione": 1
+  }
+}

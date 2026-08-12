@@ -1,0 +1,20 @@
+{
+  "scenario": "kill worker mid-computation",
+  "request_id": "killmid-1786540300",
+  "party_killed": 1,
+  "kill_timestamp": 1786540325,
+  "submit_timestamp": 1786540300,
+  "seconds_into_computation_at_kill": 25,
+  "surviving_party0_status": {
+    "stato": "fallito",
+    "aggiornato_il": 1786540325.6928499,
+    "errore": "mascot-party.x returncode=1: ... Fatal error in communication: read_some: stream truncated [asio.ssl.stream:1] This is probably because party 1 encountered a problem.",
+    "seconds_to_detect_failure": 0.69
+  },
+  "surviving_party0_callback_delivered": true,
+  "killed_party1_own_status_after_restart_of_api": {
+    "stato": "in corso",
+    "note": "party 1's own /stato stays stuck at 'in corso' forever for this request -- its worker died before it could ever update its own status. The backend still learns the request failed via party 0's callback/status, but querying party 1 directly (if it were ever brought back without clearing this key) would be misleading in isolation."
+  },
+  "salute_gap_observed": "party 1's own /salute continued reporting ok:true even while its worker container was dead -- /salute only checks Redis reachability and static file presence (binary, compiled program, certs), not whether the worker process is actually alive. A monitoring setup relying solely on /salute would not detect this failure mode."
+}
