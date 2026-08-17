@@ -102,8 +102,10 @@ i due operatori:
 
 1. Avvia `docker compose up -d` su entrambe le macchine (i worker
    generano i propri certificati al boot, poi restano in attesa: `/salute`
-   segnaler&agrave; `certificato_peer: false` finch&eacute; non completi
-   questo passaggio).
+   segnaler&agrave; `certificati_peer` con `false` per ogni peer mancante
+   finch&eacute; non completi questo passaggio -- un oggetto con una voce
+   per peer, non pi&ugrave; un singolo booleano, da quando il prototipo
+   supporta anche N=3, vedi deploy/deploy_nodes.sh).
 2. Recupera `Player-Data/P0.pem` dalla macchina party 0 (es.
    `docker compose cp worker:/usr/src/MP-SPDZ/Player-Data/P0.pem .`) e
    mandalo alla macchina party 1 con qualunque canale fuori banda
@@ -114,8 +116,8 @@ i due operatori:
    macchina party 0.
 4. Su entrambe le macchine, rigenera l'indice hash OpenSSL:
    `docker compose exec worker sh -c "c_rehash Player-Data || openssl rehash Player-Data"`.
-5. Verifica `GET /salute` su entrambe: `certificato_locale` e
-   `certificato_peer` devono essere entrambi `true`.
+5. Verifica `GET /salute` su entrambe: `certificato_locale` deve essere
+   `true` e ogni voce di `certificati_peer` deve essere `true`.
 
 Questo passaggio &egrave; manuale **di proposito** in un deployment reale a
 due macchine: automatizzarlo (es. copiare i certificati attraverso la
@@ -370,7 +372,213 @@ Osservato sul party superstite:
 
 Dati grezzi in `local-test/results/kill_mid_computation.json`.
 
-## 9. Log
+## 9. Estensione a N=3
+
+### 9.1 Cosa cambia rispetto a N=2, non solo "un nodo in pi&ugrave;"
+
+`Programs/Source/crypto_collateral_risk.mpc` non &egrave; un file a parte
+per la produzione: mode 2 (`decide_production`) &egrave; gi&agrave; lo
+stesso file, selezionato via argomento di compilazione. A N=3 cambia il
+comportamento del calcolo stesso: il branch gi&agrave; presente nel
+programma (`if N_PLATFORMS == 2 ... else ...`) rivela una fascia 0-3
+a N=2, ma il **valore esatto in dollari** a N&ge;3, perch&eacute; da
+tre piattaforme in su nessuna pu&ograve; pi&ugrave; isolare per
+sottrazione il contributo delle altre. Compilato con
+`./compile.py -o field crypto_collateral_risk 3 0 2`, prodotto
+`field-crypto_collateral_risk-3-0-2`, stessa immagine `collateral-node:local`
+di N=2 (entrambi i programmi coesistono, selezionati a runtime da
+`N_PLATFORMS`/`MP_SPDZ_PROG`, vedi `node/app/config.py`).
+
+Verificato direttamente in `Networking/Player.cpp` (`PlainPlayer::setup_sockets`,
+`default_port = portnum_base + playerno`): a N=2 solo la porta di party 0
+deve essere raggiungibile dall'esterno (party 1 chiama solo verso il
+basso). A N=3 anche la porta di party 1 deve esserlo, perch&eacute;
+party 2 chiama verso il basso anche verso di lui &mdash;
+`deploy/deploy_nodes.sh` pubblica quindi la porta MP-SPDZ di **tutti e
+tre** i nodi 1:1 sull'host, non solo quella di party 0 come bastava a N=2.
+
+### 9.2 Percorso di successo, ripetuto
+
+Scenario di riferimento identico a `results_produzione/n3/` (stesso
+totale di debito della verifica N=2, diviso su tre piattaforme invece di
+due, stessa logica degli sweep N=2/3/4/5): wallet
+`0xclean0000000000000000000000000000000001`, prestito $50.000,
+collateral 3,5 BTC, debiti 6.667/6.667/6.666. Sottomesso tramite
+l'orchestratore reale (`/api/preventivo` del backend pubblico), non un
+harness separato.
+
+| Batch | Ripetizioni | Esito |
+|---|---|---|
+| 1, senza pausa tra le richieste | 3 | 2 successo (255,4s / 246,4s), 1 fallito (268,3s, `stream truncated`) |
+| 2, senza pausa | 3 | 1 successo (297,9s), 2 falliti (2,1s `connection reset`; 601,7s misto SIGPIPE/timeout/connection reset) |
+| 3, pausa di 30s tra le richieste | 3 | 3/3 successo (308,2s / 292,5s / 560,0s&sup1;) |
+| Finale, isolata dopo il fix del &sect;9.4 | 1 | successo, 270,6s, party0/1/2 = 269,01/269,53/269,52s |
+
+&sup1; il terzo tempo include ~5 minuti di attesa in coda legittima
+dietro una richiesta indipendente di un visitatore reale del sito
+(IP `94.33.118.202`, lo stesso gi&agrave; osservato nell'incidente del
+rate limit) sottomessa durante il test: nessuna contaminazione tra le
+due richieste, ciascuna ha ottenuto il proprio risultato corretto e
+isolato (verificato leggendo entrambi i record da Redis). Il tempo di
+calcolo MPC proprio di quella ripetizione era 267-268s, in linea con le
+altre.
+
+In ogni successo, le tre piattaforme hanno riportato **esattamente** lo
+stesso `esito`/`risk_score`, e `esposizione_totale_usd` &egrave; sempre
+comparso come valore esatto ($70.000 = 6.667+6.667+6.666+50.000), mai
+come fascia &mdash; conferma diretta che sia il branch N=3 del `.mpc`
+sia la nuova logica di correlazione N-via dell'orchestratore
+(`backend/app.py`'s `_finalize_if_all_reported`, che ora attende
+**tutte** le N risposte e verifica l'accordo prima di fidarsi di una
+qualunque, non solo un confronto a coppie) si comportano come previsto.
+
+Sul percorso senza pausa: **3 successi e 3 fallimenti su 6 tentativi
+consecutivi**, non un caso isolato. Con una pausa di 30s tra le
+richieste, 3/3. Questo non era mai stato testato prima a nessun N: sia
+`local-test/run_repeated_success.py` (N=2) sia
+`run_repeated_strangers.py` fanno sempre un riavvio completo dello stack
+tra una ripetizione e l'altra, quindi il caso "due calcoli MPC
+consecutivi sugli stessi container, senza riavvio" non era mai stato
+esercitato concretamente, a nessun N &mdash; vedi &sect;9.5 per cosa
+&egrave; stato effettivamente trovato indagando questo caso.
+
+### 9.3 Percorso di fallimento: un party ucciso a met&agrave; calcolo, a N=3
+
+Stesso protocollo di verifica gi&agrave; usato a N=2 (&sect;8.5), ripetuto
+qui: container `node2-worker` (party 2) ucciso con `docker kill` a 0,8s
+dalla sottomissione, confermato `mascot-party.x` gi&agrave; attivo prima
+del kill (non prima dell'avvio). L'orchestratore ha segnalato il
+fallimento esplicitamente in **meno di 1 secondo** (0,98s) dal kill, con
+l'errore completo di entrambi i party superstiti (party 0 e party 1,
+entrambi: `read_some: stream truncated ... probabilmente perch&eacute;
+il party 2 ha incontrato un problema` &mdash; MP-SPDZ stesso nomina il
+party responsabile) &mdash; non un'attesa indefinita, non un
+completamento con solo 2 risposte su 3 trattate come sufficienti.
+`party2` nel record della richiesta &egrave; rimasto `null`, come atteso
+(il worker ucciso non ha mai potuto aggiornare il proprio stato,
+limite gi&agrave; osservato e documentato a N=2 in &sect;8.5, confermato
+identico a N=3).
+
+Correzione applicata in questo giro alla logica di correlazione
+(`backend/app.py`): la versione precedente attendeva **tutte** le N
+risposte anche per riportare un fallimento, il che avrebbe significato
+aspettare `QUOTE_TIMEOUT_SECONDS` (700s) prima di segnalare un party
+ucciso che non former&agrave; mai la sua risposta. Ora un fallimento
+riportato anche da un solo party basta a marcare l'intera richiesta
+fallita immediatamente (il protocollo MP-SPDZ &egrave; sincrono: se un
+party fallisce, il calcolo &egrave; fallito per tutti, a prescindere da
+quando gli altri se ne accorgono) &mdash; verificato con questo stesso
+test: senza la correzione, la segnalazione sarebbe arrivata in minuti,
+non in meno di un secondo.
+
+### 9.4 Bug trovato e corretto: Player-Data non isolato nell'immagine Docker
+
+Dopo il test di kill del &sect;9.3, **ogni** tentativo successivo (2 su
+2) &egrave; fallito in modo identico e riproducibile: crash con
+`SIGABRT`, `Removing Player-Data//Mascot-Secrets-2-40-<hash>-P<i>-3
+because of MAC check failure` seguito da
+`Assertion 'unlink(filename.c_str()) == 0' failed` &mdash; un crash
+nel codice di pulizia di `mascot-party.x` stesso (`MAC_Check.hpp`), non
+nel programma di questo progetto.
+
+Causa radice, verificata direttamente (non assunta): il repo non aveva
+mai avuto un `.dockerignore`. Il Dockerfile di primo livello fa
+`COPY . .` dalla radice del repo, quindi ha sempre incluso
+`Player-Data/` nell'immagine `mpspdz-mascot:local` &mdash; **2,0GB,
+1133 file**, materiale di preprocessing lasciato da sessioni di
+benchmark passate e completamente estranee a questo deployment
+(`ChaiGear-Secrets`, vecchi `Mascot-Secrets`, certificati di test
+precedenti). Docker, per comportamento documentato, pre-popola un
+nuovo volume nominato con il contenuto gi&agrave; presente nell'immagine
+al punto di mount la prima volta che viene usato &mdash; quindi anche
+un volume "appena creato" per un nodo non partiva mai da uno stato
+davvero vuoto. Confermato controllando le date dei certificati dentro i
+container: `P0.pem`/`P1.pem`/`P2.pem` avevano la data della build
+dell'immagine (o della sessione ancora precedente), non quella di
+creazione del container. Un `docker rm` + `docker volume rm` + nuovo
+deploy **ha effettivamente ripristinato il servizio** (1/1 successo),
+ma senza spiegare perch&eacute; un volume "nuovo" contenesse gi&agrave;
+materiale di sessioni passate.
+
+Corretto aggiungendo `.dockerignore` alla radice del repo (esclude
+`Player-Data/`), poi ricostruite entrambe le immagini
+(`mpspdz-mascot:local`, ricompilazione C++ completa, e
+`collateral-node:local` sopra di essa). Verificato che il
+`Player-Data/` dentro l'immagine sia sceso da 1133 file/2,0GB a 16
+voci/36KB (tutte generate dalla build stessa, non pi&ugrave; residui di
+sessioni precedenti). Non risolve per&ograve; il problema del
+&sect;9.5, scoperto proprio ri-testando dopo questo fix.
+
+### 9.5 Problema aperto, non risolto in questo giro: possibile "incrocio" tra richieste sotto carico in coda
+
+Il fix del &sect;9.4 **non** ha eliminato i fallimenti a richieste
+consecutive ravvicinate: nella prima ripetizione dopo il fix (3
+richieste, pausa di 20s), 2 su 3 sono fallite di nuovo rapidamente
+(`connection reset`/SIGPIPE, 2,1s), inclusa la **prima richiesta mai
+sottomessa a quel deployment appena ricreato** &mdash; quindi non
+spiegabile con materiale residuo di questa sessione di test.
+
+La terza richiesta di quel batch ha rivelato qualcosa di pi&ugrave;
+serio, ricostruito dai log timestampati di tutti e tre i nodi: party 0
+ha completato "con successo" in 204s (con un `esito`/`risk_score`/
+`esposizione_totale_usd` del tutto plausibili, identici a ogni altra
+run riuscita), ma party 1 e party 2 sono rimasti bloccati per l'intero
+budget di 600s prima di essere terminati a forza. Party 0 aveva avviato
+questo tentativo alle 13:51:22 (worker libero, avendo gi&agrave; fallito
+rapidamente il tentativo precedente); party 1 e party 2 per&ograve;
+erano ancora occupati fino alle 13:54:46 con il **tentativo
+precedente**, i cui processi `mascot-party.x` non erano usciti subito
+dopo che la loro controparte (party 0) era caduta &mdash; sono rimasti
+in esecuzione per altri 226 secondi, bloccando la coda a concorrenza 1
+di quei due nodi. La finestra in cui party 0 ha "completato con
+successo" (13:51:22&ndash;13:54:45) coincide quasi esattamente con la
+finestra in cui i processi *del tentativo precedente* di party 1/2 erano
+ancora vivi (13:51:00&ndash;13:54:46) &mdash; i processi reali di party
+1/2 per QUESTA richiesta non erano nemmeno partiti ancora a quel punto.
+
+L'ipotesi pi&ugrave; probabile, non ancora confermata a livello di
+pacchetti di rete ma coerente con ogni timestamp osservato: il processo
+`mascot-party.x` di party 0 per la richiesta nuova si &egrave;
+sincronizzato con i processi **ancora vivi ma orfani** di party 1/2
+relativi alla richiesta precedente, non con i (futuri) processi della
+propria richiesta. `mascot-party.x` non ha alcun concetto di
+"request ID" nel proprio protocollo di coordinamento: si limita a
+collegarsi alla porta fissa `PORT_BASE + player_id` e a completare il
+protocollo con chiunque risponda l&igrave;. Se cos&igrave; fosse, in un
+uso reale con richieste diverse in coda (non lo stesso scenario di test
+ripetuto identico), un utente potrebbe ricevere un risultato calcolato
+sui dati di **una richiesta precedente e non correlata**, non i propri.
+
+**Perch&eacute; questo non ha prodotto un falso risultato positivo in
+questo test**: la nuova logica di correlazione N-via dell'orchestratore
+(&sect;9.2) non marca mai una richiesta `completato` finch&eacute; non
+ricevono conferma **tutte** le N parti. Party 1 e party 2, occupati con
+la richiesta sbagliata, non hanno mai confermato quella corrente in
+tempo, quindi la richiesta &egrave; correttamente rimasta poi `fallito`
+per timeout, mai mostrata come riuscita all'utente. Questo per&ograve;
+&egrave; un effetto collaterale fortunato di un controllo pensato per
+un motivo diverso (verificare l'accordo N-via sull'esito), non una
+protezione progettata contro questo scenario specifico: se, per
+sfortuna, party 1 e party 2 si sincronizzassero ENTRAMBI con lo stesso
+processo orfano coerente tra loro, il controllo di accordo attuale non
+lo distinguerebbe da un risultato genuino.
+
+**Non risolto in questo giro, segnalato esplicitamente invece di essere
+nascosto o minimizzato**: una singola richiesta isolata (nessun'altra
+richiesta in coda) funziona in modo affidabile e corretto (confermato,
+&sect;9.2, ultima riga della tabella). Il rischio &egrave; specifico a
+richieste ravvicinate/in coda sugli stessi nodi. Rimedi possibili da
+valutare in un giro successivo, non implementati qui: allocare una
+porta MP-SPDZ diversa per richiesta invece di riusare sempre lo stesso
+`PORT_BASE`; far attendere all'orchestratore la conferma esplicita che
+tutti e N i worker siano davvero liberi prima di sottomettere una nuova
+richiesta; oppure un identificatore di richiesta verificato a livello
+applicativo prima di fidarsi di un esito rivelato. Fino ad allora, il
+deployment pubblico va considerato affidabile per un uso supervisionato
+e non concorrente (una richiesta alla volta, con margine tra l'una e
+l'altra), non per carico concorrente reale non controllato.
+
+## 10. Log
 
 `Player-Data/`, `node_logs/<request_id>.log` (stdout/stderr grezzo del
 processo `mascot-party.x` per quella run, non solo il risultato

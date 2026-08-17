@@ -2,7 +2,8 @@
 set -euo pipefail
 cd "${MP_SPDZ_HOME:-/usr/src/MP-SPDZ}"
 
-: "${PARTY_ID:?PARTY_ID must be set (0 or 1)}"
+: "${PARTY_ID:?PARTY_ID must be set (0..N_PLATFORMS-1)}"
+N_PLATFORMS="${N_PLATFORMS:-2}"
 
 generate_own_cert() {
     # Player-Data/ is a mounted volume so the identity persists across
@@ -16,9 +17,13 @@ generate_own_cert() {
     else
         echo "[entrypoint] WARNING: neither c_rehash nor 'openssl rehash' available -- -e (encrypted channels) will fail until Player-Data is rehashed manually" >&2
     fi
-    if [ ! -f "Player-Data/P$((1 - PARTY_ID)).pem" ]; then
-        echo "[entrypoint] WARNING: peer certificate (P$((1 - PARTY_ID)).pem) missing from Player-Data/ -- MPC runs will fail until it is copied in (see README, certificate exchange section). /salute will report this." >&2
-    fi
+    # Every OTHER party's cert must be present, not just one fixed peer --
+    # at N=3 this party has two peers, not one.
+    for peer in $(seq 0 $((N_PLATFORMS - 1))); do
+        if [ "$peer" != "$PARTY_ID" ] && [ ! -f "Player-Data/P${peer}.pem" ]; then
+            echo "[entrypoint] WARNING: peer certificate (P${peer}.pem) missing from Player-Data/ -- MPC runs will fail until it is copied in (see README, certificate exchange section). /salute will report this." >&2
+        fi
+    done
 }
 
 role="${1:-api}"

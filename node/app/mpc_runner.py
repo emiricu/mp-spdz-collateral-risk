@@ -109,12 +109,23 @@ def _write_raw_log(raw_log_dir, request_id, stdout, stderr, timed_out):
 def parse_result(stdout):
     """Reuses crypto_risk_run's own key:value parser and decision-code
     map -- same semantics as every other place in this repo that reads
-    decide_production()'s output."""
+    decide_production()'s output.
+
+    Which of esposizione_totale_usd/esposizione_totale (fascia) the .mpc
+    program actually printed depends on N_PLATFORMS (exact figure at
+    N>=3, band only at N==2 -- see crypto_collateral_risk.mpc's own
+    N_PLATFORMS==2 branch), so this mirrors crypto_risk_run.py's own
+    _liquidation_price_for: check which key is PRESENT in the output
+    rather than branching on config.N_PLATFORMS here, so this stays
+    correct even if the two ever disagree (e.g. a mismatched
+    MP_SPDZ_PROG override)."""
     mpc_result = crypto_risk_run.parse_output(stdout)
     if 'esito_code' not in mpc_result:
         raise MpcRunError(f"nessun 'esito_code' nell'output -- output grezzo: {stdout[-500:]!r}")
     esito = crypto_risk_run.DECISION_CODE_TO_ESITO.get(int(mpc_result['esito_code']))
-    fascia = crypto_risk_run._extract_lev_tier(mpc_result)  # N==2 -> band only, never the exact figure
+    exposure_usd = (int(mpc_result['esposizione_totale_usd'])
+                     if 'esposizione_totale_usd' in mpc_result else None)
+    fascia = crypto_risk_run._extract_lev_tier(mpc_result) if exposure_usd is None else None
     return {
         'esito': esito,
         'risk_score': int(mpc_result['risk_score']) if 'risk_score' in mpc_result else None,
@@ -122,4 +133,5 @@ def parse_result(stdout):
         'liq_threshold_bps': (int(mpc_result['liq_threshold_bps'])
                                 if 'liq_threshold_bps' in mpc_result else None),
         'fascia_esposizione': fascia,
+        'esposizione_totale_usd': exposure_usd,
     }

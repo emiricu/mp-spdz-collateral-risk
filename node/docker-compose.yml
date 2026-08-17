@@ -22,6 +22,7 @@ services:
     depends_on:
       - redis
     environment:
+      N_PLATFORMS: "${N_PLATFORMS:-2}"
       PARTY_ID: "${PARTY_ID:?set PARTY_ID in .env}"
       PARTY0_HOST: "${PARTY0_HOST:?set PARTY0_HOST in .env}"
       PORT_BASE: "${PORT_BASE:-5000}"
@@ -41,6 +42,7 @@ services:
     depends_on:
       - redis
     environment:
+      N_PLATFORMS: "${N_PLATFORMS:-2}"
       PARTY_ID: "${PARTY_ID:?set PARTY_ID in .env}"
       PARTY0_HOST: "${PARTY0_HOST:?set PARTY0_HOST in .env}"
       PORT_BASE: "${PORT_BASE:-5000}"
@@ -50,9 +52,12 @@ services:
     ports:
       # MP-SPDZ's own protocol ports, opened by mascot-party.x itself
       # starting at PORT_BASE -- exposed from the WORKER container (the
-      # process that actually execs mascot-party.x), not from api.
-      # Range covers PORT_BASE and PORT_BASE+1 (2 parties); see README
-      # for why a wider range may be worth opening on the firewall too.
+      # process that actually execs mascot-party.x), not from api. Every
+      # party listens on PORT_BASE + its own party id, so N_PLATFORMS
+      # parties need PORT_BASE..PORT_BASE+N_PLATFORMS-1 -- this range
+      # covers PORT_BASE and PORT_BASE+1 for this file's N=2 default; see
+      # README for why a wider range may be worth opening on the firewall
+      # too, and deploy/deploy_nodes.sh for the actual N=3 deployment.
       - "${PORT_BASE:-5000}-${PORT_BASE_PLUS1:-5001}:${PORT_BASE:-5000}-${PORT_BASE_PLUS1:-5001}"
     volumes:
       - player-data:/usr/src/MP-SPDZ/Player-Data

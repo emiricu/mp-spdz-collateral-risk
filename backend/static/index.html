@@ -21,6 +21,7 @@
     --violet-dim: #4B3FA0;
     --party0: #4FD1FF;
     --party1: #FF9F4F;
+    --party2: #C77DFF;
     --good: #2CFFB5;
     --good-bg: #0E2A22;
     --warn: #FFD166;
@@ -129,14 +130,16 @@
     color: var(--ink-faint); margin: 0 0 12px;
   }
 
-  .party-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+  .party-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 18px; }
   .party-card { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; background: #0b0f17; }
   .party-card .pc-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-family: var(--mono); font-size: 12.5px; font-weight: 700; }
   .party-card.p0 .pc-head { color: var(--party0); }
   .party-card.p1 .pc-head { color: var(--party1); }
+  .party-card.p2 .pc-head { color: var(--party2); }
   .party-card .pc-dot { width: 7px; height: 7px; border-radius: 50%; }
   .party-card.p0 .pc-dot { background: var(--party0); box-shadow: 0 0 8px var(--party0); }
   .party-card.p1 .pc-dot { background: var(--party1); box-shadow: 0 0 8px var(--party1); }
+  .party-card.p2 .pc-dot { background: var(--party2); box-shadow: 0 0 8px var(--party2); }
   .party-card .pc-note { font-size: 11.5px; color: var(--ink-faint); margin-top: 8px; }
 
   .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -217,7 +220,7 @@
     <div class="card">
       <div class="lock">&#128274;</div>
       <h1>collateral.mpc</h1>
-      <p class="lede">Prototipo di tesi &mdash; valutazione del rischio di sottocollateralizzazione tra due piattaforme di lending, via calcolo multiparty sicuro (MP-SPDZ, protocollo <code class="mono">mascot</code>).</p>
+      <p class="lede">Prototipo di tesi &mdash; valutazione del rischio di sottocollateralizzazione tra tre piattaforme di lending, via calcolo multiparty sicuro (MP-SPDZ, protocollo <code class="mono">mascot</code>).</p>
       <form id="login-form">
         <div class="field">
           <label for="login-password">Password di accesso</label>
@@ -236,20 +239,20 @@
       <div class="brand">
         <span class="dot"></span>
         collateral.mpc
-        <span class="sub">mascot &middot; field &middot; N=2 &middot; produzione</span>
+        <span class="sub">mascot &middot; field &middot; N=3 &middot; produzione</span>
       </div>
       <div class="top-right">
-        <span class="pill"><span class="led"></span>2/2 nodi online</span>
+        <span class="pill"><span class="led"></span>3/3 nodi online</span>
         <a class="ghost" href="/documentazione" style="text-decoration:none; display:inline-flex; align-items:center;">Documentazione</a>
         <button class="ghost" id="logout-btn">Esci</button>
       </div>
     </header>
 
     <h1>Richiedi un preventivo di prestito</h1>
-    <p class="lede">Ogni richiesta esegue un calcolo reale a due parti: nessuna delle due piattaforme rivela mai il proprio importo di esposizione all'altra, solo il risultato aggregato viene condiviso.</p>
+    <p class="lede">Ogni richiesta esegue un calcolo reale a tre parti: nessuna delle tre piattaforme rivela mai il proprio importo di esposizione alle altre, solo il risultato aggregato viene condiviso.</p>
 
     <div class="card">
-      <div class="section-title">Esposizione privata per piattaforma (mai condivisa in chiaro tra le due)</div>
+      <div class="section-title">Esposizione privata per piattaforma (mai condivisa in chiaro tra le tre)</div>
       <div class="party-grid">
         <div class="party-card p0">
           <div class="pc-head"><span class="pc-dot"></span>Piattaforma A &mdash; richiedente (party 0)</div>
@@ -264,6 +267,14 @@
           <div class="slider-row">
             <div class="sr-head"><label>Debito esistente</label><span class="sr-value mono" id="val-p1">$10,000</span></div>
             <input type="range" id="slider-p1" min="0" max="100000" step="1000" value="10000">
+          </div>
+          <div class="pc-note">Contribuisce solo il proprio dato di esposizione, nient'altro.</div>
+        </div>
+        <div class="party-card p2">
+          <div class="pc-head"><span class="pc-dot"></span>Piattaforma C &mdash; controparte (party 2)</div>
+          <div class="slider-row">
+            <div class="sr-head"><label>Debito esistente</label><span class="sr-value mono" id="val-p2">$10,000</span></div>
+            <input type="range" id="slider-p2" min="0" max="100000" step="1000" value="10000">
           </div>
           <div class="pc-note">Contribuisce solo il proprio dato di esposizione, nient'altro.</div>
         </div>
@@ -302,14 +313,14 @@
 
       <div class="submit-row">
         <button class="primary" id="submit-btn">Richiedi preventivo</button>
-        <span class="rate-note" id="rate-note">Max 3 richieste/ora per indirizzo &mdash; ogni calcolo impegna entrambi i nodi per ~40&ndash;90s.</span>
+        <span class="rate-note" id="rate-note">Max 3 richieste/ora per indirizzo &mdash; ogni calcolo impegna tutti e tre i nodi.</span>
       </div>
     </div>
 
     <div id="status-area"></div>
 
     <footer class="foot">
-      Calcolo eseguito realmente su due container MPC indipendenti (party 0 / party 1), canali cifrati (<code class="mono">-e</code>), N=2 &mdash; a questo N viene rivelata solo la fascia di leva aggregata, mai l'importo esatto della controparte.
+      Calcolo eseguito realmente su tre container MPC indipendenti (party 0 / party 1 / party 2), canali cifrati (<code class="mono">-e</code>), N=3 &mdash; a questo N nessuna piattaforma pu&ograve; isolare per sottrazione il contributo delle altre, quindi l'esposizione aggregata esatta viene rivelata a tutte.
     </footer>
   </div>
 
@@ -379,6 +390,7 @@
   }
   bindSlider('slider-p0', 'val-p0', (x) => fmtUsd(x));
   bindSlider('slider-p1', 'val-p1', (x) => fmtUsd(x));
+  bindSlider('slider-p2', 'val-p2', (x) => fmtUsd(x));
   bindSlider('slider-loan', 'val-loan', (x) => fmtUsd(x));
   bindSlider('slider-collateral', 'val-collateral', (x) => Number(x).toFixed(2) + ' ' + $('select-asset').value);
   $('select-asset').addEventListener('change', function() {
@@ -401,31 +413,51 @@
       '<div class="status-card"><div class="status-row">' +
         '<div class="spinner"></div>' +
         '<div><div class="status-label">' + (stato === 'in coda' ? 'In coda&hellip;' : 'Calcolo MPC in corso&hellip;') + '</div>' +
-        '<div class="status-sub">Entrambe le piattaforme stanno eseguendo il protocollo insieme. Non chiudere questa pagina.</div></div>' +
+        '<div class="status-sub">Tutte le piattaforme stanno eseguendo il protocollo insieme. Non chiudere questa pagina.</div></div>' +
       '</div></div>';
   }
 
+  // Whether the aggregate exposure is an exact dollar figure or only a
+  // leverage band depends on N_PLATFORMS on the backend/.mpc side (exact
+  // at N>=3, band-only at N==2 -- see crypto_collateral_risk.mpc's own
+  // N_PLATFORMS==2 branch), never assumed here: read directly off
+  // whichever field the API response actually carries, so this keeps
+  // working unmodified if N ever changes again.
   function renderResult(q) {
     const cls = esitoBadgeClass(q.esito);
     const scorePct = Math.max(0, Math.min(100, q.risk_score || 0));
+    const hasExactExposure = q.esposizione_totale_usd !== undefined && q.esposizione_totale_usd !== null;
+    const exposureLabel = hasExactExposure ? 'Esposizione totale' : 'Fascia esposizione';
+    const exposureValue = hasExactExposure ? fmtUsd(q.esposizione_totale_usd) : (q.fascia_esposizione + '/3');
+    const nPlatforms = q.n_platforms || 3;
+    let maxDuration = null;
+    for (let i = 0; i < nPlatforms; i++) {
+      const p = q['party' + i];
+      if (p && typeof p.durata_secondi === 'number') {
+        maxDuration = maxDuration === null ? p.durata_secondi : Math.max(maxDuration, p.durata_secondi);
+      }
+    }
+    const privacyText = hasExactExposure
+      ? 'A N&ge;3 nessuna piattaforma pu&ograve; isolare per sottrazione il contributo delle altre dalla somma aggregata: l\'esposizione totale esatta pu&ograve; quindi essere rivelata in sicurezza a tutte le piattaforme partecipanti.'
+      : 'A N=2 solo la fascia di esposizione aggregata viene rivelata (mai l\'importo esatto): rivelare l\'importo esatto al richiedente gli permetterebbe di dedurre per sottrazione l\'esposizione esatta della controparte, dato che conosce gi&agrave; il proprio contributo e il nuovo prestito.';
     statusArea.innerHTML =
       '<div class="status-card">' +
         '<div class="result-head">' +
           '<span class="esito-badge ' + cls + '">' + q.esito + '</span>' +
-          '<span class="status-sub mono">durata: ' + (q.party0 && q.party0.durata_secondi ? q.party0.durata_secondi + 's' : '&mdash;') + '</span>' +
+          '<span class="status-sub mono">durata: ' + (maxDuration !== null ? maxDuration + 's' : '&mdash;') + '</span>' +
         '</div>' +
         '<div class="metric-grid">' +
           '<div class="metric"><div class="m-label">Risk score</div><div class="m-value">' + q.risk_score + '/100</div></div>' +
           '<div class="metric"><div class="m-label">Max LTV</div><div class="m-value">' + (q.max_ltv_bps/100).toFixed(1) + '%</div></div>' +
           '<div class="metric"><div class="m-label">Soglia liquidazione</div><div class="m-value">' + (q.liq_threshold_bps/100).toFixed(1) + '%</div></div>' +
-          '<div class="metric"><div class="m-label">Fascia esposizione</div><div class="m-value">' + q.fascia_esposizione + '/3</div></div>' +
+          '<div class="metric"><div class="m-label">' + exposureLabel + '</div><div class="m-value">' + exposureValue + '</div></div>' +
         '</div>' +
         '<div class="score-gauge">' +
           '<div class="sg-head"><span>0</span><span>risk score</span><span>100</span></div>' +
           '<div class="score-bar"><div class="fill" style="width:' + scorePct + '%"></div></div>' +
         '</div>' +
         '<div class="privacy-note"><span class="pn-mark">&#9673;</span>' +
-        '<span>A N=2 solo la fascia di esposizione aggregata viene rivelata (mai l\'importo esatto): rivelare l\'importo esatto al richiedente gli permetterebbe di dedurre per sottrazione l\'esposizione esatta della controparte, dato che conosce gi&agrave; il proprio contributo e il nuovo prestito.</span></div>' +
+        '<span>' + privacyText + '</span></div>' +
       '</div>';
   }
 
@@ -446,6 +478,7 @@
       collateral_amount: parseFloat($('slider-collateral').value),
       existing_debt_p0: parseInt($('slider-p0').value, 10),
       existing_debt_p1: parseInt($('slider-p1').value, 10),
+      existing_debt_p2: parseInt($('slider-p2').value, 10),
     };
     renderInProgress('in coda');
     try {
@@ -458,7 +491,7 @@
             clearInterval(pollTimer);
             renderResult(q);
             submitBtn.disabled = false;
-          } else if (q.stato === 'fallito') {
+          } else if (q.stato === 'fallito' || q.stato === 'incoerente') {
             clearInterval(pollTimer);
             renderError(q.errore || 'errore sconosciuto');
             submitBtn.disabled = false;

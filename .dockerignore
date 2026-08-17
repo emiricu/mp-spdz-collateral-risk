@@ -1,0 +1,21 @@
+# Player-Data/ is per-deployment runtime identity (certificates, keys,
+# offline-phase preprocessing material) -- gitignored, but NOT excluded
+# from the Docker build context before this file existed, so `COPY . .`
+# in the top-level Dockerfile baked in whatever happened to be sitting in
+# the repo's own Player-Data/ at build time (here: ~2GB / 1133 files of
+# leftover material from unrelated past benchmark sessions -- old certs,
+# old Mascot-Secrets/ChaiGear-Secrets preprocessing batches for other
+# protocols and N values). Docker auto-seeds a freshly-created named
+# volume from whatever the image already has at that mount path, so
+# every node container's Player-Data volume -- even brand new -- was
+# actually starting pre-populated with this stale cross-session content,
+# not empty. Confirmed directly: every node's own P<id>.pem had the
+# image build's date, not the container's actual creation time, and a
+# node killed mid-computation triggered a reproducible MAC-check
+# assertion crash (mac_fail_remove's unlink() failing) on every
+# subsequent run until the volume was manually wiped -- consistent with
+# stale preprocessing state being read back in, not regenerated fresh.
+# node/entrypoint.sh already intentionally keeps a party's cert across
+# restarts via a real mounted volume; that identity should come from the
+# volume alone, never from the image.
+Player-Data

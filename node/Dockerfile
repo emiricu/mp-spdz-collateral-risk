@@ -12,15 +12,20 @@ FROM mpspdz-mascot:local
 
 WORKDIR /usr/src/MP-SPDZ
 
-# Compile crypto_collateral_risk.mpc for this deployment's ONE fixed
-# shape: domain=field, N=2 platforms, requester=party 0, mode=2
-# (decide_production -- see the .mpc's own module docstring). Same
-# program, same compile-time args already validated across every run in
-# results_produzione/n2/ -- not touched, not recompiled per request.
-# Naming matches Scripts/mpc_bench.py's compile_domain() convention
-# (-o field prefixes the output so it can never collide with a
-# different domain's compile of the same args).
+# Compile crypto_collateral_risk.mpc for every N this image is asked to
+# run: domain=field, requester=party 0, mode=2 (decide_production -- see
+# the .mpc's own module docstring). Same source file, same family of
+# compile-time args already validated across every run in
+# results_produzione/n2/ and n3/ -- not touched, not recompiled per
+# request. Both N=2 and N=3 are baked into this one image (selected at
+# container start via MP_SPDZ_PROG, see node/app/config.py) rather than
+# building a separate image per N -- there is nothing image-specific
+# about which N a given container ends up running as. Naming matches
+# Scripts/mpc_bench.py's compile_domain() convention (-o field prefixes
+# the output so it can never collide with a different domain's compile
+# of the same args).
 RUN ./compile.py -o field crypto_collateral_risk 2 0 2
+RUN ./compile.py -o field crypto_collateral_risk 3 0 2
 
 # openssl: needed at runtime to generate this party's own certificate for
 # encrypted channels (-e) if one doesn't already exist on the mounted
@@ -40,12 +45,16 @@ RUN chmod +x /usr/src/MP-SPDZ/entrypoint.sh /usr/src/MP-SPDZ/node_scripts/*.sh
 
 ENV PYTHONUNBUFFERED=1
 ENV MP_SPDZ_HOME=/usr/src/MP-SPDZ
-ENV MP_SPDZ_PROG=field-crypto_collateral_risk-2-0-2
+# MP_SPDZ_PROG deliberately NOT set here: node/app/config.py derives it
+# from N_PLATFORMS (which the deploy script sets per container) so the
+# right one of the two programs compiled above gets picked automatically
+# -- baking a fixed value into the image would silently override that
+# and pin every container back to N=2 regardless of N_PLATFORMS.
 
 # HTTP_PORT default (see node/app/config.py); MP-SPDZ's own ports
-# (PORT_BASE.. PORT_BASE+1, see README) are opened dynamically by
-# mascot-party.x, not something Docker EXPOSE can pin ahead of time to a
-# single value -- documented in node/README.md instead.
+# (PORT_BASE + each party's own id, see README) are opened dynamically
+# by mascot-party.x, not something Docker EXPOSE can pin ahead of time to
+# a single value -- documented in node/README.md instead.
 EXPOSE 8000
 
 ENTRYPOINT ["/usr/src/MP-SPDZ/entrypoint.sh"]

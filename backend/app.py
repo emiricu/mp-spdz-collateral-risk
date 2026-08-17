@@ -1,10 +1,10 @@
 """Minimal orchestrator + demo frontend host for the crypto-collateral-risk
 MPC network. Deliberately small: this exists to let a browser trigger a
-real end-to-end quote (submit the SAME request_id to both nodes in
-parallel, per node/README.md's own note to whoever builds this backend),
-not to be a production loan-origination system. Session-cookie login,
-per-IP + global rate limiting, and a static "cryptolike" frontend are the
-only concessions to running this on the open internet.
+real end-to-end quote (submit the SAME request_id to all N_PLATFORMS
+nodes in parallel, per node/README.md's own note to whoever builds this
+backend), not to be a production loan-origination system. Session-cookie
+login, per-IP + global rate limiting, and a static "cryptolike" frontend
+are the only concessions to running this on the open internet.
 """
 import asyncio
 import hashlib
@@ -30,8 +30,17 @@ log = logging.getLogger('backend')
 STATIC_DIR = Path(__file__).parent / 'static'
 CONTENT_DIR = Path(__file__).parent / 'content'
 
-NODE0_URL = os.environ.get('NODE0_URL', 'http://node0-api:8000')
-NODE1_URL = os.environ.get('NODE1_URL', 'http://node1-api:8000')
+# N_PLATFORMS drives everything below it: how many existing_debt_p<i>
+# fields /api/preventivo requires, how many NODE<i>_URL nodes get the
+# parallel /calcola submission, and how many callbacks /api/callback
+# waits for before finalizing a quote -- change this (and deploy the
+# matching number of node containers/NODE<i>_URL env vars) rather than
+# hardcoding a party count anywhere else in this file.
+N_PLATFORMS = int(os.environ.get('N_PLATFORMS', '3'))
+NODE_URLS = [
+    os.environ.get(f'NODE{i}_URL', f'http://node{i}-api:8000')
+    for i in range(N_PLATFORMS)
+]
 CALLBACK_BASE_URL = os.environ.get('CALLBACK_BASE_URL', 'http://backend:9091')
 SESSION_SECRET = os.environ['SESSION_SECRET']
 ADMIN_PASSWORD_HASH = os.environ['ADMIN_PASSWORD_HASH']  # sha256 hex
@@ -41,6 +50,15 @@ RATE_LIMIT_PER_IP = int(os.environ.get('RATE_LIMIT_PER_IP', '3'))
 RATE_LIMIT_WINDOW_SECONDS = int(os.environ.get('RATE_LIMIT_WINDOW_SECONDS', str(3600)))
 MAX_CONCURRENT_QUOTES = int(os.environ.get('MAX_CONCURRENT_QUOTES', '3'))
 QUOTE_TTL_SECONDS = int(os.environ.get('QUOTE_TTL_SECONDS', str(24 * 3600)))
+# A node that dies mid-computation (killed, crashed, network partition)
+# never calls back at all -- without this, a quote missing even one
+# party's callback would stay 'in corso' forever. node/app/config.py's
+# own MPC_TIMEOUT_SECONDS default is 600s; this adds a margin on top for
+# callback delivery/retry (see node/app/callback.py's own backoff) before
+# the ORCHESTRATOR gives up waiting and reports the missing party/ies
+# explicitly, rather than silently finalizing on whichever subset did
+# respond.
+QUOTE_TIMEOUT_SECONDS = int(os.environ.get('QUOTE_TIMEOUT_SECONDS', str(700)))
 
 DEMO_WALLETS = {
     'clean': '0xclean0000000000000000000000000000000001',
@@ -114,8 +132,70 @@ def _check_rate_limit(ip: str):
 def _check_global_capacity():
     if count_active_quotes() >= MAX_CONCURRENT_QUOTES:
         raise HTTPException(503, 'sistema al momento occupato con altre richieste, riprova '
-                                  'tra qualche minuto -- ogni calcolo richiede i due nodi '
-                                  'seriali dedicati, non e\' istantaneo per design')
+                                  f'tra qualche minuto -- ogni calcolo richiede tutti e '
+                                  f'{N_PLATFORMS} i nodi dedicati, non e\' istantaneo per design')
+
+
+# both production-mode reveal shapes (N==2's fascia, N>=3's exact figure
+# -- see crypto_collateral_risk.mpc's own N_PLATFORMS==2 branch and
+# node/app/mpc_runner.py's parse_result) are covered here so this stays
+# correct regardless of which one is actually present in a given party's
+# callback payload.
+RESULT_FIELDS = ('esito', 'risk_score', 'max_ltv_bps', 'liq_threshold_bps',
+                  'fascia_esposizione', 'esposizione_totale_usd')
+
+
+def _finalize_if_all_reported(q):
+    """Never marks a quote 'completato' until EVERY party has reported --
+    the previous version did so as soon as the FIRST party's callback
+    said so, without waiting for the others or checking whether they
+    agreed. At N parties, a single party's report is not enough to trust
+    a SUCCESS: this waits for all N, then cross-checks that they all
+    agree on esito/risk_score (not just a pairwise comparison) before
+    trusting any of them -- a genuine disagreement is reported as its
+    own explicit 'incoerente' state, never silently resolved by picking
+    a majority or whichever arrived first.
+
+    A FAILURE, in contrast, is reported as soon as the first party
+    reports one, without waiting for the rest: MP-SPDZ is a synchronous
+    protocol, so one party failing means the whole run failed for
+    everyone, and a party that was killed or crashed outright may never
+    call back at all -- waiting for it would just mean sitting on an
+    already-known failure until QUOTE_TIMEOUT_SECONDS, instead of
+    reporting it the moment it's known (reproduced directly: a killed
+    worker's peers detect and report the break in under a second)."""
+    n = q.get('n_platforms', N_PLATFORMS)
+    parties = [q.get(f'party{i}') for i in range(n)]
+    reported = [p for p in parties if p is not None]
+
+    failed = [p for p in reported if p.get('stato') != 'completato']
+    if failed:
+        q['stato'] = 'fallito'
+        q['errore'] = '; '.join(
+            f"party {p.get('party_id')}: {p.get('errore', 'errore sconosciuto dal nodo')}"
+            for p in failed)
+        return
+
+    if len(reported) < n:
+        return  # still waiting on at least one party -- stays 'in corso'
+
+    esiti = {p.get('esito') for p in parties}
+    punteggi = {p.get('risk_score') for p in parties}
+    if len(esiti) > 1 or len(punteggi) > 1:
+        q['stato'] = 'incoerente'
+        q['errore'] = (f"i {n} nodi non concordano sul risultato -- esiti="
+                        f"{sorted(str(e) for e in esiti)} risk_score="
+                        f"{sorted(str(s) for s in punteggi)}: possibile bug del "
+                        f"protocollo o dati di input divergenti, da investigare "
+                        f"manualmente, non risolvibile automaticamente")
+        return
+
+    q['stato'] = 'completato'
+    for k in RESULT_FIELDS:
+        for p in parties:
+            if p.get(k) is not None:
+                q[k] = p[k]
+                break
 
 
 # ---------------------------------------------------------------------------
@@ -165,44 +245,45 @@ async def preventivo(request: Request):
         new_loan_usd = int(body['new_loan_usd'])
         collateral_asset = str(body.get('collateral_asset', 'BTC'))
         collateral_amount = float(body['collateral_amount'])
-        existing_debt_p0 = int(body['existing_debt_p0'])
-        existing_debt_p1 = int(body['existing_debt_p1'])
+        existing_debts = [int(body[f'existing_debt_p{i}']) for i in range(N_PLATFORMS)]
     except (KeyError, ValueError, TypeError) as exc:
         raise HTTPException(400, f'input non valido: {exc}')
-    for name, val in (('new_loan_usd', new_loan_usd), ('existing_debt_p0', existing_debt_p0),
-                       ('existing_debt_p1', existing_debt_p1)):
+    for i, val in enumerate(existing_debts):
         if not (0 <= val <= 1_000_000_000):
-            raise HTTPException(400, f'{name} fuori range')
+            raise HTTPException(400, f'existing_debt_p{i} fuori range')
+    if not (0 <= new_loan_usd <= 1_000_000_000):
+        raise HTTPException(400, 'new_loan_usd fuori range')
     if not (0 < collateral_amount <= 1_000_000):
         raise HTTPException(400, 'collateral_amount fuori range')
 
     request_id = str(uuid.uuid4())
 
     callback_url = f'{CALLBACK_BASE_URL}/api/callback'
-    payload0 = {
-        'request_id': request_id, 'callback_url': callback_url,
-        'wallet_address': wallet_address, 'existing_debt_usd': existing_debt_p0,
-        'new_loan_usd': new_loan_usd, 'collateral_asset': collateral_asset,
-        'collateral_amount': collateral_amount,
-    }
-    payload1 = {
-        'request_id': request_id, 'callback_url': callback_url,
-        'existing_debt_usd': existing_debt_p1,
-    }
+    # party 0 (the requester) carries every field the .mpc program needs
+    # to derive publicly, everyone else contributes only their own debt
+    # figure -- same split node/app/main.py's REQUESTER_ONLY_FIELDS
+    # already enforces on the node side, mirrored here for N parties.
+    payloads = [{'request_id': request_id, 'callback_url': callback_url,
+                 'existing_debt_usd': existing_debts[i]} for i in range(N_PLATFORMS)]
+    payloads[0].update({
+        'wallet_address': wallet_address, 'new_loan_usd': new_loan_usd,
+        'collateral_asset': collateral_asset, 'collateral_amount': collateral_amount,
+    })
 
     set_quote(request_id, {
         'request_id': request_id, 'stato': 'in coda', 'submitted_at': time.time(),
-        'party0': None, 'party1': None,
+        'n_platforms': N_PLATFORMS,
+        **{f'party{i}': None for i in range(N_PLATFORMS)},
     })
 
     async with httpx.AsyncClient(timeout=15) as client:
         try:
-            r0, r1 = await asyncio.gather(
-                client.post(f'{NODE0_URL}/calcola', json=payload0),
-                client.post(f'{NODE1_URL}/calcola', json=payload1),
-            )
-            r0.raise_for_status()
-            r1.raise_for_status()
+            responses = await asyncio.gather(*(
+                client.post(f'{NODE_URLS[i]}/calcola', json=payloads[i])
+                for i in range(N_PLATFORMS)
+            ))
+            for r in responses:
+                r.raise_for_status()
         except httpx.HTTPError as exc:
             q = get_quote(request_id)
             q['stato'] = 'fallito'
@@ -222,6 +303,16 @@ async def stato(request: Request, request_id: str):
     q = get_quote(request_id)
     if q is None:
         raise HTTPException(404, 'request_id sconosciuto')
+    if q['stato'] in ('in coda', 'in corso'):
+        elapsed = time.time() - q['submitted_at']
+        if elapsed > QUOTE_TIMEOUT_SECONDS:
+            n = q.get('n_platforms', N_PLATFORMS)
+            missing = [i for i in range(n) if q.get(f'party{i}') is None]
+            q['stato'] = 'fallito'
+            q['errore'] = (f'timeout dopo {elapsed:.0f}s in attesa dei nodi '
+                            f'{missing} (budget {QUOTE_TIMEOUT_SECONDS}s) -- non ha/hanno '
+                            f'mai risposto, non si procede con una risposta parziale')
+            set_quote(request_id, q)
     return q
 
 
@@ -241,18 +332,7 @@ async def callback(request: Request):
         return {'ok': False}
     party_id = body.get('party_id')
     q[f'party{party_id}'] = body
-    # both modes reveal identical esito/risk_score to both parties (see
-    # crypto_collateral_risk.mpc's decide_production docstring) -- either
-    # party's payload is authoritative once present.
-    if body.get('stato') == 'completato':
-        q['stato'] = 'completato'
-        for k in ('esito', 'risk_score', 'max_ltv_bps', 'liq_threshold_bps',
-                  'fascia_esposizione'):
-            if k in body:
-                q[k] = body[k]
-    elif q['stato'] != 'completato':
-        q['stato'] = 'fallito'
-        q['errore'] = body.get('errore', 'errore sconosciuto dal nodo')
+    _finalize_if_all_reported(q)
     set_quote(request_id, q)
     return {'ok': True}
 

@@ -74,15 +74,22 @@ def stato(request_id: str):
 def salute():
     prog_sch = f'{config.MP_SPDZ_HOME}/Programs/Schedules/{config.PROG_NAME}.sch'
     own_cert = f'{config.MP_SPDZ_HOME}/Player-Data/P{config.PARTY_ID}.pem'
-    peer_cert = f'{config.MP_SPDZ_HOME}/Player-Data/P{1 - config.PARTY_ID}.pem'
+    # Every OTHER party's cert, not just one fixed peer -- at N=3 this
+    # party has two peers, not one (see entrypoint.sh's generate_own_cert).
+    peer_ids = [i for i in range(config.N_PLATFORMS) if i != config.PARTY_ID]
+    certificati_peer = {
+        str(i): os.path.exists(f'{config.MP_SPDZ_HOME}/Player-Data/P{i}.pem')
+        for i in peer_ids
+    }
     dettagli = {
         'processo': True,
         'redis': store.ping(),
         'binario_mascot': os.path.exists(f'{config.MP_SPDZ_HOME}/mascot-party.x'),
         'programma_compilato': os.path.exists(prog_sch),
         'certificato_locale': os.path.exists(own_cert),
-        'certificato_peer': os.path.exists(peer_cert),
+        'certificati_peer': certificati_peer,
         'party_id': config.PARTY_ID,
+        'n_platforms': config.N_PLATFORMS,
     }
     core_ok = (dettagli['redis'] and dettagli['binario_mascot']
                and dettagli['programma_compilato'] and dettagli['certificato_locale'])
