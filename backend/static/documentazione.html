@@ -147,6 +147,23 @@
   .admonition.attenzione .adm-label { color: var(--warn-border); }
   .admonition p { font-size: 14.5px; line-height: 1.65; margin: 0; color: #333844; text-align: justify; text-justify: inter-word; }
 
+  /* ---------------- bibliography ---------------- */
+  .bibliography {
+    margin: 22px 0 26px; padding-top: 16px; border-top: 1px solid var(--border);
+  }
+  .bib-label {
+    font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    font-weight: 700; color: var(--ink-faint); margin-bottom: 10px;
+  }
+  .bib-list { margin: 0; padding-left: 1.6em; font-size: 13.5px; line-height: 1.65; color: var(--ink-muted); }
+  .bib-list li { margin-bottom: 8px; }
+  .bib-list li:last-child { margin-bottom: 0; }
+  .bib-autore { color: var(--ink); font-weight: 600; }
+  .bib-titolo { color: var(--accent); text-decoration: none; }
+  .bib-titolo:hover { text-decoration: underline; }
+  .bib-dettagli { font-style: italic; }
+  .bib-anno { color: var(--ink-faint); }
+
   /* ---------------- tables ---------------- */
   .table-wrap { overflow-x: auto; margin: 18px 0 24px; border: 1px solid var(--border); border-radius: 10px; }
   .doc-table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 480px; }
@@ -320,6 +337,31 @@
     });
   }
 
+  function renderFonti(container, fonti) {
+    if (!fonti || !fonti.length) return;
+    const box = el('div', { cls: 'bibliography' });
+    box.appendChild(el('div', { cls: 'bib-label', text: 'Fonti' }));
+    const ol = el('ol', { cls: 'bib-list' });
+    fonti.forEach(function(f) {
+      const li = el('li');
+      if (f.autore) li.appendChild(el('span', { cls: 'bib-autore', text: f.autore + '. ' }));
+      if (f.url) {
+        const a = el('a', { cls: 'bib-titolo', text: f.titolo || '' });
+        a.href = f.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        li.appendChild(a);
+      } else if (f.titolo) {
+        li.appendChild(el('span', { cls: 'bib-titolo', text: f.titolo }));
+      }
+      if (f.dettagli) li.appendChild(el('span', { cls: 'bib-dettagli', text: ', ' + f.dettagli }));
+      if (f.anno) li.appendChild(el('span', { cls: 'bib-anno', text: ' (' + f.anno + ')' }));
+      ol.appendChild(li);
+    });
+    box.appendChild(ol);
+    container.appendChild(box);
+  }
+
   let chartCounter = 0;
   function renderCharts(container, grafici) {
     (grafici || []).forEach(function(g) {
@@ -406,6 +448,7 @@
     renderNotes(section, node.note);
     renderTables(section, node.tabelle);
     renderCharts(section, node.grafici);
+    renderFonti(section, node.fonti);
 
     bodyRoot.appendChild(section);
     if (depth === 0) bodyRoot.appendChild(el('hr', { cls: 'chapter-rule' }));
