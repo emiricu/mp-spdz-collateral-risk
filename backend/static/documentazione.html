@@ -76,11 +76,18 @@
   }
   .sidebar-nav .sub a .num { font-family: var(--mono); font-size: 11px; margin-right: 6px; }
   .sidebar-nav .sub a.active { color: #fff; border-left-color: var(--accent); }
-  .sidebar-foot {
-    padding: 14px 22px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 12.5px;
+
+  /* always on screen -- fixed to the viewport, not the sidebar, so it
+     survives sidebar scroll, the mobile off-canvas collapse, and the
+     mobile drawer being open or closed. */
+  .demo-fab {
+    position: fixed; top: 14px; right: 14px; z-index: 25;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent); color: var(--accent-ink); text-decoration: none;
+    font-family: var(--sans); font-weight: 700; font-size: 13px;
+    padding: 9px 16px; border-radius: 20px; box-shadow: 0 2px 10px rgba(46,125,209,0.35);
   }
-  .sidebar-foot a { color: var(--sidebar-ink-dim); }
-  .sidebar-foot a:hover { color: #fff; }
+  .demo-fab:hover { background: #2568b3; }
 
   /* ---------------- content ---------------- */
   .content-wrap { margin-left: var(--sidebar-w); min-height: 100vh; }
@@ -201,8 +208,9 @@
     <div class="doctype" id="sidebar-doctype"></div>
   </div>
   <nav class="sidebar-nav" id="sidebar-nav" aria-label="Indice dei capitoli"></nav>
-  <div class="sidebar-foot"><a href="/demo">&rarr; Vai alla demo</a></div>
 </aside>
+
+<a href="/demo" class="demo-fab">Vai alla demo &rarr;</a>
 
 <div class="content-wrap">
   <div class="content">
