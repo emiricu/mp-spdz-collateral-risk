@@ -48,8 +48,11 @@
   }
   .top-nav .brand { color: var(--ink-muted); display: flex; align-items: center; gap: 8px; }
   .top-nav .brand .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 8px var(--mint); }
-  .top-nav a.back { color: var(--ink-muted); }
-  .top-nav a.back:hover { color: var(--mint); }
+  .top-nav a.demo-link {
+    color: #04140D; background: linear-gradient(135deg, var(--mint), #17C793);
+    font-weight: 700; padding: 7px 14px; border-radius: 8px; letter-spacing: 0.01em;
+  }
+  .top-nav a.demo-link:hover { text-decoration: none; filter: brightness(1.08); }
 
   .page { max-width: 760px; margin: 0 auto; padding: 28px 24px 90px; }
 
@@ -84,11 +87,6 @@
   nav.toc a::before {
     content: counter(toc, decimal-leading-zero); font-family: var(--mono); font-size: 12.5px;
     color: var(--violet); flex: none; width: 1.6em;
-  }
-
-  .version-note {
-    font-size: 12.5px; color: var(--ink-faint); border-left: 2px solid var(--border-bright);
-    padding: 2px 0 2px 14px; margin: -8px 0 36px; max-width: 60ch;
   }
 
   /* ---- reading sections ---- */
@@ -128,7 +126,7 @@
 
 <div class="top-nav">
   <span class="brand"><span class="dot"></span>collateral.mpc</span>
-  <a class="back" href="/">&larr; torna al sito</a>
+  <a class="demo-link" href="/demo">Vai alla demo &rarr;</a>
 </div>
 
 <div class="page">
@@ -142,8 +140,6 @@
     <div class="toc-label">Indice</div>
     <ol id="toc-list"></ol>
   </nav>
-
-  <p class="version-note" id="doc-version-note"></p>
 
   <div id="doc-sections"></div>
 
@@ -173,7 +169,6 @@
     document.title = (data.meta.titolo_pagina || 'Documentazione') + ' — collateral.mpc';
     document.getElementById('doc-title').textContent = data.meta.titolo_pagina || 'Documentazione';
     document.getElementById('doc-subtitle').textContent = data.meta.sottotitolo_pagina || '';
-    document.getElementById('doc-version-note').textContent = data.meta.nota_versione || '';
 
     const tocList = document.getElementById('toc-list');
     const sectionsRoot = document.getElementById('doc-sections');

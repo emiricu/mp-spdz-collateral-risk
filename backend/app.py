@@ -269,12 +269,20 @@ app.mount('/content', StaticFiles(directory=str(CONTENT_DIR)), name='content')
 
 
 @app.get('/')
-async def index():
-    return FileResponse(STATIC_DIR / 'index.html')
+async def home():
+    # the site opens on the public documentation, not the login-gated
+    # demo -- a visitor should be able to read what this is before ever
+    # being asked for a password. /demo is the actual app.
+    return FileResponse(STATIC_DIR / 'documentazione.html')
 
 
 @app.get('/documentazione')
 async def documentazione():
-    # deliberately public: no _require_login here. Presentation/context
-    # for the project, not an operation on anyone's data.
+    # same page as '/', kept as a stable direct link.
     return FileResponse(STATIC_DIR / 'documentazione.html')
+
+
+@app.get('/demo')
+async def demo():
+    # the login-gated app (client-side gate, see static/index.html).
+    return FileResponse(STATIC_DIR / 'index.html')
