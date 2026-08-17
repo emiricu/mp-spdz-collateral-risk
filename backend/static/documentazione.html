@@ -387,14 +387,19 @@
     const sectionId = node.id;
     const tag = headingTag(depth);
     const section = el('section', { cls: depth === 0 ? 'chapter' : 'subsection', id: sectionId });
+    // chapter "0" is front matter (Sommario), not a numbered chapter --
+    // shown by title alone, no "Capitolo 0" / "0" badge anywhere.
+    const isUnnumbered = depth === 0 && numero === '0';
 
     if (depth === 0) {
       const crumb = el('div', { cls: 'breadcrumb' });
-      crumb.innerHTML = 'Documentazione <span class="sep">&rsaquo;</span> Capitolo ' + numero;
+      crumb.innerHTML = 'Documentazione <span class="sep">&rsaquo;</span> '
+        + (isUnnumbered ? escapeHtml(node.titolo || '') : 'Capitolo ' + numero);
       section.appendChild(crumb);
     }
     const heading = el(tag);
-    heading.innerHTML = '<span class="chnum">' + numero + '</span>' + escapeHtml(node.titolo || '');
+    heading.innerHTML = (isUnnumbered ? '' : '<span class="chnum">' + numero + '</span>')
+      + escapeHtml(node.titolo || '');
     section.appendChild(heading);
 
     renderParagraphs(section, node.paragrafi);
@@ -407,7 +412,8 @@
 
     // ---- sidebar entry ----
     const li = el('li', { cls: depth === 0 ? 'chapter' : 'sub' });
-    const a = el('a', { html: '<span class="num">' + numero + '</span>' + escapeHtml(node.titolo || '') });
+    const a = el('a', { html: (isUnnumbered ? '' : '<span class="num">' + numero + '</span>')
+      + escapeHtml(node.titolo || '') });
     a.href = '#' + sectionId;
     a.dataset.target = sectionId;
     li.appendChild(a);
