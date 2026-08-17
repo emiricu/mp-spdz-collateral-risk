@@ -134,6 +134,20 @@
   .doc-body p:last-child { margin-bottom: 0; }
   hr.chapter-rule { border: none; border-top: 1px solid var(--border); margin: 48px 0 0; }
 
+  /* cross-reference links ("Capitolo N" -> target chapter's title) */
+  a.chref { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
+  a.chref:hover { border-bottom-style: solid; }
+
+  /* ---------------- lists ---------------- */
+  ul.doc-list, ol.doc-list {
+    margin: 0 0 22px; padding-left: 1.5em; max-width: 100%;
+  }
+  .doc-list li {
+    font-size: 16px; line-height: 1.75; color: var(--ink); margin-bottom: 14px;
+  }
+  .doc-list li:last-child { margin-bottom: 0; }
+  .doc-list li::marker { color: var(--accent); font-weight: 700; }
+
   /* ---------------- admonitions ---------------- */
   .admonition {
     border-left: 4px solid var(--note-border); background: var(--note-bg);
@@ -273,16 +287,52 @@
     'g'
   );
 
+  // Cross-references: "Capitolo 4" anywhere in prose becomes a link to
+  // that chapter, showing ITS title rather than "Capitolo 4" -- same idea
+  // as Sphinx's :ref: with no explicit link text. Built once per render()
+  // from data.capitoli, keyed by the "numero" string.
+  let CHAPTER_BY_NUMERO = {};
+  function buildChapterIndex(capitoli) {
+    CHAPTER_BY_NUMERO = {};
+    (capitoli || []).forEach(function(cap) {
+      CHAPTER_BY_NUMERO[String(cap.numero)] = cap;
+    });
+  }
+  const CAPITOLO_REF_PATTERN = /Capitolo\s+(\d+)/g;
+
+  // Single pass over the text: merges "code span" matches and "chapter
+  // cross-reference" matches (by position) so both transformations apply
+  // wherever this function is called -- paragraphs, note text, list
+  // items, chart captions -- without running two separate, order-
+  // dependent passes over the same string.
   function renderInlineCode(text) {
-    let out = '';
-    let last = 0;
+    const matches = [];
     let m;
     CODE_PATTERN.lastIndex = 0;
     while ((m = CODE_PATTERN.exec(text)) !== null) {
-      out += escapeHtml(text.slice(last, m.index));
-      out += '<code>' + escapeHtml(m[0]) + '</code>';
-      last = m.index + m[0].length;
+      matches.push({ start: m.index, end: m.index + m[0].length, type: 'code', text: m[0] });
     }
+    CAPITOLO_REF_PATTERN.lastIndex = 0;
+    while ((m = CAPITOLO_REF_PATTERN.exec(text)) !== null) {
+      const target = CHAPTER_BY_NUMERO[m[1]];
+      if (target) {
+        matches.push({ start: m.index, end: m.index + m[0].length, type: 'ref', id: target.id, titolo: target.titolo || '' });
+      }
+    }
+    matches.sort(function(a, b) { return a.start - b.start; });
+
+    let out = '';
+    let last = 0;
+    matches.forEach(function(mm) {
+      if (mm.start < last) return; // matches never overlap by construction; guard anyway
+      out += escapeHtml(text.slice(last, mm.start));
+      if (mm.type === 'code') {
+        out += '<code>' + escapeHtml(mm.text) + '</code>';
+      } else {
+        out += '<a href="#' + mm.id + '" class="chref">' + escapeHtml(mm.titolo) + '</a>';
+      }
+      last = mm.end;
+    });
     out += escapeHtml(text.slice(last));
     return out;
   }
@@ -309,6 +359,17 @@
       box.appendChild(el('div', { cls: 'adm-label', text: n.tipo === 'attenzione' ? 'Attenzione' : 'Nota' }));
       box.appendChild(el('p', { html: renderInlineCode(n.testo || '') }));
       container.appendChild(box);
+    });
+  }
+
+  function renderListe(container, liste) {
+    (liste || []).forEach(function(l) {
+      const tag = l.tipo === 'numerata' ? 'ol' : 'ul';
+      const list = el(tag, { cls: 'doc-list' });
+      (l.elementi || []).forEach(function(item) {
+        list.appendChild(el('li', { html: renderInlineCode(item) }));
+      });
+      container.appendChild(list);
     });
   }
 
@@ -446,6 +507,7 @@
 
     renderParagraphs(section, node.paragrafi);
     renderNotes(section, node.note);
+    renderListe(section, node.liste);
     renderTables(section, node.tabelle);
     renderCharts(section, node.grafici);
     renderFonti(section, node.fonti);
@@ -498,6 +560,8 @@
     document.getElementById('doc-subtitle').textContent = data.meta.sottotitolo_pagina || '';
     document.getElementById('doc-doctype-label').textContent = data.meta.tipo_documento || 'Documentazione';
     document.getElementById('sidebar-doctype').textContent = data.meta.tipo_documento || '';
+
+    buildChapterIndex(data.capitoli);
 
     const bodyRoot = document.getElementById('doc-body');
     const navRoot = document.getElementById('sidebar-nav');
