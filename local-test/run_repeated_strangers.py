@@ -30,13 +30,6 @@ HERE = Path(__file__).parent
 RESULTS_DIR = HERE / 'results'
 IMAGE = 'collateral-node:local'
 
-WALLET = '0xclean0000000000000000000000000000000001'
-SCENARIO_P0 = {
-    'wallet_address': WALLET, 'existing_debt_usd': 10000, 'new_loan_usd': 50000,
-    'collateral_asset': 'BTC', 'collateral_amount': 3.5,
-}
-SCENARIO_P1 = {'existing_debt_usd': 10000}
-
 NET0 = 'strangers-node0-net'
 NET1 = 'strangers-node1-net'
 PORT_BASE = 5000
@@ -51,6 +44,18 @@ HTTP1_HOST_PORT = 18101
 # like a 600s hang. Verified directly: 1:1 mapping is required, not
 # optional dressing.
 MPSPDZ0_HOST_PORT = PORT_BASE
+
+WALLET = '0xclean0000000000000000000000000000000001'
+# port_base: required since node/README.md sec:9.6 (per-request MP-SPDZ
+# ports, see backend/app.py's _allocate_port_base) -- this harness has
+# no orchestrator assigning one, so it just reuses PORT_BASE above, fine
+# for a single-request-at-a-time harness that always tears down and
+# rebuilds the whole topology between reps.
+SCENARIO_P0 = {
+    'wallet_address': WALLET, 'existing_debt_usd': 10000, 'new_loan_usd': 50000,
+    'collateral_asset': 'BTC', 'collateral_amount': 3.5, 'port_base': PORT_BASE,
+}
+SCENARIO_P1 = {'existing_debt_usd': 10000, 'port_base': PORT_BASE}
 
 CONTAINERS = [
     'strangers-node0-redis', 'strangers-node0-api', 'strangers-node0-worker',

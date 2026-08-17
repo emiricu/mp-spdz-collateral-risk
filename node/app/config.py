@@ -50,6 +50,13 @@ if not PARTY0_HOST:
         "are on separate machines or containers, including on party 0's "
         "own machine -- see node/README.md)")
 
+# No longer used to pick the actual MP-SPDZ port for a run -- that's
+# now per-request (orchestrator-assigned, see node/app/main.py's
+# CalcolaRequest.port_base and mpc_runner.run_party), specifically to
+# stop every request sharing the same fixed port (node/README.md
+# sec:9.5/9.6). Kept only because node/docker-compose.yml's own
+# 2-machine template (a separate, less-used deployment path than
+# deploy/deploy_nodes.sh) still reads it for its port-publish range.
 PORT_BASE = _require_int('PORT_BASE', default=5000)
 HTTP_PORT = _require_int('HTTP_PORT', default=8000)
 POLICY_VERSION = _require_int('POLICY_VERSION', default=1)

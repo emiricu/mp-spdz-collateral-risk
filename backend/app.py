@@ -60,6 +60,32 @@ QUOTE_TTL_SECONDS = int(os.environ.get('QUOTE_TTL_SECONDS', str(24 * 3600)))
 # respond.
 QUOTE_TIMEOUT_SECONDS = int(os.environ.get('QUOTE_TIMEOUT_SECONDS', str(700)))
 
+# Per-request MP-SPDZ port allocation (node/README.md sec:9.5/9.6): every
+# party used to be invoked with the SAME static PORT_BASE for every
+# request. Under back-to-back load a node's single-concurrency worker
+# can still be finishing a PREVIOUS request's mascot-party.x process
+# (observed hanging up to ~226s past its peer's own crash) when a fresh
+# request starts on another node -- that fresh process then binds/dials
+# the very same ports and can end up completing a protocol run with the
+# stale leftover process instead of its own intended peers, since
+# mascot-party.x's own coordination has no concept of request identity,
+# only a fixed port per party. A ring buffer of PORT_POOL_SIZE slots
+# means a port_base is only ever reused after PORT_POOL_SIZE other
+# requests have been assigned one; PORT_SLOT_MIN_AGE_SECONDS is the hard
+# backstop that makes the guarantee absolute rather than merely
+# probabilistic -- reuse within that window is refused outright (503),
+# not silently allowed, regardless of how fast requests are arriving.
+PORT_POOL_BASE = int(os.environ.get('PORT_POOL_BASE', '20000'))
+PORT_POOL_SIZE = int(os.environ.get('PORT_POOL_SIZE', '50'))
+PORT_POOL_STRIDE = int(os.environ.get('PORT_POOL_STRIDE', '10'))
+# Must exceed the longest any single party's mascot-party.x process can
+# possibly stay alive. That's a hard ceiling, not an estimate: node/app/
+# mpc_runner.py's subprocess.run(timeout=config.MPC_TIMEOUT_SECONDS)
+# forcibly kills the child at 600s by default, on every node,
+# independent of what any OTHER party is doing. This adds a margin on
+# top for scheduling/callback delivery.
+PORT_SLOT_MIN_AGE_SECONDS = int(os.environ.get('PORT_SLOT_MIN_AGE_SECONDS', '900'))
+
 DEMO_WALLETS = {
     'clean': '0xclean0000000000000000000000000000000001',
     'borderline': '0xborderline00000000000000000000000003',
@@ -134,6 +160,24 @@ def _check_global_capacity():
         raise HTTPException(503, 'sistema al momento occupato con altre richieste, riprova '
                                   f'tra qualche minuto -- ogni calcolo richiede tutti e '
                                   f'{N_PLATFORMS} i nodi dedicati, non e\' istantaneo per design')
+
+
+def _allocate_port_base():
+    """One dedicated MP-SPDZ port_base per request, atomically assigned
+    (Redis INCR is safe under concurrent /api/preventivo calls). Never
+    hands out a slot still within PORT_SLOT_MIN_AGE_SECONDS of its
+    previous assignment -- see the constants' own docstring above for
+    why this needs to be a hard refusal, not just a big-enough pool."""
+    slot = _redis.incr('port_pool_counter') % PORT_POOL_SIZE
+    key = f'port_pool_slot:{slot}'
+    last_used = _redis.get(key)
+    now = time.time()
+    if last_used and now - float(last_used) < PORT_SLOT_MIN_AGE_SECONDS:
+        raise HTTPException(
+            503, 'sistema al momento non puo\' allocare in sicurezza una porta dedicata '
+                 'per una nuova richiesta, riprova tra qualche minuto')
+    _redis.set(key, now, ex=PORT_SLOT_MIN_AGE_SECONDS * 2)
+    return PORT_POOL_BASE + slot * PORT_POOL_STRIDE
 
 
 # both production-mode reveal shapes (N==2's fascia, N>=3's exact figure
@@ -257,14 +301,19 @@ async def preventivo(request: Request):
         raise HTTPException(400, 'collateral_amount fuori range')
 
     request_id = str(uuid.uuid4())
+    port_base = _allocate_port_base()
 
     callback_url = f'{CALLBACK_BASE_URL}/api/callback'
     # party 0 (the requester) carries every field the .mpc program needs
     # to derive publicly, everyone else contributes only their own debt
     # figure -- same split node/app/main.py's REQUESTER_ONLY_FIELDS
     # already enforces on the node side, mirrored here for N parties.
+    # port_base: every node for THIS request must use the identical
+    # value (see node/README.md sec:9.6) -- assigned once, here, and
+    # handed to all N nodes below, never derived locally by a node.
     payloads = [{'request_id': request_id, 'callback_url': callback_url,
-                 'existing_debt_usd': existing_debts[i]} for i in range(N_PLATFORMS)]
+                 'existing_debt_usd': existing_debts[i], 'port_base': port_base}
+                for i in range(N_PLATFORMS)]
     payloads[0].update({
         'wallet_address': wallet_address, 'new_loan_usd': new_loan_usd,
         'collateral_asset': collateral_asset, 'collateral_amount': collateral_amount,

@@ -136,6 +136,7 @@ Corpo per il nodo **party 0** (richiedente):
 {
   "request_id": "req-123",
   "callback_url": "https://backend.example.com/callback",
+  "port_base": 20000,
   "wallet_address": "0xclean0000000000000000000000000000000001",
   "existing_debt_usd": 10000,
   "new_loan_usd": 50000,
@@ -150,9 +151,16 @@ Corpo per il nodo **party 1** (controparte):
 {
   "request_id": "req-123",
   "callback_url": "https://backend.example.com/callback",
+  "port_base": 20000,
   "existing_debt_usd": 10000
 }
 ```
+
+`port_base` &egrave; **obbligatorio**, campo aggiunto in &sect;9.6: il
+chiamante (l'orchestratore) deve assegnarne uno per richiesta, mai un
+valore fisso/riusato, e mandare lo **stesso valore a tutti gli N nodi**
+per quella richiesta &mdash; vedi &sect;9.6 per il perch&eacute; e la
+garanzia offerta contro il riuso.
 
 Risposta immediata (**non** attende la fine del calcolo MPC):
 
@@ -161,11 +169,12 @@ Risposta immediata (**non** attende la fine del calcolo MPC):
 {"request_id": "req-123", "stato": "in coda", "party_id": 0}
 ```
 
-Nota per chi costruir&agrave; il backend: l'MPC richiede entrambe le parti
-online contemporaneamente &mdash; sottometti lo **stesso `request_id`** a
-entrambi i nodi in parallelo, non in sequenza con un ritardo arbitrario.
-I due worker seriali locali garantiscono "un calcolo alla volta" su
-ciascun nodo, ma l'accoppiamento delle due sottomissioni per la stessa
+Nota per chi costruir&agrave; il backend: l'MPC richiede tutte le parti
+online contemporaneamente &mdash; sottometti lo **stesso `request_id`**
+(e lo stesso `port_base`) a tutti i nodi in parallelo, non in sequenza
+con un ritardo arbitrario. I worker seriali locali garantiscono "un
+calcolo alla volta" su ciascun nodo, ma l'accoppiamento delle
+sottomissioni per la stessa
 richiesta resta responsabilit&agrave; del chiamante.
 
 ### `GET /stato/<request_id>`
@@ -577,6 +586,97 @@ applicativo prima di fidarsi di un esito rivelato. Fino ad allora, il
 deployment pubblico va considerato affidabile per un uso supervisionato
 e non concorrente (una richiesta alla volta, con margine tra l'una e
 l'altra), non per carico concorrente reale non controllato.
+
+### 9.6 Porte dedicate per richiesta: implementato, verificato, **non risolve il problema**
+
+Implementato esattamente come pianificato: l'orchestratore assegna un
+`port_base` per richiesta da un ring buffer Redis di 50 slot (stride
+10, base 20000 &mdash; range 20000-20492), mandato a tutti e N i nodi
+nello stesso `POST /calcola`, usato da ciascun nodo per il proprio
+`mascot-party.x -pn` al posto di un `PORT_BASE` statico e condiviso da
+ogni richiesta. Il riuso di uno slot entro `PORT_SLOT_MIN_AGE_SECONDS`
+(900s, ben oltre il tetto massimo di 600s che `MPC_TIMEOUT_SECONDS`
+impone per costruzione a ogni processo `mascot-party.x` su ogni nodo)
+&egrave; **rifiutato esplicitamente** (503), non solo reso improbabile
+da un pool grande &mdash; una garanzia dura, non statistica. Aggiunto
+anche, in difesa in profondit&agrave;, un controllo che uccide processi
+`mascot-party.x` residui prima di ogni nuovo run.
+`deploy/deploy_nodes.sh` pubblica ora, per ciascun nodo, l'insieme
+disgiunto di porte che pu&ograve; effettivamente usare (party i usa
+sempre e solo offset `+i` dentro ogni slot), non pi&ugrave; una singola
+porta fissa.
+
+**Verifica, non solo "sembra funzionare"**: stress test di 25
+sottomissioni consecutive senza alcuna pausa, prima e dopo il fix,
+stesse condizioni esatte, ciascuna con un `existing_debt_p<i>` leggermente
+diverso apposta (non pi&ugrave; lo stesso scenario fisso) cos&igrave; un
+eventuale incrocio tra richieste sarebbe visibile confrontando
+l'`esposizione_totale_usd` ottenuta con quella attesa per l'input di
+*quella* richiesta specifica, non solo l'accordo tra i tre nodi.
+
+| | Ripetizioni | Successi | Fallimenti | Risultato di un'altra richiesta (mismatch) |
+|---|---|---|---|---|
+| Prima del fix (baseline) | 25 | **3/25 (12%)** | 22/25 | 0/25 |
+| Dopo il fix | 25 | **3/25 (12%)** | 22/25 | 0/25 |
+
+**Identico, nessun miglioramento.** Il fix chiude realmente il rischio
+specifico per cui era stato progettato &mdash; zero mismatch in
+entrambe le 25 ripetizioni, cio&egrave; mai un risultato di una
+richiesta consegnato a un'altra, nemmeno una volta su 50 tentativi
+totali &mdash; ma quel rischio **non era la causa dominante** del tasso
+di fallimento osservato nel &sect;9.5. La causa reale era un'altra,
+trovata continuando a indagare invece di fermarsi al primo fix che
+sembrava plausibile.
+
+**Causa reale, questa volta ricostruita con precisione dai timestamp di
+tutti e tre i nodi**: le code dei tre nodi (RQ, concorrenza 1 ciascuna,
+indipendenti l'una dall'altra) **si disallineano sotto carico
+continuo**. Osservato direttamente: per lo stesso `request_id`, node0
+ha elaborato la richiesta partendo alle 18:29:23, mentre node1 e node2
+(che restano perfettamente sincronizzati **tra loro**) hanno iniziato la
+**stessa identica richiesta** solo alle 19:09:16 &mdash; **40 minuti
+dopo**. Meccanismo: quando su un nodo una richiesta fallisce/si
+risolve pi&ugrave; velocemente che sugli altri due (per qualunque
+motivo, anche solo casuale variabilit&agrave; nella rapidit&agrave; con
+cui un fallimento viene rilevato), quel nodo libera il proprio worker
+prima e passa alla richiesta successiva in coda &mdash; ma gli altri due
+nodi, ancora occupati con la richiesta precedente, non hanno **ancora
+nemmeno avviato** il processo `mascot-party.x` per quella nuova
+richiesta. Il nodo "in anticipo" tenta quindi di completare il
+protocollo con partner che non esistono ancora, fallisce o va in
+timeout, e il divario si allarga a ogni richiesta successiva invece di
+richiudersi. Le porte dedicate per richiesta chiudono la possibilit&agrave;
+che un processo si agganci per errore a un partner sbagliato ancora
+vivo, ma non impediscono che un processo parta semplicemente **senza
+alcun partner disponibile** &mdash; ed &egrave; questo, non l'incrocio
+del &sect;9.5, il motivo dominante dei fallimenti osservati.
+
+`MAX_CONCURRENT_QUOTES=3` (l'orchestratore accetta fino a tre richieste
+contemporaneamente attive) presuppone implicitamente che le code dei
+nodi restino allineate; con code indipendenti a concorrenza singola e
+nessun meccanismo che le tenga sincronizzate, questa non &egrave; mai
+stata una garanzia reale, semplicemente non era mai stata messa sotto
+stress prima d'ora (lo stesso motivo per cui i problemi di questo intero
+&sect;9 non erano mai emersi a nessun N: la metodologia di verifica
+precedente riavviava sempre l'intero stack tra una ripetizione e
+l'altra).
+
+**Non risolto in questo giro.** Rimedi possibili per un giro
+successivo, non implementati qui perch&eacute; richiedono una modifica
+architetturale pi&ugrave; ampia di quanto pianificato per questo fix, e
+non solo un cambiamento incrementale: un cancello di sincronizzazione
+lato orchestratore che non sottometta una richiesta N+1 finch&eacute;
+non ha conferma esplicita che tutti gli N nodi abbiano davvero finito
+(non solo risposto) alla richiesta N; oppure, pi&ugrave; semplicemente,
+ridurre la concorrenza effettiva dell'intero sistema a **una sola
+richiesta MPC alla volta** (`MAX_CONCURRENT_QUOTES=1`), coerente con
+quello che l'architettura a concorrenza singola per nodo permette
+davvero di garantire oggi. Un singolo utente isolato, senza altre
+richieste in coda, continua a funzionare in modo affidabile e corretto
+(riconfermato pi&ugrave; volte, inclusa una richiesta immediatamente
+dopo questi 50 tentativi di stress consecutivi). Il rischio &egrave;
+specifico al carico concorrente/in coda continuo, non all'uso normale
+supervisionato.
 
 ## 10. Log
 

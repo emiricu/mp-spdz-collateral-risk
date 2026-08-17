@@ -15,6 +15,7 @@ requester) needs them; party 1 contributes nothing but its own debt
 figure and never touches risk_data/oracles at all (it has no reason to
 see the client's wallet address or the requester's loan terms).
 """
+import logging
 import subprocess
 import sys
 import time
@@ -26,9 +27,33 @@ sys.path.insert(0, f'{config.MP_SPDZ_HOME}/Scripts')
 import crypto_risk_run  # noqa: E402
 from risk_data import policy  # noqa: E402
 
+log = logging.getLogger('node.mpc_runner')
+
 
 class MpcRunError(RuntimeError):
     pass
+
+
+def _kill_residual_processes():
+    """Defense in depth alongside per-request ports (run_party's
+    port_base argument, see node/README.md sec:9.6): under normal RQ
+    single-concurrency operation this should never find anything -- a
+    node's worker can't start a new job until the PREVIOUS job's
+    subprocess.run() call has already returned, meaning that job's
+    mascot-party.x has already exited. Catches the abnormal case (e.g.
+    a worker process crash/restart orphaning a child) instead of
+    assuming it can't happen; best-effort only if pgrep isn't
+    available."""
+    try:
+        out = subprocess.run(['pgrep', '-f', 'mascot-party.x'],
+                              capture_output=True, text=True)
+    except FileNotFoundError:
+        return
+    pids = [p for p in out.stdout.split() if p]
+    for pid in pids:
+        log.warning('residual mascot-party.x process (pid %s) found before starting '
+                    'a new run -- killing it', pid)
+        subprocess.run(['kill', '-9', pid])
 
 
 def _input_path(party_id):
@@ -59,20 +84,31 @@ def write_own_input(payload):
     _input_path(config.PARTY_ID).write_text(' '.join(str(f) for f in fields) + '\n')
 
 
-def run_party(request_id, raw_log_dir=None):
+def run_party(request_id, port_base, raw_log_dir=None):
     """Execs mascot-party.x for THIS party only and blocks until the
-    2-party protocol completes (both machines must be online
-    simultaneously -- see node/README.md). -OF . is not cosmetic: by
-    default mascot-party.x only writes the program's print_ln output to
-    stdout for party 0 and stays silent for every other party (verified
+    N-party protocol completes (every party must be online simultaneously
+    -- see node/README.md). -OF . is not cosmetic: by default
+    mascot-party.x only writes the program's print_ln output to stdout
+    for party 0 and stays silent for every other party (verified
     directly against this exact binary/program, not assumed from docs)
-    -- without it, party 1 would have nothing to parse or report."""
+    -- without it, the other parties would have nothing to parse or
+    report.
+
+    port_base is per-REQUEST, assigned by the orchestrator and identical
+    across every node for that request -- never config.PORT_BASE (a
+    fixed, request-independent default): reusing the same static port
+    for every request is exactly what let a fresh request's process
+    end up completing a protocol run with a stale, still-alive process
+    from a different, unrelated earlier request under back-to-back load
+    (node/README.md sec:9.5) -- see sec:9.6 for the fix and its
+    verification."""
+    _kill_residual_processes()
     cmd = [
         f'./{"mascot-party.x"}',
         '-p', str(config.PARTY_ID),
         '-N', str(config.N_PLATFORMS),
         config.PROG_NAME,
-        '-pn', str(config.PORT_BASE),
+        '-pn', str(port_base),
         '-h', config.PARTY0_HOST,  # required on both parties -- see config.py
         '-e',           # encrypted channels -- see node/README.md for
                          # the certificate exchange this requires

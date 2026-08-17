@@ -26,6 +26,15 @@ class CalcolaRequest(BaseModel):
     request_id: str = Field(..., min_length=1)
     callback_url: str = Field(..., min_length=1)
     existing_debt_usd: int
+    # Required, no default: the orchestrator assigns one port_base per
+    # request and sends the SAME value to every node for that request --
+    # see node/README.md sec:9.6 for why a node must never fall back to
+    # a locally-derived/static port here (that's the exact bug this
+    # closes: a fresh request's process ending up talking to a stale
+    # leftover process from an unrelated earlier request, because the
+    # static PORT_BASE was reused before the old process could have
+    # possibly still been alive).
+    port_base: int
     # requester-only (party 0) fields -- absent/ignored on party 1,
     # required on party 0 (validated below, not via pydantic's own
     # required/optional split, since which fields are required depends

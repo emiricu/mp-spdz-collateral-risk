@@ -24,14 +24,20 @@ HERE = Path(__file__).parent
 RESULTS_DIR = HERE / 'results'
 
 WALLET = '0xclean0000000000000000000000000000000001'
+# port_base: required since node/README.md sec:9.6 (per-request MP-SPDZ
+# ports, see backend/app.py's _allocate_port_base) -- this harness has
+# no orchestrator assigning one, so it just reuses each node's own
+# static PORT_BASE (see docker-compose.yml), fine for a single-request-
+# at-a-time local dev loop that always restarts the stack between reps.
 SCENARIO_P0 = {
     'wallet_address': WALLET,
     'existing_debt_usd': 10000,
     'new_loan_usd': 50000,
     'collateral_asset': 'BTC',
     'collateral_amount': 3.5,
+    'port_base': 5000,
 }
-SCENARIO_P1 = {'existing_debt_usd': 10000}
+SCENARIO_P1 = {'existing_debt_usd': 10000, 'port_base': 5000}
 
 NODE0 = 'http://localhost:8000'
 NODE1 = 'http://localhost:8001'
