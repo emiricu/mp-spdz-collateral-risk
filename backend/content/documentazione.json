@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "titolo_pagina": "Documentazione",
+    "sottotitolo_pagina": "Valutazione privacy-preserving del rischio di sottocollateralizzazione per prestiti garantiti da crypto — progetto di tesi",
+    "nota_versione": "Contenuto gestito da questo file JSON: ogni voce di 'sezioni' diventa un blocco della pagina, nell'ordine in cui compare qui. Aggiungere una sezione = aggiungere un oggetto all'array, nessuna modifica al codice richiesta finché segue lo stesso schema (id, titolo, sottotitolo, paragrafi)."
+  },
+  "sezioni": [
+    {
+      "id": "introduzione",
+      "titolo": "Di cosa si tratta",
+      "sottotitolo": "Verifica collaborativa e privata della solvibilità per prestiti collateralizzati in crypto",
+      "paragrafi": [
+        "Un cliente chiede a una piattaforma un prestito garantito da collateral in criptovaluta. Prima di approvarlo, la piattaforma deve sapere se quel collateral è, e resterà, sufficiente — ma per farlo con sicurezza avrebbe bisogno di conoscere anche l'esposizione debitoria dello stesso cliente su altre piattaforme, dato che nulla impedisce a un cliente di aprire prestiti multipli in parallelo su exchange diversi senza che nessuno dei due lo sappia.",
+        "Il problema è che le piattaforme non si fidano tra loro e non vogliono rivelarsi a vicenda i dati dei propri clienti — né vogliono affidarli a un terzo centralizzato, che reintrodurrebbe un singolo punto di fiducia e di fallimento (oltre a un nuovo bersaglio per una violazione dei dati).",
+        "Questo progetto risolve il problema con il calcolo multi-parte sicuro (secure multi-party computation, MPC): più piattaforme calcolano insieme l'esposizione aggregata del cliente e un punteggio di rischio, senza che nessuna delle due riveli all'altra i propri dati grezzi — nemmeno alle altre parti che partecipano al calcolo. Solo l'esito finale, una volta concordato da un quorum delle piattaforme partecipanti, viene pubblicato in uno smart contract, per avere un record verificabile e immutabile senza esporre i dati sensibili che lo hanno prodotto."
+      ]
+    },
+    {
+      "id": "motivazioni",
+      "titolo": "Perché questo problema",
+      "sottotitolo": "Il punto cieco della sovracollateralizzazione cross-platform",
+      "paragrafi": [
+        "I protocolli di lending decentralizzato (es. Aave) risolvono il rischio di credito eliminandolo alla radice: niente storico creditizio, niente fiducia nel debitore — solo sovracollateralizzazione e liquidazione automatica se il valore del collateral scende sotto soglia. È un meccanismo solido, ma cieco a ciò che succede fuori dal proprio protocollo: vede solo il collateral depositato al proprio interno, non l'esposizione debitoria che lo stesso cliente potrebbe avere aperta altrove.",
+        "Lo stesso punto cieco esiste tra exchange centralizzati che offrono prestiti collateralizzati in crypto: ciascuno vede solo la propria relazione col cliente. Un cliente potrebbe teoricamente aprire prestiti su più piattaforme usando lo stesso collateral sottostante come garanzia implicita più volte, senza che nessuna delle piattaforme coinvolte possa accorgersene da sola.",
+        "La soluzione tradizionale — un ente centrale tipo centrale rischi/credit bureau — richiede che ogni piattaforma condivida i dati grezzi dei propri clienti con quell'ente, reintroducendo esattamente il problema di fiducia e di esposizione dati che si vorrebbe evitare. L'MPC permette lo stesso risultato (una valutazione che tiene conto dell'esposizione aggregata) senza che questo passaggio sia mai necessario."
+      ]
+    },
+    {
+      "id": "libreria",
+      "titolo": "MP-SPDZ: la libreria MPC scelta",
+      "sottotitolo": "Perché non una singola implementazione, ma un intero catalogo di protocolli",
+      "paragrafi": [
+        "Il progetto usa MP-SPDZ (data61/CSIRO), un framework open source che implementa oltre venti protocolli MPC diversi dietro un'unica interfaccia di programmazione: un linguaggio simile a Python che viene compilato in bytecode ed eseguito da binari specifici per ciascun protocollo crittografico.",
+        "Il motivo della scelta non è un singolo protocollo migliore a priori, ma la possibilità di scrivere l'algoritmo di rischio una sola volta e misurarne il comportamento reale su modelli di sicurezza radicalmente diversi (maggioranza onesta vs disonesta, sicurezza semi-honest vs malicious, tre domini aritmetici — campo, anello, binario) senza doverli reimplementare uno per uno. Per una tesi che vuole giustificare la scelta finale del protocollo con dati misurati e non solo con argomenti teorici, questa flessibilità è stata determinante."
+      ]
+    },
+    {
+      "id": "scelta-algoritmo",
+      "titolo": "Come è stato scelto il protocollo giusto",
+      "sottotitolo": "Benchmark su 22 protocolli, N=2/3/4/5, due modalità — e una correzione metodologica lungo il percorso",
+      "paragrafi": [
+        "Lo stesso programma di valutazione del rischio è stato eseguito su tutto il catalogo di protocolli disponibili in MP-SPDZ, a N crescente (2, 3, 4, 5 piattaforme partecipanti), in due modalità di rivelazione (vedi sezione successiva). Su 102 combinazioni protocollo/N tentate per modalità, 78 sono riuscite in modalità benchmark e 60 in modalità produzione. In ogni singola esecuzione riuscita — qualunque fosse il protocollo, il dominio o N — il risultato (esito e risk_score) è stato identico: la prova più diretta che la logica di rischio è corretta indipendentemente dalla primitiva crittografica che la esegue.",
+        "Un primo confronto tra i tempi di esecuzione in modalità benchmark e produzione suggeriva un fattore netto — comporre il risultato in aritmetica segreta prima di rivelarlo, come richiede la modalità produzione, sembrava costare circa 3.8 volte il tempo della modalità benchmark a N=2. Prima di accettare questo numero, è stato eseguito un retest controllato: solo i due protocolli candidati (mascot, mama), tutti gli N, scenario congelato, ordine alternato nella stessa sessione, tre ripetizioni per combinazione (48 run totali). Risultato: in 7 casi su 8 la differenza tra modalità era più piccola del rumore misurato tra ripetizioni della stessa identica combinazione — il fattore ×3.8 non ha retto a una misurazione rigorosa. Solo una combinazione (mama a N=3) ha mostrato un effetto reale, ma molto più piccolo (13%, non il valore inizialmente stimato).",
+        "La raccomandazione finale, quindi, non si basa sul tempo di esecuzione (dimostrato inaffidabile su singola misurazione), ma su due criteri deterministici: il volume di dati scambiati (mascot: 91,7 GB contro i 149,8 GB di mama a N=5, 0% di varianza tra run) e l'affidabilità sotto un budget di tempo fisso (mascot 0 timeout su 6 tentativi a N=5, mama 3 su 6, stesso budget di 1200 secondi). Su questa base è stato scelto mascot come protocollo per il sistema reale.",
+        "È stata anche esplorata l'alternativa dei protocolli a maggioranza onesta (validi solo da N=3 in su): a N=3, mal-rep-ring costa circa 207 volte meno in tempo e 2660 volte meno in dati rispetto a mascot; a N=4, rep4-ring costa circa 272 volte meno in tempo e oltre 500.000 volte meno in dati rispetto a mama. Il vantaggio è enorme, ma la scelta tra maggioranza onesta e disonesta è un'assunzione sul modello di fiducia del consorzio (quante piattaforme potrebbero essere malevole), non una questione risolvibile dai soli numeri di benchmark — nessun vincitore assoluto viene dichiarato: è una decisione che la tesi documenta come scelta esplicita da giustificare, non implicita nei dati."
+      ]
+    },
+    {
+      "id": "due-modalita",
+      "titolo": "Le due modalità: benchmark e produzione",
+      "sottotitolo": "Perché in modalità benchmark il protocollo migliore in assoluto (tinier) non è quello scelto per il sistema reale",
+      "paragrafi": [
+        "Il programma di valutazione del rischio supporta due modalità di rivelazione. In modalità benchmark, tutte le piattaforme partecipanti vedono i cinque sotto-punteggi, le soglie interne e i sette flag intermedi oltre all'esito finale — è portabile su tutti e tre i domini di MP-SPDZ (campo, anello, binario) ed è la modalità usata per il confronto sull'intero catalogo di protocolli, proprio perché nessun protocollo ne resta escluso a priori. In modalità produzione, le piattaforme vedono solo l'esito finale, il punteggio di rischio, e le due soglie operative (max LTV e soglia di liquidazione), composti in aritmetica segreta prima della rivelazione — mai i sotto-punteggi o i flag grezzi — ed è ristretta ai domini campo e anello, perché il dominio binario di MP-SPDZ non supporta la composizione segreta pre-rivelazione richiesta da questa modalità.",
+        "Nel confronto in modalità benchmark, il protocollo più economico in assoluto è tinier: a N=5 completa in 2,38 secondi scambiando 903 MB, contro i 190,8 secondi e 91,7 GB di mascot — da 10 a 100 volte più leggero, e l'unico che scala in modo contenuto (circa ×3,1 da N=2 a N=5). Ma tinier vive interamente nel dominio binario, che strutturalmente non può eseguire la modalità produzione: un benchmark condotto nella modalità più permissiva porta a una raccomandazione che il sistema reale non può seguire. È esattamente per questo motivo che il sistema reale usa mascot — non il più veloce in assoluto nei benchmark, ma l'unico tra i candidati realmente compatibile con ciò che la modalità produzione richiede."
+      ]
+    },
+    {
+      "id": "docker-e-rete",
+      "titolo": "I due nodi della rete: dai container alla rete reale",
+      "sottotitolo": "Costruiti, eseguiti, e corretti su bug reali — non solo progettati",
+      "paragrafi": [
+        "Ogni piattaforma partecipante gestisce un nodo della rete MPC come container Docker indipendente: contiene MP-SPDZ compilato con supporto al protocollo mascot e il programma di valutazione del rischio compilato per il dominio campo in modalità produzione. Ogni nodo espone un'API minima e asincrona (avvio calcolo, stato, salute) sostenuta da una coda a concorrenza singola: un nodo accetta e processa un calcolo alla volta, e consegna il risultato al backend richiedente tramite una callback, con ripetizione automatica in caso di mancata consegna e possibilità di recuperare comunque il risultato tramite interrogazione diretta.",
+        "Costruire ed eseguire davvero i container — non solo scriverne il codice — ha fatto emergere due problemi reali che nessuna lettura del codice avrebbe rivelato. Il primo, nella toolchain di compilazione: l'immagine Docker base non offriva un compilatore abbastanza recente da supportare una funzionalità C++20 usata dal framework, risolto passando a un'immagine più aggiornata. Il secondo, nella rete: MP-SPDZ fa sì che ogni parte — inclusa la parte che coordina l'avvio della rete — annunci alle altre l'indirizzo IP locale rilevato sulla propria connessione verso se stessa; se quell'indirizzo è impostato a 'localhost', l'indirizzo annunciato è inutilizzabile da un container separato e l'intera comunicazione si blocca in silenzio, senza un errore esplicito. La correzione (mai usare 'localhost' per l'indirizzo della parte coordinatrice, sempre un indirizzo realmente raggiungibile dall'altra parte) è stata verificata direttamente nel codice sorgente di MP-SPDZ prima di essere considerata definitiva.",
+        "Al momento i due nodi girano sulla stessa macchina fisica, ma configurati e verificati deliberatamente come se fossero estranei: reti Docker isolate e non collegate tra loro, porte pubblicate sull'indirizzo IP reale della macchina anziché su nomi di servizio Docker interni. È lo stesso identico percorso di rete che serve quando i due nodi si sposteranno su due macchine fisicamente separate, una per piattaforma — lo spostamento richiederà solo puntare la configurazione all'indirizzo reale dell'altra macchina, nessuna modifica al codice o al protocollo."
+      ]
+    },
+    {
+      "id": "flusso-operativo",
+      "titolo": "Dal form alla notifica: il flusso operativo completo",
+      "sottotitolo": "Come una richiesta di prestito diventa un calcolo distribuito e poi un esito",
+      "paragrafi": [
+        "L'utente compila la richiesta di prestito sul sito (wallet, crypto scelta come collateral, quantità, importo richiesto). Il backend orchestratore riceve la richiesta, la mette in una coda globale a concorrenza singola — un calcolo alla volta nell'intero sistema, non solo per singolo nodo — genera un identificativo univoco per la richiesta e deriva gli input privati necessari a ciascuna piattaforma partecipante dai dati già disponibili (prezzi di mercato, storico wallet on-chain).",
+        "L'orchestratore sottomette il calcolo in parallelo a entrambi i nodi, con lo stesso identificativo di richiesta. Mentre il calcolo procede — da decine di secondi a qualche minuto, a seconda del carico — il sito mostra che la verifica è in corso, comunicando che si tratta di un calcolo distribuito tra più piattaforme, non di un'attesa generica. Quando entrambi i nodi completano, ciascuno richiama l'orchestratore con il proprio risultato decodificato in modo indipendente; l'orchestratore verifica che i due risultati coincidano — un controllo di correttezza, non solo di fiducia reciproca — prima di considerare la richiesta conclusa.",
+        "L'utente vede quindi due informazioni distinte, tenute deliberatamente separate: il proprio risultato completo (esito, punteggio di rischio, soglie operative), visibile solo a lui, e il record che verrà pubblicato pubblicamente in chain, che contiene molto meno."
+      ]
+    },
+    {
+      "id": "smart-contract",
+      "titolo": "Pubblicazione on-chain: progettata, non ancora implementata",
+      "sottotitolo": "Cosa manca oggi, e come sarebbe fatto un contratto corretto se venisse implementato",
+      "paragrafi": [
+        "In questa fase del prototipo lo smart contract non è ancora implementato: l'orchestratore usa al suo posto un passaggio simulato, chiaramente segnalato come tale nel codice, che permette di costruire e verificare l'intero resto del flusso senza dover aspettare il contratto. È un limite dichiarato del prototipo attuale, non un dettaglio nascosto.",
+        "Un contratto correttamente progettato per questo scopo sarebbe un multisig a soglia minimale: accetta un record solo dopo aver ricevuto le firme di un quorum delle piattaforme partecipanti (nel caso attuale a due parti, entrambe le firme). Ogni piattaforma firma lo stesso esito che il proprio nodo ha calcolato e verificato in modo indipendente — non una dichiarazione di fiducia nella controparte, ma la conferma di aver ottenuto autonomamente lo stesso risultato tramite il calcolo MPC. Al raggiungimento del quorum, il contratto registra ed emette un evento con l'indirizzo del wallet, l'esito, la versione della policy applicata, un timestamp, e l'insieme delle firme — un record minimale, verificabile pubblicamente da chiunque, e a prova di manomissione.",
+        "Deliberatamente esclusi dal record pubblico restano il punteggio di rischio e le soglie operative, anche se questi vengono rivelati alle piattaforme partecipanti durante il calcolo MPC stesso: un valore di rischio legato in modo permanente e pubblicamente leggibile a un indirizzo wallet è un'esposizione dati ben più ampia e duratura della condivisione privata tra le sole piattaforme partecipanti, soprattutto se quel wallet è collegabile a un'identità reale tramite la procedura KYC di una qualsiasi delle piattaforme coinvolte — un dato scritto su un registro pubblico immutabile non può più essere cancellato, in tensione diretta con il diritto all'oblio. È un parametro di design esplicito, non una svista.",
+        "Il risultato che uscirebbe da un contratto così fatto è quindi minimale per costruzione: chiunque può verificare che un determinato insieme di piattaforme ha concordato un determinato esito, sotto una determinata versione delle regole di policy, in un determinato momento — senza che nessuno al di fuori delle piattaforme partecipanti (e nemmeno le piattaforme stesse, oltre al dato aggregato già visto durante il calcolo) possa mai risalire dal record pubblico ai dati di debito o al punteggio di rischio effettivo del cliente."
+      ]
+    }
+  ]
+}

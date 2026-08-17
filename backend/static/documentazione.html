@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentazione — collateral.mpc</title>
+<style>
+  :root {
+    --bg: #06080d;
+    --surface: #0d1119;
+    --surface-2: #121722;
+    --border: #212836;
+    --border-bright: #2e3749;
+    --ink: #E7ECF7;
+    --ink-muted: #9AA2B8;
+    --ink-faint: #5C6579;
+    --mint: #2CFFB5;
+    --violet: #8B7BFF;
+    --party0: #4FD1FF;
+    --party1: #FF9F4F;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --serif-read: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(900px 420px at 50% -8%, rgba(139,123,255,0.07), transparent 60%),
+      var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  .mono { font-family: var(--mono); }
+  a { color: var(--mint); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+
+  .top-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 760px; margin: 0 auto; padding: 22px 24px 0;
+    font-family: var(--mono); font-size: 13px;
+  }
+  .top-nav .brand { color: var(--ink-muted); display: flex; align-items: center; gap: 8px; }
+  .top-nav .brand .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 8px var(--mint); }
+  .top-nav a.back { color: var(--ink-muted); }
+  .top-nav a.back:hover { color: var(--mint); }
+
+  .page { max-width: 760px; margin: 0 auto; padding: 28px 24px 90px; }
+
+  header.masthead { padding: 20px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 36px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 12px;
+  }
+  h1 {
+    font-size: clamp(26px, 4vw, 34px); font-weight: 700; letter-spacing: -0.015em;
+    line-height: 1.2; margin: 0 0 12px; text-wrap: balance;
+  }
+  .page-sub { color: var(--ink-muted); font-size: 17px; line-height: 1.55; max-width: 62ch; margin: 0; }
+
+  /* ---- table of contents ---- */
+  nav.toc {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 24px; margin-bottom: 28px;
+  }
+  nav.toc .toc-label {
+    font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--ink-faint); margin-bottom: 12px;
+  }
+  nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: toc; }
+  nav.toc li { counter-increment: toc; margin: 0; }
+  nav.toc li + li { border-top: 1px solid var(--border); }
+  nav.toc a {
+    display: flex; align-items: baseline; gap: 12px; padding: 9px 2px;
+    color: var(--ink); font-size: 14.5px;
+  }
+  nav.toc a:hover { color: var(--mint); text-decoration: none; }
+  nav.toc a::before {
+    content: counter(toc, decimal-leading-zero); font-family: var(--mono); font-size: 12.5px;
+    color: var(--violet); flex: none; width: 1.6em;
+  }
+
+  .version-note {
+    font-size: 12.5px; color: var(--ink-faint); border-left: 2px solid var(--border-bright);
+    padding: 2px 0 2px 14px; margin: -8px 0 36px; max-width: 60ch;
+  }
+
+  /* ---- reading sections ---- */
+  section.doc-section { margin-bottom: 52px; max-width: 680px; }
+  section.doc-section:last-of-type { margin-bottom: 0; }
+  section.doc-section h2 {
+    font-size: 22px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 8px; text-wrap: balance;
+    scroll-margin-top: 24px;
+  }
+  section.doc-section .section-sub {
+    color: var(--violet); font-size: 14.5px; font-weight: 500; margin: 0 0 18px; line-height: 1.5;
+  }
+  section.doc-section p {
+    margin: 0 0 16px; color: var(--ink); font-size: 16px; line-height: 1.75; max-width: 66ch;
+  }
+  section.doc-section p:last-child { margin-bottom: 0; }
+
+  .back-to-toc {
+    display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 12px;
+    color: var(--ink-faint); margin-top: 18px;
+  }
+  .back-to-toc:hover { color: var(--mint); }
+
+  footer.foot {
+    max-width: 680px; margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border);
+    font-size: 12.5px; color: var(--ink-faint);
+  }
+
+  #load-error { display: none; color: #FF6161; font-family: var(--mono); font-size: 13.5px; }
+
+  @media (max-width: 560px) {
+    .top-nav, .page { padding-left: 18px; padding-right: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-nav">
+  <span class="brand"><span class="dot"></span>collateral.mpc</span>
+  <a class="back" href="/">&larr; torna al sito</a>
+</div>
+
+<div class="page">
+  <header class="masthead">
+    <div class="eyebrow">crypto_collateral_risk &middot; documentazione di progetto</div>
+    <h1 id="doc-title">&nbsp;</h1>
+    <p class="page-sub" id="doc-subtitle"></p>
+  </header>
+
+  <nav class="toc" id="doc-toc" aria-label="Indice">
+    <div class="toc-label">Indice</div>
+    <ol id="toc-list"></ol>
+  </nav>
+
+  <p class="version-note" id="doc-version-note"></p>
+
+  <div id="doc-sections"></div>
+
+  <div id="load-error">Impossibile caricare il contenuto della documentazione (<code>/content/documentazione.json</code>). Riprova pi&ugrave; tardi.</div>
+
+  <footer class="foot">
+    <p style="margin:0;">Il contenuto di questa pagina &egrave; interamente derivato da un unico file JSON &mdash; aggiungere una sezione l&igrave; la fa comparire qui automaticamente, nell'ordine in cui compare nel file.</p>
+  </footer>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  function el(tag, opts) {
+    const e = document.createElement(tag);
+    opts = opts || {};
+    if (opts.text !== undefined) e.textContent = opts.text;
+    if (opts.html !== undefined) e.innerHTML = opts.html;
+    if (opts.cls) e.className = opts.cls;
+    if (opts.id) e.id = opts.id;
+    if (opts.href !== undefined) e.href = opts.href;
+    return e;
+  }
+
+  function render(data) {
+    document.title = (data.meta.titolo_pagina || 'Documentazione') + ' — collateral.mpc';
+    document.getElementById('doc-title').textContent = data.meta.titolo_pagina || 'Documentazione';
+    document.getElementById('doc-subtitle').textContent = data.meta.sottotitolo_pagina || '';
+    document.getElementById('doc-version-note').textContent = data.meta.nota_versione || '';
+
+    const tocList = document.getElementById('toc-list');
+    const sectionsRoot = document.getElementById('doc-sections');
+    tocList.innerHTML = '';
+    sectionsRoot.innerHTML = '';
+
+    (data.sezioni || []).forEach(function(sez) {
+      // ---- TOC entry ----
+      const li = el('li');
+      const a = el('a', { href: '#' + sez.id, text: sez.titolo });
+      li.appendChild(a);
+      tocList.appendChild(li);
+
+      // ---- section block ----
+      const section = el('section', { cls: 'doc-section', id: sez.id });
+      section.appendChild(el('h2', { text: sez.titolo }));
+      if (sez.sottotitolo) {
+        section.appendChild(el('p', { cls: 'section-sub', text: sez.sottotitolo }));
+      }
+      (sez.paragrafi || []).forEach(function(paragrafo) {
+        section.appendChild(el('p', { text: paragrafo }));
+      });
+      const backLink = el('a', { cls: 'back-to-toc', href: '#doc-toc', html: '&uarr; indice' });
+      section.appendChild(backLink);
+      sectionsRoot.appendChild(section);
+    });
+  }
+
+  fetch('/content/documentazione.json')
+    .then(function(res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(render)
+    .catch(function(err) {
+      console.error('errore caricamento documentazione:', err);
+      document.getElementById('load-error').style.display = 'block';
+    });
+})();
+</script>
+</body>
+</html>

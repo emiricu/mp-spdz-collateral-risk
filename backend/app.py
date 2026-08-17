@@ -28,6 +28,7 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger('backend')
 
 STATIC_DIR = Path(__file__).parent / 'static'
+CONTENT_DIR = Path(__file__).parent / 'content'
 
 NODE0_URL = os.environ.get('NODE0_URL', 'http://node0-api:8000')
 NODE1_URL = os.environ.get('NODE1_URL', 'http://node1-api:8000')
@@ -260,8 +261,20 @@ async def callback(request: Request):
 # frontend
 # ---------------------------------------------------------------------------
 app.mount('/assets', StaticFiles(directory=str(STATIC_DIR)), name='assets')
+# public, read-only content used by static pages (e.g. /documentazione) --
+# deliberately separate from STATIC_DIR: this is prose content meant to be
+# edited on its own (add a section = add an object to the JSON), not app
+# code or markup.
+app.mount('/content', StaticFiles(directory=str(CONTENT_DIR)), name='content')
 
 
 @app.get('/')
 async def index():
     return FileResponse(STATIC_DIR / 'index.html')
+
+
+@app.get('/documentazione')
+async def documentazione():
+    # deliberately public: no _require_login here. Presentation/context
+    # for the project, not an operation on anyone's data.
+    return FileResponse(STATIC_DIR / 'documentazione.html')
