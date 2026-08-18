@@ -1,0 +1,20 @@
+{
+  "protocol": "tinier",
+  "party0_host": "localhost",
+  "waited_s": 91.5,
+  "states": [
+    {
+      "request_id": "test5-localhost-1787073318",
+      "stato": "in corso",
+      "aggiornato_il": 1787073319.0014994,
+      "party_id": 0
+    },
+    {
+      "request_id": "test5-localhost-1787073318",
+      "stato": "in corso",
+      "aggiornato_il": 1787073319.0340464,
+      "party_id": 1
+    }
+  ],
+  "hung_like_mascot": true
+}

@@ -1,0 +1,306 @@
+[
+  {
+    "rep": 1,
+    "request_id": "test1-1-1787070761",
+    "states": [
+      {
+        "request_id": "test1-1-1787070761",
+        "stato": "completato",
+        "aggiornato_il": 1787070766.7075222,
+        "party_id": 0,
+        "durata_secondi": 3.82,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      },
+      {
+        "request_id": "test1-1-1787070761",
+        "stato": "completato",
+        "aggiornato_il": 1787070766.7083492,
+        "party_id": 1,
+        "durata_secondi": 4.36,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      }
+    ],
+    "waited_s": 5.155666351318359
+  },
+  {
+    "rep": 2,
+    "request_id": "test1-2-1787070804",
+    "states": [
+      {
+        "request_id": "test1-2-1787070804",
+        "stato": "completato",
+        "aggiornato_il": 1787070808.454033,
+        "party_id": 0,
+        "durata_secondi": 3.16,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      },
+      {
+        "request_id": "test1-2-1787070804",
+        "stato": "completato",
+        "aggiornato_il": 1787070808.4470406,
+        "party_id": 1,
+        "durata_secondi": 3.64,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      }
+    ],
+    "waited_s": 4.062572240829468
+  },
+  {
+    "rep": 3,
+    "request_id": "test1-3-1787070844",
+    "states": [
+      {
+        "request_id": "test1-3-1787070844",
+        "stato": "completato",
+        "aggiornato_il": 1787070848.1729622,
+        "party_id": 0,
+        "durata_secondi": 2.84,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      },
+      {
+        "request_id": "test1-3-1787070844",
+        "stato": "completato",
+        "aggiornato_il": 1787070848.1735687,
+        "party_id": 1,
+        "durata_secondi": 3.4,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      }
+    ],
+    "waited_s": 4.105172157287598
+  },
+  {
+    "rep": 4,
+    "request_id": "test1-4-1787070894",
+    "states": [
+      {
+        "request_id": "test1-4-1787070894",
+        "stato": "fallito",
+        "aggiornato_il": 1787070894.886067,
+        "party_id": 0,
+        "errore": "errore inatteso: CoinGecko request failed: HTTP Error 429: Too Many Requests"
+      },
+      {
+        "request_id": "test1-4-1787070894",
+        "stato": "in corso",
+        "aggiornato_il": 1787070894.4139328,
+        "party_id": 1
+      }
+    ],
+    "waited_s": 600.6049249172211
+  },
+  {
+    "rep": 5,
+    "request_id": "test1-5-1787071536",
+    "states": [
+      {
+        "request_id": "test1-5-1787071536",
+        "stato": "completato",
+        "aggiornato_il": 1787071540.8094685,
+        "party_id": 0,
+        "durata_secondi": 3.58,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      },
+      {
+        "request_id": "test1-5-1787071536",
+        "stato": "completato",
+        "aggiornato_il": 1787071540.8150737,
+        "party_id": 1,
+        "durata_secondi": 4.02,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      }
+    ],
+    "waited_s": 5.245625734329224
+  },
+  {
+    "rep": 6,
+    "request_id": "test1-6-1787071573",
+    "states": [
+      {
+        "request_id": "test1-6-1787071573",
+        "stato": "completato",
+        "aggiornato_il": 1787071577.137977,
+        "party_id": 0,
+        "durata_secondi": 2.71,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      },
+      {
+        "request_id": "test1-6-1787071573",
+        "stato": "completato",
+        "aggiornato_il": 1787071577.1368916,
+        "party_id": 1,
+        "durata_secondi": 3.14,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      }
+    ],
+    "waited_s": 4.06874418258667
+  },
+  {
+    "rep": 7,
+    "request_id": "test1-7-1787071602",
+    "states": [
+      {
+        "request_id": "test1-7-1787071602",
+        "stato": "fallito",
+        "aggiornato_il": 1787071603.304364,
+        "party_id": 0,
+        "errore": "errore inatteso: CoinGecko request failed: HTTP Error 429: Too Many Requests"
+      },
+      {
+        "request_id": "test1-7-1787071602",
+        "stato": "in corso",
+        "aggiornato_il": 1787071602.863786,
+        "party_id": 1
+      }
+    ],
+    "waited_s": 600.5685374736786
+  },
+  {
+    "rep": 8,
+    "request_id": "test1-8-1787072234",
+    "states": [
+      {
+        "request_id": "test1-8-1787072234",
+        "stato": "completato",
+        "aggiornato_il": 1787072238.4457946,
+        "party_id": 0,
+        "durata_secondi": 3.08,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      },
+      {
+        "request_id": "test1-8-1787072234",
+        "stato": "completato",
+        "aggiornato_il": 1787072238.44579,
+        "party_id": 1,
+        "durata_secondi": 3.64,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      }
+    ],
+    "waited_s": 4.102315902709961
+  },
+  {
+    "rep": 9,
+    "request_id": "test1-9-1787072265",
+    "states": [
+      {
+        "request_id": "test1-9-1787072265",
+        "stato": "completato",
+        "aggiornato_il": 1787072269.298103,
+        "party_id": 0,
+        "durata_secondi": 3.19,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      },
+      {
+        "request_id": "test1-9-1787072265",
+        "stato": "completato",
+        "aggiornato_il": 1787072269.2909317,
+        "party_id": 1,
+        "durata_secondi": 3.7,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      }
+    ],
+    "waited_s": 4.07848596572876
+  },
+  {
+    "rep": 10,
+    "request_id": "test1-10-1787072304",
+    "states": [
+      {
+        "request_id": "test1-10-1787072304",
+        "stato": "completato",
+        "aggiornato_il": 1787072308.0779786,
+        "party_id": 0,
+        "durata_secondi": 2.64,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      },
+      {
+        "request_id": "test1-10-1787072304",
+        "stato": "completato",
+        "aggiornato_il": 1787072308.1275895,
+        "party_id": 1,
+        "durata_secondi": 3.11,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      }
+    ],
+    "waited_s": 4.0636937618255615
+  }
+]

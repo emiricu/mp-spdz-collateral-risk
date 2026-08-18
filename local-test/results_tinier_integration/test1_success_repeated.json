@@ -1,0 +1,167 @@
+[
+  {
+    "rep": 1,
+    "request_id": "test1-1-1787068628",
+    "states": [
+      {
+        "request_id": "test1-1-1787068628",
+        "stato": "completato",
+        "aggiornato_il": 1787068723.9608712,
+        "party_id": 0,
+        "durata_secondi": 93.8,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": 1,
+        "esposizione_totale_usd": null
+      },
+      {
+        "request_id": "test1-1-1787068628",
+        "stato": "completato",
+        "aggiornato_il": 1787068723.9684248,
+        "party_id": 1,
+        "durata_secondi": 94.71,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": 1,
+        "esposizione_totale_usd": null
+      }
+    ],
+    "waited_s": 95.15203142166138
+  },
+  {
+    "rep": 2,
+    "request_id": "test1-2-1787068755",
+    "states": [
+      {
+        "request_id": "test1-2-1787068755",
+        "stato": "completato",
+        "aggiornato_il": 1787068834.5583992,
+        "party_id": 0,
+        "durata_secondi": 78.21,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": 1,
+        "esposizione_totale_usd": null
+      },
+      {
+        "request_id": "test1-2-1787068755",
+        "stato": "completato",
+        "aggiornato_il": 1787068834.5579479,
+        "party_id": 1,
+        "durata_secondi": 78.65,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": 1,
+        "esposizione_totale_usd": null
+      }
+    ],
+    "waited_s": 79.76652479171753
+  },
+  {
+    "rep": 3,
+    "request_id": "test1-3-1787068875",
+    "states": [
+      {
+        "request_id": "test1-3-1787068875",
+        "stato": "completato",
+        "aggiornato_il": 1787068961.4185543,
+        "party_id": 0,
+        "durata_secondi": 85.07,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": 1,
+        "esposizione_totale_usd": null
+      },
+      {
+        "request_id": "test1-3-1787068875",
+        "stato": "completato",
+        "aggiornato_il": 1787068961.4334369,
+        "party_id": 1,
+        "durata_secondi": 85.54,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": 1,
+        "esposizione_totale_usd": null
+      }
+    ],
+    "waited_s": 86.68470549583435
+  },
+  {
+    "rep": 4,
+    "request_id": "test1-4-1787068989",
+    "states": [
+      {
+        "request_id": "test1-4-1787068989",
+        "stato": "completato",
+        "aggiornato_il": 1787069054.0088048,
+        "party_id": 0,
+        "durata_secondi": 63.88,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": 1,
+        "esposizione_totale_usd": null
+      },
+      {
+        "request_id": "test1-4-1787068989",
+        "stato": "completato",
+        "aggiornato_il": 1787069053.9891331,
+        "party_id": 1,
+        "durata_secondi": 64.19,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": 1,
+        "esposizione_totale_usd": null
+      }
+    ],
+    "waited_s": 64.52860593795776
+  },
+  {
+    "rep": 5,
+    "request_id": "test1-5-1787069082",
+    "states": [
+      {
+        "request_id": "test1-5-1787069082",
+        "stato": "completato",
+        "aggiornato_il": 1787069154.9210637,
+        "party_id": 0,
+        "durata_secondi": 72.08,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": 1,
+        "esposizione_totale_usd": null
+      },
+      {
+        "request_id": "test1-5-1787069082",
+        "stato": "completato",
+        "aggiornato_il": 1787069154.923139,
+        "party_id": 1,
+        "durata_secondi": 72.42,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": 1,
+        "esposizione_totale_usd": null
+      }
+    ],
+    "waited_s": 72.78169131278992
+  }
+]

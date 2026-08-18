@@ -26,6 +26,13 @@ class CalcolaRequest(BaseModel):
     request_id: str = Field(..., min_length=1)
     callback_url: str = Field(..., min_length=1)
     existing_debt_usd: int
+    # Required, no default, same treatment as request_id/port_base: the
+    # orchestrator decides which protocol a given request uses and sends
+    # the SAME value to every node for that request -- a node must never
+    # fall back to a locally-configured default, since the MPC protocol
+    # requires all N parties to run the identical program for one
+    # request (see node/README.md's tinier-integration section).
+    protocol: str
     # Required, no default: the orchestrator assigns one port_base per
     # request and sends the SAME value to every node for that request --
     # see node/README.md sec:9.6 for why a node must never fall back to
@@ -52,6 +59,22 @@ REQUESTER_ONLY_FIELDS = ('wallet_address', 'new_loan_usd', 'collateral_asset',
 
 @app.post('/calcola', status_code=202)
 def calcola(body: CalcolaRequest):
+    if body.protocol not in config.PROTOCOLS:
+        raise HTTPException(
+            400, f'protocol sconosciuto: {body.protocol!r} '
+                 f'(atteso uno tra {sorted(config.PROTOCOLS)})')
+    proto = config.PROTOCOLS[body.protocol]
+    binary_path = f'{config.MP_SPDZ_HOME}/{proto["binary"]}'
+    sch_path = f'{config.MP_SPDZ_HOME}/Programs/Schedules/{proto["prog_name"]}.sch'
+    # Checked HERE, synchronously, before enqueueing -- not left to fail
+    # inside the worker after being dequeued: a missing binary/program on
+    # this node should never look like a hung/timed-out computation to
+    # the caller (see node/README.md's tinier-integration section, Step 2
+    # point 3).
+    if not os.path.exists(binary_path) or not os.path.exists(sch_path):
+        raise HTTPException(
+            503, f'protocollo {body.protocol!r} non disponibile su questo nodo '
+                 f'(mancante: {binary_path if not os.path.exists(binary_path) else sch_path})')
     if config.IS_REQUESTER:
         missing = [f for f in REQUESTER_ONLY_FIELDS if getattr(body, f) in (None, '')]
         if missing:
@@ -81,7 +104,6 @@ def stato(request_id: str):
 
 @app.get('/salute')
 def salute():
-    prog_sch = f'{config.MP_SPDZ_HOME}/Programs/Schedules/{config.PROG_NAME}.sch'
     own_cert = f'{config.MP_SPDZ_HOME}/Player-Data/P{config.PARTY_ID}.pem'
     # Every OTHER party's cert, not just one fixed peer -- at N=3 this
     # party has two peers, not one (see entrypoint.sh's generate_own_cert).
@@ -90,17 +112,29 @@ def salute():
         str(i): os.path.exists(f'{config.MP_SPDZ_HOME}/Player-Data/P{i}.pem')
         for i in peer_ids
     }
+    # Reported per protocol, not collapsed into one flag: a node can be
+    # healthy for mascot but missing tinier (or vice versa) -- see
+    # node/README.md's tinier-integration section, Step 2 point 3.
+    protocolli = {
+        name: dict(
+            binario=os.path.exists(f'{config.MP_SPDZ_HOME}/{p["binary"]}'),
+            programma_compilato=os.path.exists(
+                f'{config.MP_SPDZ_HOME}/Programs/Schedules/{p["prog_name"]}.sch'),
+        )
+        for name, p in config.PROTOCOLS.items()
+    }
+    almeno_un_protocollo_ok = any(
+        v['binario'] and v['programma_compilato'] for v in protocolli.values())
     dettagli = {
         'processo': True,
         'redis': store.ping(),
-        'binario_mascot': os.path.exists(f'{config.MP_SPDZ_HOME}/mascot-party.x'),
-        'programma_compilato': os.path.exists(prog_sch),
+        'protocolli': protocolli,
         'certificato_locale': os.path.exists(own_cert),
         'certificati_peer': certificati_peer,
         'party_id': config.PARTY_ID,
         'n_platforms': config.N_PLATFORMS,
     }
-    core_ok = (dettagli['redis'] and dettagli['binario_mascot']
-               and dettagli['programma_compilato'] and dettagli['certificato_locale'])
+    core_ok = (dettagli['redis'] and almeno_un_protocollo_ok
+               and dettagli['certificato_locale'])
     return JSONResponse(status_code=200 if core_ok else 503,
                          content={'ok': core_ok, 'dettagli': dettagli})

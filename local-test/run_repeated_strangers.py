@@ -54,8 +54,9 @@ WALLET = '0xclean0000000000000000000000000000000001'
 SCENARIO_P0 = {
     'wallet_address': WALLET, 'existing_debt_usd': 10000, 'new_loan_usd': 50000,
     'collateral_asset': 'BTC', 'collateral_amount': 3.5, 'port_base': PORT_BASE,
+    'protocol': 'mascot',
 }
-SCENARIO_P1 = {'existing_debt_usd': 10000, 'port_base': PORT_BASE}
+SCENARIO_P1 = {'existing_debt_usd': 10000, 'port_base': PORT_BASE, 'protocol': 'mascot'}
 
 CONTAINERS = [
     'strangers-node0-redis', 'strangers-node0-api', 'strangers-node0-worker',

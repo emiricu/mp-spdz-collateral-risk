@@ -36,8 +36,9 @@ SCENARIO_P0 = {
     'collateral_asset': 'BTC',
     'collateral_amount': 3.5,
     'port_base': 5000,
+    'protocol': 'mascot',
 }
-SCENARIO_P1 = {'existing_debt_usd': 10000, 'port_base': 5000}
+SCENARIO_P1 = {'existing_debt_usd': 10000, 'port_base': 5000, 'protocol': 'mascot'}
 
 NODE0 = 'http://localhost:8000'
 NODE1 = 'http://localhost:8001'

@@ -64,13 +64,27 @@ POLICY_VERSION = _require_int('POLICY_VERSION', default=1)
 REDIS_URL = os.environ.get('REDIS_URL', 'redis://redis:6379/0')
 
 MP_SPDZ_HOME = os.environ.get('MP_SPDZ_HOME', '/usr/src/MP-SPDZ')
-# Derived from N_PLATFORMS/REQUESTER by default (matches the node
-# Dockerfile's compile.py naming convention exactly) so a deployment that
-# only sets N_PLATFORMS can't silently end up running the wrong
-# compiled program -- override MP_SPDZ_PROG explicitly if that's ever
-# genuinely needed (e.g. a non-default mode).
-PROG_NAME = os.environ.get(
-    'MP_SPDZ_PROG', f'field-crypto_collateral_risk-{N_PLATFORMS}-{REQUESTER}-2')
+
+# Dual protocol support (node/README.md's tinier-integration section):
+# which binary + compiled program a request uses is now chosen per
+# REQUEST (the `protocol` field on POST /calcola), never a single
+# node-wide static default -- the MPC protocol requires all N parties to
+# run the identical program for a given request, but different requests
+# to the same node, one after another, can legitimately use different
+# protocols (see mpc_runner.run_party). Both entries derived from
+# N_PLATFORMS/REQUESTER by the same naming convention node/Dockerfile's
+# compile.py invocations use, so a deployment that only sets N_PLATFORMS
+# can't silently end up pointing at a program that was never compiled.
+PROTOCOLS = {
+    'mascot': dict(
+        binary='mascot-party.x',
+        prog_name=f'field-crypto_collateral_risk-{N_PLATFORMS}-{REQUESTER}-2',
+    ),
+    'tinier': dict(
+        binary='tinier-party.x',
+        prog_name=f'binary-crypto_collateral_risk_binary_produzione_sperimentale-{N_PLATFORMS}-{REQUESTER}-0',
+    ),
+}
 
 # MPC run timeout: results_produzione/n2/mascot.json (N=2) measured well
 # under 100s, results_produzione/n3/ (N=3) under 5s for most protocols;

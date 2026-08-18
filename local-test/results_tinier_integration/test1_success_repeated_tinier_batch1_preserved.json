@@ -1,0 +1,142 @@
+[
+  {
+    "rep": 1,
+    "request_id": "test1-1-1787069217",
+    "states": [
+      {
+        "request_id": "test1-1-1787069217",
+        "stato": "completato",
+        "aggiornato_il": 1787069222.35118,
+        "party_id": 0,
+        "durata_secondi": 3.75,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      },
+      {
+        "request_id": "test1-1-1787069217",
+        "stato": "completato",
+        "aggiornato_il": 1787069222.346417,
+        "party_id": 1,
+        "durata_secondi": 4.27,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      }
+    ],
+    "waited_s": 5.237412214279175
+  },
+  {
+    "rep": 2,
+    "request_id": "test1-2-1787069251",
+    "states": [
+      {
+        "request_id": "test1-2-1787069251",
+        "stato": "completato",
+        "aggiornato_il": 1787069253.9582367,
+        "party_id": 0,
+        "durata_secondi": 2.2,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      },
+      {
+        "request_id": "test1-2-1787069251",
+        "stato": "completato",
+        "aggiornato_il": 1787069253.960153,
+        "party_id": 1,
+        "durata_secondi": 2.71,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      }
+    ],
+    "waited_s": 3.066128969192505
+  },
+  {
+    "rep": 3,
+    "request_id": "test1-3-1787069284",
+    "states": [
+      {
+        "request_id": "test1-3-1787069284",
+        "stato": "fallito",
+        "aggiornato_il": 1787069285.6135123,
+        "party_id": 0,
+        "errore": "tinier-party.x returncode=-13: Using statistical security parameter 40\n"
+      },
+      {
+        "request_id": "test1-3-1787069284",
+        "stato": "in corso",
+        "aggiornato_il": 1787069284.7840312,
+        "party_id": 1
+      }
+    ],
+    "waited_s": 600.1845705509186
+  },
+  {
+    "rep": 4,
+    "request_id": "test1-4-1787069927",
+    "states": [
+      {
+        "request_id": "test1-4-1787069927",
+        "stato": "fallito",
+        "aggiornato_il": 1787069929.0986855,
+        "party_id": 0,
+        "errore": "tinier-party.x returncode=1: Using statistical security parameter 40\nFatal communication error on a990b18bcd06: Receiving error (Connection reset by peer) when sending 4 bytes\nThis is probably because another party encountered a problem.\n"
+      },
+      {
+        "request_id": "test1-4-1787069927",
+        "stato": "fallito",
+        "aggiornato_il": 1787069929.120563,
+        "party_id": 1,
+        "errore": "tinier-party.x returncode=1: Using statistical security parameter 40\nFatal communication error on 707d235a611f: Receiving error (Connection reset by peer) when sending 4 bytes\nThis is probably because another party encountered a problem.\n"
+      }
+    ],
+    "waited_s": 2.0537562370300293
+  },
+  {
+    "rep": 5,
+    "request_id": "test1-5-1787069976",
+    "states": [
+      {
+        "request_id": "test1-5-1787069976",
+        "stato": "completato",
+        "aggiornato_il": 1787069982.3502958,
+        "party_id": 0,
+        "durata_secondi": 4.57,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      },
+      {
+        "request_id": "test1-5-1787069976",
+        "stato": "completato",
+        "aggiornato_il": 1787069982.3442397,
+        "party_id": 1,
+        "durata_secondi": 5.06,
+        "esito": "REVIEW MANUALE",
+        "risk_score": 65,
+        "max_ltv_bps": 5000,
+        "liq_threshold_bps": 6000,
+        "fascia_esposizione": null,
+        "esposizione_totale_usd": null
+      }
+    ],
+    "waited_s": 6.333720684051514
+  }
+]

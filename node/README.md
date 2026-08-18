@@ -684,3 +684,248 @@ supervisionato.
 processo `mascot-party.x` per quella run, non solo il risultato
 decodificato) sono su volumi montati (`player-data`, `node-logs`),
 sopravvivono ai riavvii dei container.
+
+## 11. Tentativo di integrazione di tinier (sperimentale) nei nodi: fermato al test 2
+
+tinier era gi&agrave; stato validato due volte, separatamente e in
+isolamento: correttezza (34/34 scenari concordanti con mascot,
+`results_binario_produzione_sperimentale/`) e tempo/dati/affidabilit&agrave;
+sequenziale (`Scripts/tinier_vs_mascot.py`,
+`results_tinier_vs_mascot/`: 30&times;-85&times; pi&ugrave; veloce,
+31&times;-101&times; meno dati, 0/12 timeout/crash a ogni N). N&eacute;
+l'uno n&eacute; l'altro giro avevano mai toccato l'infrastruttura reale
+&mdash; questa sezione documenta il tentativo di farlo, con lo stesso
+rigore gi&agrave; usato per mascot in &sect;7-9.6, e il punto preciso in
+cui &egrave; stato interrotto.
+
+**Non si &egrave; arrivati all'integrazione in produzione.** Il test 2
+(party ucciso a met&agrave; calcolo) ha mostrato per tinier un
+rilevamento di crash sistematicamente e riproducibilmente pi&ugrave;
+lento di quello gi&agrave; noto per mascot (&sect;8.5/&sect;9.3, <1s) &mdash;
+esattamente la condizione di stop esplicita concordata prima di questo
+giro. Non corretto per tentativi, non smussato: riportato di seguito con
+i dati completi, poi fermato.
+
+### 11.1 Passo 1: binario e immagine Docker, dual-protocol
+
+`tinier-party.x` (verificato nel Makefile, non assunto per analogia con
+`mascot-party.x`: `Makefile:245`) costruito con `make tinier-party.x`
+sopra l'immagine base gi&agrave; contenente `mascot-party.x` &mdash;
+riusa gli oggetti OT/libOTe gi&agrave; compilati come dipendenza
+transitiva di quest'ultimo (`$(SPDZ) -> $(TINIER) -> $(OT)` nel
+Makefile di primo livello), verificato empiricamente: ~63s, non una
+ricompilazione completa di libOTe da zero. `crypto_collateral_risk_binary_produzione_sperimentale.mpc`
+compilato per N=2 e N=3 (`-B 64 -o binary ... <n> 0 0`), stessi argomenti
+di compilazione gi&agrave; validati in `results_tinier_vs_mascot/`.
+Entrambi i protocolli nella STESSA immagine `collateral-node:local`, non
+due deployment paralleli (`node/Dockerfile`).
+
+**Build pulita da zero verificata** (`--no-cache` su entrambi gli stage,
+non solo sull'ultimo): immagine base (mascot-party.x + tutto MP-SPDZ +
+libOTe da zero) 28m8s, immagine nodo (+tinier-party.x + 4 programmi
+compilati + app) 1m55s, **zero errori**. Confermato dal log di build che
+ogni fix gi&agrave; noto per mascot si applica identico anche qui:
+`g++` (mai `clang++`), `bookworm`, `-Wno-error=restrict` accettato senza
+errori su ogni singolo file compilato.
+
+### 11.2 Passo 2: selezione del protocollo per richiesta, coda unica invariata
+
+Campo `protocol` (`mascot`|`tinier`) aggiunto a `POST /calcola`
+(`node/app/main.py`), obbligatorio, stesso trattamento di `request_id`/
+`port_base`. Verificato esplicitamente prima di accodare il job (non
+lasciato fallire dopo, come timeout silenzioso): se il binario o il
+programma compilato per il protocollo richiesto non esistono su questo
+nodo, `503` immediato con il percorso mancante nel messaggio.
+`node/app/config.py`'s `PROTOCOLS` mappa `protocol` &rarr;
+(binario, programma compilato), derivata da `N_PLATFORMS` con la stessa
+convenzione di `compile.py` gi&agrave; in uso. `/salute` riporta lo stato
+di entrambi i protocolli separatamente (`dettagli.protocolli.mascot`,
+`.tinier`), non un flag unico.
+
+**Verificato esplicitamente nel codice** (non assunto) che l'aggiunta
+del secondo protocollo non introduce una seconda coda o un secondo
+worker: `node/app/main.py` istanzia una sola `Queue('default', ...)`,
+`node/entrypoint.sh` lancia un solo processo `rq worker ... default`,
+`node/app/tasks.py` registra un solo tipo di job (`run_mpc_job`) che ora
+riceve `protocol` come parametro in pi&ugrave;, non come dispatch verso
+un secondo percorso. L'invariante "un calcolo alla volta per nodo" su
+cui si regge &sect;8/&sect;9 resta intatta.
+
+### 11.3 Metodologia di verifica: topologia isolata, mai i nodi reali
+
+Tutti i test di questa sezione girano su una topologia Docker isolata
+ed effimera (`local-test/tinier_integration_test.py`, container
+`tint*-node{i}-*`, reti e porte proprie, mai `node0-net`/`node1-net`/
+`node2-net`) &mdash; mai i nodi di produzione reali, che sono rimasti
+online e non toccati per l'intera durata di questo giro (verificato:
+stessa immagine di prima, `Up 24 hours` durante tutti questi test).
+Stesso meccanismo di rete reale gi&agrave; usato da `deploy_nodes.sh`
+(reti Docker indipendenti, IP host reale come `PARTY0_HOST`, pool di
+porte pubblicate 1:1), isolato semplicemente su nomi/porte diversi.
+
+### 11.4 Test 1 &mdash; percorso di successo ripetuto, N=2
+
+Prima ripetizione (5 run, teardown completo tra l'una e l'altra, stesso
+protocollo di &sect;8.1/8.2): tinier ha mostrato un fallimento su 5
+(`Connection reset by peer`), un tasso pi&ugrave; alto del CV storico di
+mascot. Anzich&eacute; fermarsi su un campione di 5, verificato se fosse
+un segnale reale o rumore: stesso identico harness rieseguito anche per
+mascot (mai fatto prima con QUESTO harness specifico, i numeri storici
+di &sect;8.1/8.2 vengono da uno script diverso, in una sessione
+diversa), poi esteso a 20 ripetizioni per protocollo.
+
+| Protocollo | Ripetizioni | Successi | CV tempo (run riuscite) |
+|---|---|---|---|
+| tinier | 20 | 15/20 (75%) | 14.2% |
+| mascot (stesso harness, stesso giro) | 20 | 17/20 (85%) | 14.1% |
+
+Test di Fisher esatto sulla differenza di tasso di successo (15/5 vs
+17/3): **p=0.69** &mdash; nessuna differenza statisticamente
+significativa. La firma di errore &egrave; identica per entrambi
+(`Fatal communication error... Receiving error (Connection reset by
+peer)... probably because another party encountered a problem`),
+la stessa classe gi&agrave; documentata per mascot in &sect;8.2
+("fallimento transitorio isolato... non riprodotto in modo
+sistematico") &mdash; qui riprodotta pi&ugrave; spesso per **entrambi**
+i protocolli sotto ripetizione rapida (teardown+rebuild immediato,
+stesse porte host riusate ogni volta), non introdotta da tinier. Il
+tasso assoluto (15-25%) &egrave; pi&ugrave; alto del campione storico
+pulito (0/5, 0/5), verosimilmente per lo stato di questa macchina dopo
+ore di churn Docker continuo in questa sessione, non per una regressione
+di codice &mdash; ma essendo identico tra i due protocolli, non &egrave;
+attribuibile a tinier. **Non un segnale di stop**: la prima lettura
+(1/5 per tinier, 0/5 per mascot) sarebbe stata fuorviante presa da sola,
+esattamente il tipo di falso allarme che una ripetizione pi&ugrave; ampia
+&egrave; pensata per correggere.
+
+Dati grezzi: `local-test/results_tinier_integration/test1_success_repeated_{tinier,mascot}*.json`.
+
+### 11.5 Test 5 &mdash; indirizzo di rete del coordinatore
+
+Verificato nel codice sorgente PRIMA di testare (`GC/ShareParty.hpp`,
+`Tools/NetworkOptions.cpp`) che tinier passa dalla stessa identica
+funzione di coordinamento di rete di mascot, `Server::start_networking`
+(chiamata sia da `NetworkOptionsWithNumber::start_networking` per
+tinier sia da `Processor/OnlineMachine.hpp` per mascot) &mdash; non
+codice di rete separato per la famiglia garbled-circuits, come si
+sarebbe potuto presumere. Confermato empiricamente: `PARTY0_HOST=localhost`
+produce lo stesso blocco silenzioso e indefinito gi&agrave; documentato
+per mascot (`node/app/config.py`), nessun errore, entrambe le parti
+bloccate su `in corso` oltre i 90s di attesa del test. **Comportamento
+identico a mascot, non una regressione.**
+
+### 11.6 Test 2 &mdash; party ucciso a met&agrave; calcolo: qui si &egrave; fermato il giro
+
+Stesso protocollo gi&agrave; usato per mascot in &sect;8.5/&sect;9.3:
+container `worker` del party 2 (N=3) ucciso con `docker kill` a computazione
+gi&agrave; attiva (confermato `tinier-party.x` in esecuzione via `pgrep`
+subito prima del kill, non prima dell'avvio). Ripetuto **tre volte
+indipendenti** prima di trarre conclusioni, stessa disciplina gi&agrave;
+usata per il Test 1:
+
+| Run | Kill a t+ | Rilevamento (party superstiti) | Returncode | Modalit&agrave; di uscita |
+|---|---|---|---|---|
+| 1 | 2.49s | **6.08s** | -6 (SIGABRT) | eccezione C++ non gestita |
+| 2 | 1.88s | **5.61s** | 1 | uscita pulita, stesso messaggio di mascot |
+| 3 | 2.09s | **14.17s** | -6 (SIGABRT) | eccezione C++ non gestita |
+
+Baseline mascot (&sect;8.5/&sect;9.3, verificata due volte, N=2 e N=3):
+**rilevamento &lt;1s su ogni party superstite, ogni volta**, uscita
+pulita (`Fatal error in communication: read_some: stream truncated`,
+returncode gestito).
+
+**tinier &egrave; 6-14&times; pi&ugrave; lento a rilevare lo stesso
+guasto di rete, in modo riproducibile su tre run indipendenti, non un
+campione singolo.** In pi&ugrave;, un secondo problema distinto trovato
+nello stesso test: la stessa identica causa (`read_some: stream
+truncated [asio.ssl.stream:1]`, lo stesso errore SSL sottostante di
+mascot) produce per tinier **due modalit&agrave; di uscita diverse e non
+deterministiche** a seconda della run &mdash; a volte un'eccezione
+C++ non gestita (`terminate called after throwing an instance of
+'boost::wrapexcept<boost::system::system_error>'`, `SIGABRT`), a volte
+un'uscita pulita con lo stesso messaggio di mascot. Il primo caso non
+compromette la correttezza applicativa (`node/app/mpc_runner.py` cattura
+comunque il `returncode != 0` e riporta `fallito` con l'errore completo,
+verificato in tutti e tre i log), ma &egrave; un segnale di gestione
+degli errori meno matura nel binario stesso, non nel codice di
+integrazione di questo progetto.
+
+Causa pi&ugrave; probabile, visibile nei log di tutti e tre i run
+(non confermata a livello di codice sorgente, ma coerente con ogni
+timestamp osservato): appena prima del crash, ogni party superstite
+stampa `No proper key material found in Player-Data//Mascot-Secrets-B-64-...,
+generating from scratch` &mdash; tinier, a differenza di mascot, genera
+materiale di preprocessing (le proprie chiavi MAC, necessarie per il
+protocollo malicious cut-and-choose) **live, a ogni run**, non lo
+riusa da un batch offline. Il rilevamento pi&ugrave; lento coincide con
+questa finestra: un party impegnato nella generazione locale del
+preprocessing non controlla lo stato della connessione con la stessa
+frequenza di un party gi&agrave; nella fase di calcolo principale.
+Ipotesi plausibile, non verificata a livello di codice C++ in questo
+giro &mdash; motivo aggiuntivo, non l'unico, per fermarsi qui piuttosto
+che continuare a indagare per tentativi.
+
+Dati grezzi completi (log, timestamp, errori integrali):
+`local-test/results_tinier_integration/test2_kill_mid_computation_tinier_run{1,2,3}.json`.
+
+### 11.7 Condizione di stop: dichiarata esplicitamente, applicata
+
+Il test 2 soddisfa esattamente la condizione di stop concordata prima di
+questo giro ("rilevamento di crash pi&ugrave; lento" di quello gi&agrave;
+noto per mascot sullo stesso test, riprodotto su pi&ugrave; run
+indipendenti, non un campione singolo). Per istruzione esplicita:
+fermarsi qui, riportare con precisione, non correggere per tentativi n&eacute;
+smussare in una conclusione pi&ugrave; ottimistica di quanto i dati
+sostengano.
+
+**Test 3 (25 richieste consecutive senza pausa) e Test 6 (20 richieste
+consecutive a protocollo misto) non sono stati eseguiti.** Non per
+mancanza di tempo: la condizione di stop esplicita si applica appena un
+qualunque test del Passo 3 mostra un comportamento peggiore di quello
+gi&agrave; noto per mascot, e il Test 2 lo mostra gi&agrave; in modo
+chiaro e riprodotto. Eseguire comunque i test 3/6 non avrebbe cambiato
+questa conclusione, solo consumato altro tempo su una domanda gi&agrave;
+risposta.
+
+**Il supporto duale mascot/tinier NON &egrave; stato implementato in
+produzione** (Passo 4 del giro, mai raggiunto): `backend/app.py` non
+espone un campo `protocol`, i nodi di produzione (`node0`/`node1`/`node2`)
+restano sull'immagine mascot-only precedente, non sono mai stati
+toccati da questo giro.
+
+**Riepilogo dei sei test previsti dal Passo 3:**
+
+| Test | Esito | Confronto con mascot |
+|---|---|---|
+| 1. Percorso di successo ripetuto (N=2) | OK | Statisticamente indistinguibile (p=0.69) |
+| 2. Party ucciso a met&agrave; calcolo | **PEGGIORE** | Rilevamento 6-14&times; pi&ugrave; lento, uscita non deterministica |
+| 3. 25 richieste consecutive senza pausa | Non eseguito | Condizione di stop gi&agrave; soddisfatta dal test 2 |
+| 4. Isolamento Player-Data | OK | 36KB/17 voci, stesso profilo del fix di &sect;9.4 |
+| 5. Indirizzo di rete del coordinatore | OK | Comportamento identico (stesso codice sorgente) |
+| 6. Coda condivisa, protocollo misto | Non eseguito | Condizione di stop gi&agrave; soddisfatta dal test 2 |
+
+### 11.8 Cosa resta e cosa non cambia
+
+Il codice di questo tentativo resta nel repository, committato: il
+supporto per il campo `protocol` in `node/app/*` (`main.py`, `config.py`,
+`tasks.py`, `mpc_runner.py`), l'immagine Docker dual-protocol
+(`node/Dockerfile`), l'harness di verifica isolato
+(`local-test/tinier_integration_test.py`). Non &egrave; codice morto:
+se in futuro la lentezza/non-determinismo del rilevamento crash di
+tinier verr&agrave; risolto o accettato come compromesso deliberato, la
+strada di integrazione &egrave; gi&agrave; costruita e verificata fin
+dove si &egrave; arrivati (Test 1, 4, 5 passati). **Ma va trattato come
+codice sperimentale non ancora pronto**, non come una feature quasi
+finita: manca un'analisi della causa radice della lentezza/non-
+determinismo (dentro `tinier-party.x`, fuori dallo scope di un progetto
+che non modifica MP-SPDZ stesso), e i test 3/6 restano da fare una volta
+che il test 2 sia stato affrontato, non prima.
+
+**Nota di compatibilit&agrave;, per chi riprender&agrave; questo lavoro**:
+`collateral-node:local` ricostruita con questo `node/Dockerfile` richiede
+il campo `protocol` su ogni `POST /calcola` (non ha pi&ugrave; un default
+impliciti lato nodo). Il backend attuale (`backend/app.py`, invariato da
+questo giro) non lo manda. **Non ridistribuire questa immagine ai nodi
+di produzione senza aggiornare prima il backend** &mdash; romperebbe
+`/api/preventivo` con un 422 su ogni richiesta, non un fallimento
+silenzioso ma comunque una rottura da evitare con un deploy disattento.

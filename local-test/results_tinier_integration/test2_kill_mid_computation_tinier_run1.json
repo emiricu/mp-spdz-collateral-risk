@@ -1,0 +1,33 @@
+{
+  "protocol": "tinier",
+  "kill_party": 2,
+  "request_id": "test2-kill-1787073463",
+  "confirmed_running_before_kill": true,
+  "kill_offset_from_submit_s": 2.49,
+  "detection_times_s": {
+    "0": 6.08,
+    "1": 6.08
+  },
+  "survivor_states": {
+    "0": {
+      "request_id": "test2-kill-1787073463",
+      "stato": "fallito",
+      "aggiornato_il": 1787073466.7410357,
+      "party_id": 0,
+      "errore": "tinier-party.x returncode=-6: Using statistical security parameter 40\nNo proper key material found in Player-Data//Mascot-Secrets-B-64-fe9921394c99b45129ac41210fecc46e6277d1ca-P0-3, generating from scratch (cannot read from Player-Data//Mascot-Secrets-B-64-fe9921394c99b45129ac41210fecc46e6277d1ca-P0-3)\nCompiler: ./compile.py -B 64 -o binary crypto_collateral_risk_binary_produzione_sperimentale 3 0 0\nterminate called after throwing an instance of 'boost::wrapexcept<boost::system::system_error>'\n  what():  read_some: stream truncated [asio.ssl.stream:1]\n"
+    },
+    "1": {
+      "request_id": "test2-kill-1787073463",
+      "stato": "fallito",
+      "aggiornato_il": 1787073466.7877157,
+      "party_id": 1,
+      "errore": "tinier-party.x returncode=-6: Using statistical security parameter 40\nNo proper key material found in Player-Data//Mascot-Secrets-B-64-fe9921394c99b45129ac41210fecc46e6277d1ca-P1-3, generating from scratch (cannot read from Player-Data//Mascot-Secrets-B-64-fe9921394c99b45129ac41210fecc46e6277d1ca-P1-3)\nCompiler: ./compile.py -B 64 -o binary crypto_collateral_risk_binary_produzione_sperimentale 3 0 0\nterminate called after throwing an instance of 'boost::wrapexcept<boost::system::system_error>'\n  what():  read_some: stream truncated [asio.ssl.stream:1]\n"
+    }
+  },
+  "killed_party_state": {
+    "request_id": "test2-kill-1787073463",
+    "stato": "in corso",
+    "aggiornato_il": 1787073464.2225578,
+    "party_id": 2
+  }
+}

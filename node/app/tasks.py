@@ -14,8 +14,9 @@ def run_mpc_job(request_id, callback_url, party_payload):
     try:
         mpc_runner.write_own_input(party_payload)
         stdout, elapsed = mpc_runner.run_party(
-            request_id, party_payload['port_base'], raw_log_dir=RAW_LOG_DIR)
-        result = mpc_runner.parse_result(stdout)
+            request_id, party_payload['port_base'], party_payload['protocol'],
+            raw_log_dir=RAW_LOG_DIR)
+        result = mpc_runner.parse_result(stdout, party_payload['protocol'])
     except mpc_runner.MpcRunError as exc:
         log.error('run %s fallito: %s', request_id, exc)
         payload = store.set_status(request_id, 'fallito', party_id=config.PARTY_ID,
