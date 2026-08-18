@@ -70,12 +70,30 @@ Nessuna divergenza a nessun N. Valori concordanti su tutte le run
 **24/24 run completate con successo**, nessun timeout, nessun crash, a
 nessun N per nessuno dei due protocolli — incluso mascot a N=5, dove il
 retest storico (`node/README.md` §9.5/9.6) aveva mostrato instabilità
-grave (3/25 = 12% di successo) ma **sotto carico concorrente sostenuto
-sui nodi Docker**, non in esecuzione isolata come qui. Questo sweep è
-un'esecuzione singola e sequenziale, non concorrente — non è quindi la
-stessa condizione che aveva causato quei fallimenti, e il risultato
-"0 crash" qui non contraddice quel dato, semplicemente non lo rimette
-alla prova.
+grave (3/25 = 12% di successo).
+
+Questo però non è un confronto tra "stesso sistema, carico più leggero":
+`tinier_vs_mascot.py` non passa mai per l'architettura che ha prodotto
+quei fallimenti. La catena di chiamate è `tinier_vs_mascot.py` →
+`crypto_risk_run.compile_and_run()` → `mpc_bench.compile_domain/build/
+run_protocol()` → `Scripts/mascot.sh`/`Scripts/tinier.sh`, che lancia
+`mascot-party.x`/`tinier-party.x` come N processi locali sullo stesso
+host — **verificato leggendo il codice, nessuna chiamata HTTP a
+`node0-api`/`node1-api`/`node2-api`, nessun passaggio per l'orchestratore
+`backend/app.py`, nessuna coda RQ**. Il bug di §9.5/9.6 è specifico a
+quell'architettura a container (code RQ indipendenti a concorrenza
+singola per nodo su `node1-worker`/`node2-worker`, che si disallineano
+sotto carico continuo quando un nodo libera il proprio worker prima
+degli altri) e semplicemente non esiste un meccanismo equivalente in
+questo sweep: ogni run è un processo locale isolato, senza code da
+disallineare.
+
+Di conseguenza, "0/24 fallimenti per entrambi i protocolli" **non dice
+nulla** sul criterio di affidabilità che aveva deciso mascot-su-mama —
+non perché lo sweep sia stato troppo leggero o troppo breve, ma perché
+misura un percorso di esecuzione che non attraversa mai il componente
+in cui vive quel problema, indipendentemente da quante ripetizioni
+fossero state fatte.
 
 ## Tempo e dati scambiati, per ripetizione
 
@@ -139,20 +157,27 @@ risultato marginale o rumoroso: il tempo minimo di mascot a N=2 (63.1s)
 resta comunque oltre 19× il tempo MASSIMO di tinier allo stesso N
 (3.2s) — non c'è sovrapposizione tra le due distribuzioni a nessun N.
 
-**Sul criterio affidabilità: questo sweep non lo differenzia.**
-0 timeout e 0 crash per entrambi i protocolli, su tutte le 24 run. Ma
-questo è un dato più debole di quanto sembri, per un motivo preciso:
-l'instabilità di mascot che aveva pesato nella scelta mascot-su-mama
-(`node/README.md` §9.5/9.6, 3/25 successi a N=5) si manifesta **sotto
-carico concorrente sostenuto sui nodi Docker in coda**, non in
-esecuzione isolata sequenziale come questo sweep. Questo giro non
-riproduce quella condizione per NESSUNO dei due protocolli — quindi
-"0/24 fallimenti per entrambi" non dimostra che tinier sia più
-affidabile di mascot, dimostra solo che **in condizioni isolate
-entrambi sono affidabili**, il che non è la stessa domanda. Un
-confronto di affidabilità vero tra tinier e mascot richiederebbe
-ripetere lo stress concorrente di §9.5/9.6 con tinier al posto di
-mascot — non fatto qui, deliberatamente fuori scope per questo prompt.
+**Sul criterio affidabilità: questo sweep non può parlarne, non solo
+"non lo differenzia".** 0 timeout e 0 crash per entrambi i protocolli,
+su tutte le 24 run — ma è un dato più debole di quanto sembri, e per un
+motivo più preciso di "carico più leggero". `tinier_vs_mascot.py` non
+passa mai per l'architettura in cui vive il problema di §9.5/9.6:
+verificato leggendo il codice, la catena `crypto_risk_run.
+compile_and_run()` → `mpc_bench.run_protocol()` → `Scripts/mascot.sh`/
+`Scripts/tinier.sh` lancia i processi MP-SPDZ direttamente sull'host,
+senza nessuna chiamata HTTP a `node0-api`/`node1-api`/`node2-api`,
+senza passare per l'orchestratore `backend/app.py`, senza le code RQ
+indipendenti su `node1-worker`/`node2-worker` il cui disallineamento
+sotto carico continuo è la causa reale documentata in §9.6. Non c'è
+alcuna coda da disallineare in questo sweep. Quindi "0/24 fallimenti
+per entrambi" non dimostra che tinier sia più affidabile di mascot, e
+nemmeno che lo sia "in condizioni isolate" nello stesso senso di
+§9.5/9.6 — dimostra solo che l'esecuzione MP-SPDZ nuda, fuori
+dall'architettura a container, è affidabile per entrambi i protocolli,
+il che è un'altra domanda. Un confronto di affidabilità vero tra tinier
+e mascot richiederebbe integrare tinier nei nodi Docker e ripetere lo
+stress di §9.5/9.6 con tinier al posto di mascot — non fatto qui,
+deliberatamente fuori scope per questo prompt.
 
 **Conclusione, con la stessa onestà già usata per la correzione ×3.8
 mascot/mama**: qui non c'è un'inversione di verdetto da correggere come
