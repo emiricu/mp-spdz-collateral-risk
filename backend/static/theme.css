@@ -4,7 +4,7 @@
    screen). Change a color/font/radius here, not per page -- pages
    consume these tokens, they don't define parallel copies.
 
-   --good-*/--danger-* extend the original documentazione-only note/warn
+   --good- and --danger- extend the original documentazione-only note/warn
    pair (blue/amber) with green/red, needed for the demo's three-state
    esito badge (APPROVATO/REVIEW MANUALE/RIFIUTATO) -- REVIEW MANUALE
    reuses --warn-* as-is, same visual language as an "attenzione" box,
