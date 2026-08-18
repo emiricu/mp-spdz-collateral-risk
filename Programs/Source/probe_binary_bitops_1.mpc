@@ -1,0 +1,54 @@
+# coding: latin-1
+"""Isolated probe (Passo 1, esperimento binario/tinier -- see
+crypto_collateral_risk_binary_produzione_sperimentale.mpc): verifies
+that secret comparisons in the binary domain can be combined with
+NATIVE bitwise operators (&, |, ^, ~) instead of arithmetic (+, -, *)
+on already-revealed flags, and that .reveal() on the composed result is
+correct -- as opposed to the ALREADY-known-broken case (see
+crypto_collateral_risk.mpc's compute_flags docstring) of | / & on
+regint/cint values obtained by revealing binary-domain secrets
+individually first. Here the flags stay SECRET (sbitintvec, 1 bit wide
+-- comparison operators' own comp_result) until the composed boolean
+is revealed once.
+
+Three known input pairs, hardcoded as public ints then converted to
+sint (still exercises real secret comparison circuits, not a
+compile-time constant fold -- sint(int) with a compile-time-known value
+still emits real MPC instructions, same pattern credit_score.mpc /
+crypto_collateral_risk.mpc use throughout for their own sint(...)
+comparisons against policy constants).
+
+Pair 1: a=5,  b=10  -> a<b True,  a>b False, a==b False
+Pair 2: a=10, b=5   -> a<b False, a>b True,  a==b False
+Pair 3: a=7,  b=7   -> a<b False, a>b False, a==b True
+
+For each pair, prints: lt, gt, eq (each a plain reveal(), sanity
+baseline) then and_lt_gt (lt & gt, expect always 0), or_lt_gt (lt | gt,
+expect 1 iff a!=b), xor_lt_gt (lt ^ gt, expect same as or here since
+lt/gt are mutually exclusive), not_lt (~lt, expect the boolean
+negation of lt, i.e. 1-lt).
+"""
+
+pairs = [(5, 10), (10, 5), (7, 7)]
+
+for idx, (a_val, b_val) in enumerate(pairs):
+    a = sint(a_val)
+    b = sint(b_val)
+
+    lt = (a < b)
+    gt = (a > b)
+    eq = (a == b)
+
+    and_lt_gt = lt & gt
+    or_lt_gt = lt | gt
+    xor_lt_gt = lt ^ gt
+    not_lt = ~lt
+
+    print_ln('--- pair %s: a=%s b=%s ---', idx, a_val, b_val)
+    print_ln('lt: %s', lt.reveal())
+    print_ln('gt: %s', gt.reveal())
+    print_ln('eq: %s', eq.reveal())
+    print_ln('and_lt_gt: %s', and_lt_gt.reveal())
+    print_ln('or_lt_gt: %s', or_lt_gt.reveal())
+    print_ln('xor_lt_gt: %s', xor_lt_gt.reveal())
+    print_ln('not_lt: %s', not_lt.reveal())

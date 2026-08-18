@@ -1,0 +1,70 @@
+# coding: latin-1
+"""Isolated probe (Passo 1, esperimento binario/tinier), part 2: verifies
+that packing several DISTINCT secret multi-bit values into one wider
+secret structure, then revealing that structure with a SINGLE .reveal(),
+decodes back to exactly the original separate values -- no bit loss or
+corruption across the packing boundary. Deliberately mirrors the exact
+four fields decide_production would need to pack (decision code, score,
+max_ltv_bps, liq_threshold_bps), non-overlapping bit widths chosen to
+comfortably fit real policy ranges:
+  v0 = decision code   2 bits (0..2)
+  v1 = risk_score      7 bits (0..100)
+  v2 = max_ltv_bps    14 bits (0..10000, real range is <=8500)
+  v3 = liq_threshold  14 bits (0..10000, real range is <=9000)
+Total 37 bits, well inside the 64-bit sint this compiles with (-B 64).
+
+Two independent packing techniques tested on the SAME four values, so
+a failure in one but not the other is itself informative:
+  A) shift + OR:      packed = v0 | (v1 << 2) | (v2 << 9) | (v3 << 23)
+  B) bit_decompose + bit_compose: concatenate each field's own bit
+     list (low bits first) into one combined list, then bit_compose
+     that combined list back into a single sint.
+Decoding (shift + mask) happens AFTER the single reveal, on the now-
+public cint -- that side is well-trodden ground, not what's being
+tested; only the SECRET-side packing is novel here.
+"""
+
+V0_BITS, V1_BITS, V2_BITS, V3_BITS = 2, 7, 14, 14
+
+scenarios = [
+    (2, 65, 5000, 5500),     # mid-range realistic values
+    (0, 0, 0, 0),            # all-zero edge case
+    (2, 100, 10000, 10000),  # max-value edge case (all bits set within width)
+    (1, 37, 8500, 500),      # mixed
+]
+
+for idx, (v0, v1, v2, v3) in enumerate(scenarios):
+    s0 = sint(v0)
+    s1 = sint(v1)
+    s2 = sint(v2)
+    s3 = sint(v3)
+
+    # --- technique A: shift + OR ---
+    packed_a = s0 | (s1 << V0_BITS) | (s2 << (V0_BITS + V1_BITS)) \
+               | (s3 << (V0_BITS + V1_BITS + V2_BITS))
+    r_a = packed_a.reveal()
+    mask0 = (1 << V0_BITS) - 1
+    mask1 = (1 << V1_BITS) - 1
+    mask2 = (1 << V2_BITS) - 1
+    mask3 = (1 << V3_BITS) - 1
+    d0_a = r_a & mask0
+    d1_a = (r_a >> V0_BITS) & mask1
+    d2_a = (r_a >> (V0_BITS + V1_BITS)) & mask2
+    d3_a = (r_a >> (V0_BITS + V1_BITS + V2_BITS)) & mask3
+
+    # --- technique B: bit_decompose + bit_compose ---
+    bits0 = s0.bit_decompose(V0_BITS)
+    bits1 = s1.bit_decompose(V1_BITS)
+    bits2 = s2.bit_decompose(V2_BITS)
+    bits3 = s3.bit_decompose(V3_BITS)
+    combined_bits = bits0 + bits1 + bits2 + bits3
+    packed_b = sint.bit_compose(combined_bits)
+    r_b = packed_b.reveal()
+    d0_b = r_b & mask0
+    d1_b = (r_b >> V0_BITS) & mask1
+    d2_b = (r_b >> (V0_BITS + V1_BITS)) & mask2
+    d3_b = (r_b >> (V0_BITS + V1_BITS + V2_BITS)) & mask3
+
+    print_ln('--- scenario %s: v0=%s v1=%s v2=%s v3=%s ---', idx, v0, v1, v2, v3)
+    print_ln('A shift+OR   packed=%s decoded: %s %s %s %s', r_a, d0_a, d1_a, d2_a, d3_a)
+    print_ln('B bit_compose packed=%s decoded: %s %s %s %s', r_b, d0_b, d1_b, d2_b, d3_b)

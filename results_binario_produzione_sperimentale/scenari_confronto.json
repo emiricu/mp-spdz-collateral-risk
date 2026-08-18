@@ -1,0 +1,1022 @@
+[
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "baseline (tutto in zona comoda, atteso APPROVATO)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 100,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128402
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 100,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 499,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "vol=499 (appena sotto confine stable/bluechip)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 100,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128402
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 100,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 500,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "vol=500 (appena sopra, bluechip)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 98,
+      "max_ltv_bps": 6500,
+      "liq_threshold_bps": 7500,
+      "packed": 62917888394
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 98,
+      "max_ltv_bps": 6500,
+      "liq_threshold_bps": 7500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 2999,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "vol=2999 (appena sotto confine bluechip/medium)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 98,
+      "max_ltv_bps": 6500,
+      "liq_threshold_bps": 7500,
+      "packed": 62917888394
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 98,
+      "max_ltv_bps": 6500,
+      "liq_threshold_bps": 7500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 3000,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "vol=3000 (appena sopra, medium)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 90,
+      "max_ltv_bps": 5000,
+      "liq_threshold_bps": 6000,
+      "packed": 50334208362
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 90,
+      "max_ltv_bps": 5000,
+      "liq_threshold_bps": 6000
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 5999,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "vol=5999 (appena sotto confine medium/high)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 90,
+      "max_ltv_bps": 5000,
+      "liq_threshold_bps": 6000,
+      "packed": 50334208362
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 90,
+      "max_ltv_bps": 5000,
+      "liq_threshold_bps": 6000
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 6000,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "vol=6000 (appena sopra, high)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 83,
+      "max_ltv_bps": 3500,
+      "liq_threshold_bps": 4500,
+      "packed": 37750528334
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 83,
+      "max_ltv_bps": 3500,
+      "liq_threshold_bps": 4500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 15001,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "vol=15001 (vol_extreme, atteso RIFIUTATO)"
+    },
+    "binario": {
+      "esito": "RIFIUTATO",
+      "esito_code": 0,
+      "risk_score": 83,
+      "max_ltv_bps": 3500,
+      "liq_threshold_bps": 4500,
+      "packed": 37750528332
+    },
+    "field": {
+      "esito": "RIFIUTATO",
+      "esito_code": 0,
+      "risk_score": 83,
+      "max_ltv_bps": 3500,
+      "liq_threshold_bps": 4500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 2999,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "corr=2999 (appena sotto confine low/med)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 100,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128402
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 100,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 3000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "corr=3000 (appena sopra, med)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 93,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128374
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 93,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 5999,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "corr=5999 (appena sotto confine med/high)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 93,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128374
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 93,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 6000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "corr=6000 (appena sopra, high)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 85,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128342
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 85,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 99999,
+      "age": 400,
+      "flags": 0,
+      "desc": "liq=99999 (appena sotto confine good)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 94,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128378
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 94,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 100000,
+      "age": 400,
+      "flags": 0,
+      "desc": "liq=100000 (appena sopra, good)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 100,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128402
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 100,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 19999,
+      "age": 400,
+      "flags": 0,
+      "desc": "liq=19999 (appena sotto confine ok)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 89,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128358
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 89,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 20000,
+      "age": 400,
+      "flags": 0,
+      "desc": "liq=20000 (appena sopra, ok)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 94,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128378
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 94,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 4999,
+      "age": 400,
+      "flags": 0,
+      "desc": "liq=4999 (illiquid, atteso RIFIUTATO)"
+    },
+    "binario": {
+      "esito": "RIFIUTATO",
+      "esito_code": 0,
+      "risk_score": 85,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9000,
+      "packed": 75501824340
+    },
+    "field": {
+      "esito": "RIFIUTATO",
+      "esito_code": 0,
+      "risk_score": 85,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9000
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 5000,
+      "age": 400,
+      "flags": 0,
+      "desc": "liq=5000 (appena sopra, min)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 89,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128358
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 89,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 365,
+      "flags": 0,
+      "desc": "age=365 (NON established, confine stretto >)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 96,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128386
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 96,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 366,
+      "flags": 0,
+      "desc": "age=366 (established)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 100,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128402
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 100,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 90,
+      "flags": 0,
+      "desc": "age=90 (NON new_ish, confine stretto >)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 92,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128370
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 92,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 91,
+      "flags": 0,
+      "desc": "age=91 (new_ish)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 96,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128386
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 96,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "flags=0 (pulito)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 100,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128402
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 100,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 1,
+      "desc": "flags=1 (una segnalazione)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 96,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128386
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 96,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 2,
+      "desc": "flags=2 (flags_bad, atteso RIFIUTATO)"
+    },
+    "binario": {
+      "esito": "RIFIUTATO",
+      "esito_code": 0,
+      "risk_score": 93,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128372
+    },
+    "field": {
+      "esito": "RIFIUTATO",
+      "esito_code": 0,
+      "risk_score": 93,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 3,
+      "desc": "flags=3 (flags_bad, atteso RIFIUTATO)"
+    },
+    "binario": {
+      "esito": "RIFIUTATO",
+      "esito_code": 0,
+      "risk_score": 93,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128372
+    },
+    "field": {
+      "esito": "RIFIUTATO",
+      "esito_code": 0,
+      "risk_score": 93,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 42000,
+      "collateral": 100000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "leva: loan=42000 (appena sotto confine half, tier0)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 100,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128402
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 100,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 43000,
+      "collateral": 100000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "leva: loan=43000 (appena sopra, tier1)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 90,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128362
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 90,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 63000,
+      "collateral": 100000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "leva: loan=63000 (appena sotto confine three_q, tier1)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 90,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128362
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 90,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 64000,
+      "collateral": 100000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "leva: loan=64000 (appena sopra, tier2)"
+    },
+    "binario": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 80,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128322
+    },
+    "field": {
+      "esito": "APPROVATO",
+      "esito_code": 2,
+      "risk_score": 80,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 84000,
+      "collateral": 100000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "leva: loan=84000 (appena sotto confine within, tier2)"
+    },
+    "binario": {
+      "esito": "REVIEW MANUALE",
+      "esito_code": 1,
+      "risk_score": 80,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128321
+    },
+    "field": {
+      "esito": "REVIEW MANUALE",
+      "esito_code": 1,
+      "risk_score": 80,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 86000,
+      "collateral": 100000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "leva: loan=86000 (appena sopra, tier3, oltre policy)"
+    },
+    "binario": {
+      "esito": "RIFIUTATO",
+      "esito_code": 0,
+      "risk_score": 65,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128260
+    },
+    "field": {
+      "esito": "RIFIUTATO",
+      "esito_code": 0,
+      "risk_score": 65,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 1000000001,
+      "loan": 10000,
+      "collateral": 1000000,
+      "vol": 200,
+      "corr": 1000,
+      "liq": 150000,
+      "age": 400,
+      "flags": 0,
+      "desc": "any_invalid: existing_debt_p1 oltre il cap, atteso RIFIUTATO"
+    },
+    "binario": {
+      "esito": "RIFIUTATO",
+      "esito_code": 0,
+      "risk_score": 65,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500,
+      "packed": 79696128260
+    },
+    "field": {
+      "esito": "RIFIUTATO",
+      "esito_code": 0,
+      "risk_score": 65,
+      "max_ltv_bps": 8500,
+      "liq_threshold_bps": 9500
+    },
+    "match": true
+  },
+  {
+    "scenario": {
+      "p0": 0,
+      "p1": 0,
+      "loan": 45000,
+      "collateral": 100000,
+      "vol": 3500,
+      "corr": 4000,
+      "liq": 25000,
+      "age": 400,
+      "flags": 0,
+      "desc": "review manuale: punteggio 57<70, nessun rifiuto netto"
+    },
+    "binario": {
+      "esito": "REVIEW MANUALE",
+      "esito_code": 1,
+      "risk_score": 57,
+      "max_ltv_bps": 5000,
+      "liq_threshold_bps": 6000,
+      "packed": 50334208229
+    },
+    "field": {
+      "esito": "REVIEW MANUALE",
+      "esito_code": 1,
+      "risk_score": 57,
+      "max_ltv_bps": 5000,
+      "liq_threshold_bps": 6000
+    },
+    "match": true
+  }
+]

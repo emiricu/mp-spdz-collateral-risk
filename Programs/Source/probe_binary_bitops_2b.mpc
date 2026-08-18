@@ -1,0 +1,40 @@
+# coding: latin-1
+"""Isolation follow-up to probe_binary_bitops_2.mpc's CONVINT runtime
+failure: packs and reveals ONLY (no post-reveal bit-shift/mask
+arithmetic inside the .mpc at all -- that's done in Python afterward,
+on the plain printed integer) to determine whether the failure is in
+the SECRET-side packing (what's actually being tested) or in doing
+further bitwise arithmetic on an already-revealed binary-domain value
+(a separate, already-partially-known-flaky area per
+crypto_collateral_risk.mpc's compute_flags docstring)."""
+
+V0_BITS, V1_BITS, V2_BITS, V3_BITS = 2, 7, 14, 14
+
+scenarios = [
+    (2, 65, 5000, 5500),
+    (0, 0, 0, 0),
+    (2, 100, 10000, 10000),
+    (1, 37, 8500, 500),
+]
+
+for idx, (v0, v1, v2, v3) in enumerate(scenarios):
+    s0 = sint(v0)
+    s1 = sint(v1)
+    s2 = sint(v2)
+    s3 = sint(v3)
+
+    packed_a = s0 | (s1 << V0_BITS) | (s2 << (V0_BITS + V1_BITS)) \
+               | (s3 << (V0_BITS + V1_BITS + V2_BITS))
+    r_a = packed_a.reveal()
+
+    bits0 = s0.bit_decompose(V0_BITS)
+    bits1 = s1.bit_decompose(V1_BITS)
+    bits2 = s2.bit_decompose(V2_BITS)
+    bits3 = s3.bit_decompose(V3_BITS)
+    combined_bits = bits0 + bits1 + bits2 + bits3
+    packed_b = sint.bit_compose(combined_bits)
+    r_b = packed_b.reveal()
+
+    print_ln('--- scenario %s: v0=%s v1=%s v2=%s v3=%s ---', idx, v0, v1, v2, v3)
+    print_ln('A shift+OR    packed=%s', r_a)
+    print_ln('B bit_compose packed=%s', r_b)

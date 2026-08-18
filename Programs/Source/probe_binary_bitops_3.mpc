@@ -1,0 +1,36 @@
+# coding: latin-1
+"""Isolated probe (Passo 1, esperimento binario/tinier), part 3: the
+real program's decide_production needs r_any_invalid -- already a
+REVEALED (clear) value by the time it reaches decision-combination,
+same as field/ring's validate_debts -- converted BACK into a secret to
+combine with the other still-secret flags via native bitwise AND/OR/NOT
+before a later reveal (field/ring does the arithmetic analogue:
+sint(1) - sint(r_any_invalid)). This is a different operation from
+probes 1/2 (a runtime clear-to-secret conversion of a value that was
+never a compile-time Python int, not a fresh sint(<python int>) or a
+secret-to-secret bitwise op): worth confirming on its own before it
+ends up load-bearing in the real experimental program.
+
+Two revealed values (simulating r_any_invalid: 0 = valid, 1 = invalid)
+each combined via sint(clear_value) -> bitwise NOT -> AND with a second
+secret flag -> reveal, checked against the expected truth table.
+"""
+
+# scenario: (clear_invalid_flag, secret_other_flag) -> expect
+# not_invalid & other
+scenarios = [(0, 1), (0, 0), (1, 1), (1, 0)]
+
+for idx, (invalid_val, other_val) in enumerate(scenarios):
+    # simulate "already revealed" the way validate_debts really produces
+    # it: a genuine secret comparison, then .reveal() -- not a bare
+    # compile-time int standing in for a clear value.
+    r_invalid = (sint(invalid_val) > sint(0)).reveal()
+    other_flag = (sint(other_val) > sint(0))
+
+    reconverted = sint(r_invalid)
+    not_invalid = ~reconverted
+    combined = not_invalid & other_flag
+
+    print_ln('--- scenario %s: invalid=%s other=%s ---', idx, invalid_val, other_val)
+    print_ln('r_invalid (revealed clear): %s', r_invalid)
+    print_ln('not_invalid & other -> combined: %s', combined.reveal())

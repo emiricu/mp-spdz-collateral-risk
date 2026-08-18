@@ -1,0 +1,320 @@
+# coding: latin-1
+"""EXPERIMENTAL, NOT FOR DEPLOYMENT -- see node/README.md and this
+file's own header for status. Not wired into any node, orchestrator, or
+the automated benchmark sweep (crypto_collateral_risk_binary_benchmark.mpc
+stays untouched). A single, isolated question: can MODE_PRODUCTION's
+decision-composition (currently field/ring-only, see
+crypto_collateral_risk.mpc's module docstring and its compile-time
+CompilerError guard) be rewritten to work in the binary circuit domain
+by using NATIVE bitwise operators (&, |, ~) to combine the already-
+binary-typed secret comparison flags, instead of the arithmetic
+(+, -, *) composition that depends on field/ring semantics and is not
+proven safe for binary (an EARLIER, different bug: composing secret
+booleans ARITHMETICALLY before revealing silently gave the wrong answer
+in the binary domain in a prior program in this repo -- see
+decide_public's docstring in crypto_collateral_risk.mpc). The two bugs
+are different: this file tests whether bitwise composition avoids the
+arithmetic-specific one, not whether composing-before-reveal is safe in
+general (it still isn't proven safe for revealed-then-recombined
+values -- see the packing note below).
+
+Verified in isolation first (Passo 1, not reproduced here -- see
+Programs/Source/probe_binary_bitops_{1,2,2b,3}.mpc, run directly with
+`./compile.py -B 64 <name> && Scripts/tinier.sh -N 2 <name>`):
+  1. Secret comparisons (a < b etc.) combined with &, |, ^, ~ instead of
+     +, -, * on binary-domain sint (Compiler/GC/types.py's sbitintvec):
+     correct on every case in a hand-verified truth table.
+  2. Packing four distinct secret multi-bit values into one wider
+     secret via shift+OR (and, independently, via bit_decompose +
+     bit_compose), then ONE .reveal(): decodes back to exactly the
+     original values, zero corruption, both techniques agree exactly.
+  3. A value already revealed earlier (validate_debts' r_any_invalid,
+     same as field/ring) converted back to secret (sint(clear_value))
+     and combined with a still-secret flag via & : correct.
+  4. IMPORTANT CAVEAT FOUND DURING PROBE 2's FIRST (broken) VERSION:
+     further bitwise arithmetic (&, >>) attempted on an ALREADY-
+     REVEALED binary-domain value fails at RUNTIME with "Code not
+     defined for instruction CONVINT" -- an extension of the already-
+     documented regint/cint |/& failure (see compute_flags' docstring)
+     to this specific case too. Consequence for this file: the packed
+     value is revealed and printed RAW (one integer); decoding it back
+     into its four fields happens in the calling Python test harness
+     (ordinary integer bit-shifting on a plain int), never inside this
+     .mpc program.
+
+Business logic (policy constants, all five score sub-components, the
+seven decision flags) is IDENTICAL to crypto_collateral_risk.mpc's
+field/ring decide_production path -- copied verbatim, not re-derived.
+Only the flag-combination technique and the final packing/reveal
+technique differ. See that file for the fuller module docstring this
+one deliberately does not repeat.
+
+Usage: ./compile.py -B 64 crypto_collateral_risk_binary_produzione_sperimentale <n_platforms=2> <requester=0>
+(no <mode> arg -- this file only ever runs the production-composition
+path being tested, nothing else)
+"""
+
+from Compiler.exceptions import CompilerError
+
+if not program.options.binary:
+    raise CompilerError(
+        'questo file esiste per essere compilato SOLO per il dominio '
+        'binario (-B) -- per field/ring usa crypto_collateral_risk.mpc '
+        'con mode=2, gia\' verificato e in produzione.')
+
+# ---------------------------------------------------------------------------
+# Compile-time parameters (identical to crypto_collateral_risk.mpc)
+# ---------------------------------------------------------------------------
+
+N_PLATFORMS = 2
+if len(program.args) > 1:
+    N_PLATFORMS = int(program.args[1])
+
+REQUESTER = 0
+if len(program.args) > 2:
+    REQUESTER = int(program.args[2])
+
+# ---------------------------------------------------------------------------
+# Policy constants -- byte-for-byte identical to crypto_collateral_risk.mpc.
+# Business logic is explicitly NOT in scope for this experiment.
+# ---------------------------------------------------------------------------
+
+POLICY_VERSION = 1
+
+BPS = 10000
+
+VOL_STABLE_BPS = 500
+VOL_BLUECHIP_BPS = 3000
+VOL_MEDIUM_BPS = 6000
+MAX_LTV_STABLE_BPS = 8500
+MAX_LTV_BLUECHIP_BPS = 6500
+MAX_LTV_MEDIUM_BPS = 5000
+MAX_LTV_HIGH_BPS = 3500
+VOL_SCORE_STABLE = 20
+VOL_SCORE_BLUECHIP = 18
+VOL_SCORE_MEDIUM = 10
+VOL_SCORE_HIGH = 3
+
+LIQ_BUFFER_BPS = 1000
+
+CORR_LOW_BPS = 3000
+CORR_MED_BPS = 6000
+CORR_SCORE_LOW = 15
+CORR_SCORE_MED = 8
+CORR_SCORE_HIGH = 0
+
+LIQUIDITY_GOOD_BPS = 100000
+LIQUIDITY_OK_BPS = 20000
+LIQUIDITY_MIN_BPS = 5000
+LIQUIDITY_SCORE_GOOD = 15
+LIQUIDITY_SCORE_OK = 9
+LIQUIDITY_SCORE_MIN = 4
+LIQUIDITY_SCORE_BAD = 0
+
+WALLET_AGE_ESTABLISHED = 365
+WALLET_AGE_NEW = 90
+WALLET_SCORE_AGE_ESTABLISHED = 8
+WALLET_SCORE_AGE_NEW = 4
+WALLET_SCORE_FLAGS_CLEAN = 7
+WALLET_SCORE_FLAGS_ONE = 3
+
+APPROVAL_SCORE_THRESHOLD = 70
+MAX_DEBT_CAP = 1_000_000_000
+
+# Bit widths for the final packed reveal -- see module docstring point 4.
+# decision_code in {0,1,2}: 2 bits. total_score max 35+20+15+15+15=100:
+# 7 bits. max_ltv_bps max 8500, liq_threshold_bps max ~9500: 14 bits
+# each comfortably covers both with margin. 2+7+14+14=37 bits, well
+# inside the 64-bit sint this compiles with (-B 64).
+DECISION_BITS = 2
+SCORE_BITS = 7
+LTV_BITS = 14
+LIQ_BITS = 14
+
+
+# ---------------------------------------------------------------------------
+# Steps 1-3: identical to crypto_collateral_risk.mpc -- reading inputs,
+# validating debts, and every sub-score function. None of this composes
+# a secret boolean arithmetically before a reveal, so none of it needed
+# to change; all of it already runs correctly in the binary domain via
+# crypto_collateral_risk.mpc's decide_public()/MODE_BENCHMARK path,
+# exercised in every binary-domain benchmark sweep to date.
+# ---------------------------------------------------------------------------
+
+def read_platform_debts():
+    return [sint.get_input_from(i) for i in range(N_PLATFORMS)]
+
+
+def read_requester_context():
+    new_loan = sint.get_input_from(REQUESTER)
+    collateral_value = sint.get_input_from(REQUESTER)
+    vol_bps = sint.get_input_from(REQUESTER)
+    corr_bps = sint.get_input_from(REQUESTER)
+    liquidity_ratio_bps = sint.get_input_from(REQUESTER)
+    wallet_age_days = sint.get_input_from(REQUESTER)
+    wallet_flags = sint.get_input_from(REQUESTER)
+    return dict(new_loan=new_loan, collateral_value=collateral_value,
+                vol_bps=vol_bps, corr_bps=corr_bps,
+                liquidity_ratio_bps=liquidity_ratio_bps,
+                wallet_age_days=wallet_age_days, wallet_flags=wallet_flags)
+
+
+def validate_debts(platform_debts):
+    any_invalid = sint(0)
+    for debt in platform_debts:
+        valid = (debt >= sint(0)) * (debt <= sint(MAX_DEBT_CAP))
+        any_invalid = any_invalid + (sint(1) - valid)
+    return (any_invalid > sint(0)).reveal()
+
+
+def volatility_tier(vol_bps):
+    is_stable = (vol_bps < sint(VOL_STABLE_BPS))
+    is_bluechip = (vol_bps < sint(VOL_BLUECHIP_BPS))
+    is_medium = (vol_bps < sint(VOL_MEDIUM_BPS))
+    max_ltv_bps = is_stable.if_else(sint(MAX_LTV_STABLE_BPS),
+                  is_bluechip.if_else(sint(MAX_LTV_BLUECHIP_BPS),
+                  is_medium.if_else(sint(MAX_LTV_MEDIUM_BPS),
+                                     sint(MAX_LTV_HIGH_BPS))))
+    vol_score = is_stable.if_else(sint(VOL_SCORE_STABLE),
+                is_bluechip.if_else(sint(VOL_SCORE_BLUECHIP),
+                is_medium.if_else(sint(VOL_SCORE_MEDIUM),
+                                   sint(VOL_SCORE_HIGH))))
+    return max_ltv_bps, vol_score
+
+
+def correlation_score(corr_bps):
+    low = (corr_bps < sint(CORR_LOW_BPS))
+    med = (corr_bps < sint(CORR_MED_BPS))
+    return low.if_else(sint(CORR_SCORE_LOW),
+           med.if_else(sint(CORR_SCORE_MED), sint(CORR_SCORE_HIGH)))
+
+
+def liquidity_score(liquidity_ratio_bps):
+    good = (liquidity_ratio_bps >= sint(LIQUIDITY_GOOD_BPS))
+    ok = (liquidity_ratio_bps >= sint(LIQUIDITY_OK_BPS))
+    thin = (liquidity_ratio_bps >= sint(LIQUIDITY_MIN_BPS))
+    return good.if_else(sint(LIQUIDITY_SCORE_GOOD),
+           ok.if_else(sint(LIQUIDITY_SCORE_OK),
+           thin.if_else(sint(LIQUIDITY_SCORE_MIN), sint(LIQUIDITY_SCORE_BAD))))
+
+
+def wallet_score(wallet_age_days, wallet_flags):
+    established = (wallet_age_days > sint(WALLET_AGE_ESTABLISHED))
+    new_ish = (wallet_age_days > sint(WALLET_AGE_NEW))
+    age_pts = established.if_else(sint(WALLET_SCORE_AGE_ESTABLISHED),
+              new_ish.if_else(sint(WALLET_SCORE_AGE_NEW), sint(0)))
+    clean = (wallet_flags == sint(0))
+    one_flag = (wallet_flags == sint(1))
+    flag_pts = clean.if_else(sint(WALLET_SCORE_FLAGS_CLEAN),
+               one_flag.if_else(sint(WALLET_SCORE_FLAGS_ONE), sint(0)))
+    return age_pts + flag_pts
+
+
+def leverage_tier_and_score(exposure, collateral_value, max_ltv_bps):
+    budget = collateral_value * max_ltv_bps
+    half = (exposure * BPS * 2 <= budget)
+    three_q = (exposure * BPS * 4 <= budget * 3)
+    within = (exposure * BPS <= budget)
+    tier = half.if_else(sint(0), three_q.if_else(sint(1),
+            within.if_else(sint(2), sint(3))))
+    score = half.if_else(sint(35), three_q.if_else(sint(25),
+            within.if_else(sint(15), sint(0))))
+    return tier, score
+
+
+def compute_flags(exposure, collateral_value, max_ltv_bps, liq_threshold_bps,
+                   vol_bps, liquidity_ratio_bps, wallet_flags, total_score):
+    """Identical to crypto_collateral_risk.mpc's compute_flags -- returns
+    the seven raw secret comparison flags, unchanged. Nothing here
+    COMBINES flags (that's decide_production_binary below), so nothing
+    here depended on the arithmetic-vs-bitwise choice this file tests."""
+    return dict(
+        over_liq=(exposure * BPS > collateral_value * liq_threshold_bps),
+        over_max=(exposure * BPS > collateral_value * max_ltv_bps),
+        flags_bad=(wallet_flags >= sint(2)),
+        illiquid=(liquidity_ratio_bps < sint(LIQUIDITY_MIN_BPS)),
+        vol_extreme=(vol_bps > sint(15000)),
+        score_high=(total_score >= sint(APPROVAL_SCORE_THRESHOLD)),
+        ample=(exposure * BPS * 10 <= collateral_value * max_ltv_bps * 8),
+    )
+
+
+# ---------------------------------------------------------------------------
+# THE part of this experiment: decision composition rewritten with native
+# bitwise operators (confirmed correct in isolation, Passo 1) instead of
+# crypto_collateral_risk.mpc's decide_production's arithmetic
+# (sint(1) - flag for NOT, * for AND). Priority and semantics identical:
+# RIFIUTATO > APPROVATO > REVIEW MANUALE.
+# ---------------------------------------------------------------------------
+
+def decide_production_binary(flags, r_any_invalid):
+    not_over_liq = ~flags['over_liq']
+    not_over_max = ~flags['over_max']
+    not_flags_bad = ~flags['flags_bad']
+    not_illiquid = ~flags['illiquid']
+    not_vol_extreme = ~flags['vol_extreme']
+    # r_any_invalid is already REVEALED (validate_debts, unchanged) --
+    # converted back to secret to combine with the still-secret flags,
+    # confirmed correct in isolation by probe_binary_bitops_3.mpc.
+    not_invalid = ~sint(r_any_invalid)
+    all_clear = (not_over_liq & not_over_max & not_flags_bad
+                 & not_illiquid & not_vol_extreme & not_invalid)
+    reject_s = ~all_clear
+    approve_s = flags['score_high'] & flags['ample']
+    return reject_s, approve_s
+
+
+def main():
+    platform_debts = read_platform_debts()
+    ctx = read_requester_context()
+
+    r_any_invalid = validate_debts(platform_debts)
+
+    existing_debt = sum(platform_debts, sint(0))
+    exposure = existing_debt + ctx['new_loan']
+
+    max_ltv_bps, vol_score = volatility_tier(ctx['vol_bps'])
+    liq_threshold_bps = max_ltv_bps + sint(LIQ_BUFFER_BPS)
+    thin = (ctx['liquidity_ratio_bps'] < sint(LIQUIDITY_MIN_BPS))
+    liq_threshold_bps = thin.if_else(liq_threshold_bps - sint(500), liq_threshold_bps)
+
+    lev_tier, lev_score = leverage_tier_and_score(
+        exposure, ctx['collateral_value'], max_ltv_bps)
+    corr_score = correlation_score(ctx['corr_bps'])
+    liq_score = liquidity_score(ctx['liquidity_ratio_bps'])
+    wal_score = wallet_score(ctx['wallet_age_days'], ctx['wallet_flags'])
+
+    total_score = lev_score + vol_score + corr_score + liq_score + wal_score
+
+    flags = compute_flags(exposure, ctx['collateral_value'], max_ltv_bps,
+                           liq_threshold_bps, ctx['vol_bps'],
+                           ctx['liquidity_ratio_bps'], ctx['wallet_flags'],
+                           total_score)
+
+    reject_s, approve_s = decide_production_binary(flags, r_any_invalid)
+    # if_else for the final code composition is UNCHANGED from
+    # crypto_collateral_risk.mpc -- already domain-portable, exercised
+    # throughout volatility_tier/correlation_score/etc. above in every
+    # existing binary-domain run, not part of what this file tests.
+    decision_code = reject_s.if_else(sint(0), approve_s.if_else(sint(2), sint(1)))
+
+    # Pack all four values to reveal into ONE secret structure (shift +
+    # OR, confirmed correct and equivalent to bit_decompose+bit_compose
+    # in probe_binary_bitops_2b.mpc), then a SINGLE broadcast .reveal()
+    # -- not reveal_to(), unavailable for binary types and unneeded here
+    # regardless. Printed RAW: decoding happens in the Python test
+    # harness, not here -- see module docstring point 4 for why.
+    packed = decision_code | (total_score << DECISION_BITS) \
+             | (max_ltv_bps << (DECISION_BITS + SCORE_BITS)) \
+             | (liq_threshold_bps << (DECISION_BITS + SCORE_BITS + LTV_BITS))
+    r_packed = packed.reveal()
+
+    print_ln('policy_version: %s', POLICY_VERSION)
+    print_ln('packed: %s', r_packed)
+    print_ln('decision_bits: %s', DECISION_BITS)
+    print_ln('score_bits: %s', SCORE_BITS)
+    print_ln('ltv_bits: %s', LTV_BITS)
+    print_ln('liq_bits: %s', LIQ_BITS)
+
+
+main()
