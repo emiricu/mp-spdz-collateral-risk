@@ -685,7 +685,7 @@ processo `mascot-party.x` per quella run, non solo il risultato
 decodificato) sono su volumi montati (`player-data`, `node-logs`),
 sopravvivono ai riavvii dei container.
 
-## 11. Tentativo di integrazione di tinier (sperimentale) nei nodi: fermato al test 2
+## 11. Tentativo di integrazione di tinier (sperimentale) nei nodi: chiuso, non risolvibile in questo scope
 
 tinier era gi&agrave; stato validato due volte, separatamente e in
 isolamento: correttezza (34/34 scenari concordanti con mascot,
@@ -698,7 +698,18 @@ l'uno n&eacute; l'altro giro avevano mai toccato l'infrastruttura reale
 rigore gi&agrave; usato per mascot in &sect;7-9.6, e il punto preciso in
 cui &egrave; stato interrotto.
 
-**Non si &egrave; arrivati all'integrazione in produzione.** Il test 2
+**Aggiornamento (Giro 2, &sect;11.9 sotto)**: &sect;11.1-11.8 sono il
+resoconto del Giro 1, lasciato intatto come cronologia. Il Giro 2 ha
+approfondito esattamente il problema del test 2 fino a una diagnosi
+precisa e a una chiusura definitiva &mdash; leggere &sect;11.9 in poi
+per la conclusione che vale davvero; quanto segue qui sotto descrive
+solo cosa si sapeva a fine Giro 1, incluse due ipotesi (rallentamento
+legato alla generazione del materiale MAC; possibile confronto non
+equo tra le velocit&agrave; dei due protocolli) poi confermate/escluse
+con precisione nel Giro 2.
+
+**Non si &egrave; arrivati all'integrazione in produzione (n&eacute; nel
+Giro 1 n&eacute; nel Giro 2).** Il test 2
 (party ucciso a met&agrave; calcolo) ha mostrato per tinier un
 rilevamento di crash sistematicamente e riproducibilmente pi&ugrave;
 lento di quello gi&agrave; noto per mascot (&sect;8.5/&sect;9.3, <1s) &mdash;
@@ -929,3 +940,196 @@ questo giro) non lo manda. **Non ridistribuire questa immagine ai nodi
 di produzione senza aggiornare prima il backend** &mdash; romperebbe
 `/api/preventivo` con un 422 su ogni richiesta, non un fallimento
 silenzioso ma comunque una rottura da evitare con un deploy disattento.
+
+### 11.9 Giro 2 &mdash; diagnosi mirata: perch&eacute; tinier &egrave; pi&ugrave; lento a rilevare un party ucciso
+
+Obiettivo di questo giro: arrivare a una conclusione definitiva sul
+singolo problema del test 2, non un'altra osservazione parziale.
+Testate due ipotesi, in ordine; la prima ha rivelato un problema
+diverso e pi&ugrave; specifico di quello ipotizzato, la cui correzione
+del metodo di misura ha permesso di isolare la causa reale.
+
+#### 11.9.1 Ipotesi 1: materiale di preprocessing MAC non persistito
+
+Confermato **nel codice**, non solo nei log (`OT/MascotMacKey.hpp`,
+`read_or_generate`): il meccanismo di persistenza **esiste gi&agrave;**
+nel framework, condiviso identico da mascot e tinier (entrambi passano
+da `OT/NPartyTripleGenerator.hpp`) &mdash; tenta di leggere
+`Player-Data/Mascot-Secrets-*` all'avvio, rigenera da zero solo se il
+file manca o non corrisponde. Il problema non era l'assenza del
+meccanismo, ma che l'harness di test isolato (`local-test/
+tinier_integration_test.py`) non montava alcun volume persistente per
+`Player-Data/` &mdash; ogni run, per **entrambi** i protocolli,
+rigenerava sempre da zero.
+
+Corretto: aggiunto un volume Docker nominato per party
+(`Topology(persistent=True)`), pi&ugrave; una run di riscaldamento prima
+dei test di kill. Verificato che la cache funzioni: `generating from
+scratch` non compare pi&ugrave; nei log successivi al warm-up, per
+nessun party.
+
+**Risultato, sorprendente rispetto all'ipotesi**: con la cache calda, il
+rilevamento del crash non &egrave; migliorato &mdash; &egrave;
+**peggiorato**, apparentemente a tempo indefinito (nessun rilevamento
+entro 90s, su 4/4 run valide; snapshot periodici di `ps aux` durante
+l'attesa confermano che i party superstiti restano vivi con CPU vicina
+allo 0%, genuinamente bloccati, non lenti). L'ipotesi originale era
+sbagliata nella direzione, ma il tentativo di verificarla ha portato
+dritti alla causa reale.
+
+#### 11.9.2 Causa reale: due percorsi di rete distinti, condivisi da entrambi i protocolli
+
+`Networking/sockets.h` definisce `CONNECTION_TIMEOUT` (in questo
+progetto compilato a **86400 secondi**, `CONFIG.mine`:
+`MY_CFLAGS += -DCONNECTION_TIMEOUT=86400`) &mdash; usato da
+`ServerSocket.cpp` **solo nella fase di stabilimento della connessione**
+(`accept`/`connect`), un percorso di codice completamente diverso dalla
+lettura su un socket **gi&agrave; connesso**, che invece fallisce
+all'istante con un'eccezione se il peer sparisce (`read_some: stream
+truncated`).
+
+Verificato con un test isolato, senza Docker, direttamente sui binari
+(`tinier-party.x`/`mascot-party.x` sul host): uccidere il party 2 **a
+t+0,1s** (prima che le connessioni tra le tre parti siano stabilite),
+con `CONNECTION_TIMEOUT` temporaneamente abbassato a 5s per velocizzare
+la verifica (modifica reversibile, solo in `CONFIG.mine`, file locale
+non versionato, mai toccato il codice sorgente C++): rilevamento in
+esattamente **5,09s**, messaggio `Timed out waiting for peer` &mdash;
+non `stream truncated`. Confermato: sono due percorsi realmente
+distinti, e quello sbagliato (di gran lunga pi&ugrave; lento, in
+produzione 86400s = 24 ore) si attiva quando il kill arriva **prima**
+che la connessione N-via sia completa.
+
+Con la cache calda, l'intera computazione di tinier passa da qualche
+secondo a ~3-4s (salta la generazione delle chiavi) &mdash; il ritardo
+di kill fisso usato nell'harness (attesa di un processo confermato +
+1,5s) che prima ricadeva quasi sempre nella fase "gi&agrave; connesso"
+ora ricade, non deterministicamente, anche nella fase "ancora in fase
+di connessione". Non &egrave; quindi un difetto specifico di tinier
+messo in luce dalla cache calda: &egrave; un artefatto del metodo di
+misura (un ritardo di kill fisso, tarato implicitamente sui tempi
+lunghi di mascot) che smette di essere valido quando il tempo totale di
+computazione si accorcia parecchio.
+
+`CONFIG.mine` riportato a `86400` e i binari host ricompilati subito
+dopo il test, prima di procedere &mdash; l'esperimento non ha lasciato
+lo stato del repository alterato. **Non si tratta di un intervento
+adottabile come fix**: abbassare `CONNECTION_TIMEOUT` in modo permanente
+&egrave; una scelta a livello di intero progetto (tollerare meno tempo
+di avvio prima di dichiarare un peer irraggiungibile, per ogni
+protocollo e ogni deployment, incluso lo scenario reale di due macchine
+fisiche separate con latenza di rete vera), non un aggiustamento
+specifico a tinier &mdash; e, come mostrato sotto, **non risolve
+comunque** il problema di fondo del test 2.
+
+#### 11.9.3 Il confronto corretto: stesso ritardo di kill, garantito post-connessione, per entrambi
+
+Metodologia corretta: invece di un ritardo fisso tarato sui tempi di
+mascot, un ritardo fisso di 2,0s dopo l'avvio dei tre processi,
+verificato sufficiente a garantire connessione N-via gi&agrave;
+stabilita per **entrambi** i protocolli su questo host (stesso identico
+harness raw, nessun Docker, `CONNECTION_TIMEOUT` di produzione
+ripristinato). 5 run indipendenti per protocollo, N=3, party 2 ucciso:
+
+| Run | mascot: rilevamento | mascot: uscita | tinier: rilevamento | tinier: uscita |
+|---|---|---|---|---|
+| 1 | 0,091s | pulita | 2,488s | SIGABRT |
+| 2 | 0,137s | pulita | 2,457s | SIGABRT |
+| 3 | 0,149s | pulita | 2,324s | SIGABRT |
+| 4 | 0,059s | pulita | 0,062s | pulita |
+| 5 | 0,072s | pulita | 0,059s | pulita |
+
+**mascot: 5/5 rapido (0,06-0,15s), 5/5 uscita pulita &mdash; deterministico.**
+
+**tinier: bimodale, non rumore casuale.** 3 run su 5 a 2,3-2,5s con
+`SIGABRT` (eccezione C++ non gestita) su entrambe le parti superstiti,
+2 run su 5 indistinguibili da mascot (~0,06s, uscita pulita) &mdash;
+sempre la STESSA causa di fondo (`read_some: stream truncated`), due
+esiti radicalmente diversi a seconda della run. Rimosso ogni confondente
+di tempistica di connessione (stesso ritardo, verificato post-connessione
+per entrambi), la differenza persiste, riproducibile, non spiegabile da
+cache calda n&eacute; da `CONNECTION_TIMEOUT`.
+
+**Ipotesi sulla causa (architetturale, non verificata scendendo nel
+debug C++ riga per riga, che eccederebbe lo scope di questo progetto)**:
+`GC::ShareParty` (il percorso di avvio di tinier, `GC/ShareParty.hpp`)
+costruisce il `Player` **due volte** &mdash; una per l'impostazione della
+chiave MAC (`"shareparty"`), una dentro `ThreadMaster::run_with_error()`
+(`"main"`) &mdash; e usa un pool di thread (`GC::ThreadMaster`/`Thread`)
+per l'esecuzione, a differenza del percorso pi&ugrave; lineare di
+mascot (`DishonestMajorityFieldMachine`). Se l'eccezione di socket
+troncato viene sollevata su un thread diverso da quello principale, non
+protetto dallo stesso `try/catch` di livello superiore, il risultato
+&egrave; `std::terminate()` invece di un'uscita gestita &mdash; e quale
+thread nota per primo il socket morto dipende da un dettaglio di
+scheduling non deterministico, spiegando la natura bimodale
+dell'osservazione. Verificarlo con certezza richiederebbe mettere un
+debugger dentro `tinier-party.x`, cio&egrave; lavorare sul codice
+sorgente C++ di MP-SPDZ &mdash; esplicitamente fuori scope.
+
+#### 11.9.4 Condizione di successo: non soddisfatta
+
+Concordata prima di questo giro: rilevamento nello stesso ordine di
+grandezza del <1s di mascot **su almeno 5 run indipendenti**, uscita
+deterministica. Il risultato osservato (3/5 run a 2,3-2,5s con
+`SIGABRT`, 2/5 run allineate a mascot) **non soddisfa n&eacute; il
+primo n&eacute; il secondo criterio**: n&eacute; "stesso ordine di
+grandezza" (2,3-2,5s &egrave; ~20-40&times; il tempo di mascot, non un
+fattore 2-3&times;) n&eacute; "deterministico" (l'alternanza tra
+`SIGABRT` e uscita pulita a parit&agrave; di causa &egrave; precisamente
+la non-determinismo che la condizione di successo escludeva
+esplicitamente). Non un miglioramento parziale da presentare come
+"sostanzialmente risolto" &mdash; un fallimento del test 2, confermato
+con una diagnosi pi&ugrave; precisa di quella del Giro 1, non attenuato
+da essa.
+
+#### 11.9.5 Passo 2 (tuning di rete): eseguito, non sufficiente
+
+Il Passo 2 previsto da questo giro (opzione di configurazione per il
+timeout di rete, non una patch C++) &egrave; stato effettivamente
+trovato e testato: `CONNECTION_TIMEOUT`, gi&agrave; un flag di
+compilazione esposto (`CONFIG.mine`), non richiede alcuna modifica al
+codice sorgente. Ma il test del &sect;11.9.3, che ha gi&agrave; escluso
+la fase di connessione dal confronto (kill garantito post-connessione
+per entrambi i protocolli), mostra che il problema **non &egrave;
+questo timeout** &mdash; persiste identico con `CONNECTION_TIMEOUT` di
+produzione invariato. Non c'&egrave; quindi un secondo valore di questo
+flag da provare: il Passo 2, nella sua unica forma applicabile senza
+toccare il codice C++, non risolve il problema del test 2, per un
+motivo verificato, non per mancato tentativo.
+
+#### 11.9.6 Conclusione definitiva: integrazione tinier chiusa
+
+**Il problema non &egrave; risolvibile restando dentro lo scope di
+questo progetto.** Le due strade previste da questo giro sono state
+entrambe percorse fino in fondo:
+
+- Persistenza del materiale MAC (Passo 1): il meccanismo esiste
+  gi&agrave; ed &egrave; stato correttamente attivato, ma non tocca la
+  causa del problema &mdash; ha solo reso pi&ugrave; visibile un
+  artefatto separato del metodo di misura (tempi di kill tarati sulla
+  velocit&agrave; di mascot, non validi per un protocollo molto
+  pi&ugrave; veloce), gi&agrave; corretto nel confronto del &sect;11.9.3.
+- Tuning di rete (Passo 2): `CONNECTION_TIMEOUT` &egrave; un flag di
+  compilazione reale, testato, e non &egrave; la causa del problema
+  isolato nel &sect;11.9.3.
+- La causa pi&ugrave; probabile che rimane (architettura multi-thread di
+  `GC::ThreadMaster`/gestione delle eccezioni tra thread in
+  `tinier-party.x`) richiederebbe una modifica al codice sorgente C++ di
+  MP-SPDZ per essere confermata e corretta &mdash; esplicitamente fuori
+  scope, per istruzione esplicita di questo stesso giro.
+
+**Il Test 3 e il Test 6 restano non eseguiti, questa volta in modo
+definitivo, non "in sospeso in attesa del test 2".** Il supporto duale
+mascot/tinier nei nodi di produzione **non verr&agrave; implementato**.
+Questa chiusura non &egrave; "da riprovare in futuro senza una ragione
+nuova" &mdash; lo diventerebbe solo se emergesse una ragione concreta e
+nuova per riaprirla (es. una versione futura di MP-SPDZ che corregge la
+gestione delle eccezioni multi-thread di tinier, verificabile con lo
+stesso identico test del &sect;11.9.3 come criterio di accettazione).
+
+Dati grezzi completi (5+5 run, timestamp, messaggi, exit code):
+`local-test/results_tinier_integration/test2_warm_tinier.json` (round
+cache calda, Docker) e nei log di sessione per il confronto raw
+host-level del &sect;11.9.3 (non salvato come file JSON separato, dati
+integrali riportati nella tabella sopra).

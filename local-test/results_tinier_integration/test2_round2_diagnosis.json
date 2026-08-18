@@ -1,0 +1,65 @@
+{
+  "description": "Round 2 targeted diagnosis of the tinier crash-detection slowdown found in round 1's test2. See node/README.md section 11.9.",
+  "hypothesis1_mac_key_persistence": {
+    "mechanism_confirmed_in_code": "OT/MascotMacKey.hpp read_or_generate, shared identically by mascot and tinier via OT/NPartyTripleGenerator.hpp",
+    "test_harness_gap_found": "local-test/tinier_integration_test.py's Topology mounted no persistent Player-Data volume before this round -- every run for both protocols regenerated key material from scratch",
+    "fix_applied": "Topology(persistent=True): named Docker volume per party + warm-up run before kill reps",
+    "result": "cache confirmed working (no more 'generating from scratch' after warmup), but crash detection got WORSE, not better: 0/4 valid kill reps detected within 90s (see test2_warm_tinier.json), survivors' CPU near 0% (genuinely blocked, confirmed via periodic ps aux snapshots)",
+    "conclusion": "hypothesis as originally stated (slow MAC generation causes slow detection) is wrong; investigating this unexpected result led directly to the real cause below"
+  },
+  "root_cause_found": {
+    "mechanism": "Networking/sockets.h CONNECTION_TIMEOUT (compiled as 86400s in this project's CONFIG.mine) governs ONLY the accept/connect phase (Networking/ServerSocket.cpp), a completely separate code path from a read on an ALREADY-connected socket (which fails instantly on truncation with 'read_some: stream truncated')",
+    "verification": "raw host-level test (no Docker), CONNECTION_TIMEOUT temporarily lowered to 5s (reversible, CONFIG.mine only, gitignored, never touched C++ source): killing party 2 at t+0.1s (before connections established) -> survivors detect at exactly t+5.09s post-kill with message 'Timed out waiting for peer', NOT 'stream truncated' -- confirms two genuinely distinct code paths",
+    "why_warm_cache_made_it_worse": "warm cache drops tinier's total runtime from ~5-15s to ~3-4s (skips key generation); the test harness's FIXED kill delay (confirmed-process-running + 1.5s), tuned implicitly for mascot's much longer runtime, now lands non-deterministically in the pre-connection phase for tinier -- not a tinier-specific defect, an artifact of the fixed-delay measurement method",
+    "cleanup": "CONFIG.mine restored to CONNECTION_TIMEOUT=86400 and host binaries (tinier-party.x, mascot-party.x) rebuilt immediately after the experiment; verified restored before proceeding"
+  },
+  "decisive_comparison": {
+    "methodology": "raw host-level test (no Docker), N=3, party 2 killed at a FIXED 2.0s delay after process launch -- verified sufficient for full N-party connection establishment for BOTH protocols on this host, eliminating the pre/post-connection confound. Production CONNECTION_TIMEOUT=86400 in effect throughout.",
+    "mascot": {
+      "program": "field-crypto_collateral_risk-3-0-2",
+      "runs": [
+        {"rep": 1, "detection_seconds": 0.091, "exit_p0": "clean", "exit_p1": "clean", "message": "Fatal error in communication"},
+        {"rep": 2, "detection_seconds": 0.137, "exit_p0": "clean", "exit_p1": "clean", "message": "Fatal error in communication"},
+        {"rep": 3, "detection_seconds": 0.149, "exit_p0": "clean", "exit_p1": "clean", "message": "Fatal error in communication"},
+        {"rep": 4, "detection_seconds": 0.059, "exit_p0": "clean", "exit_p1": "clean", "message": "Fatal error in communication"},
+        {"rep": 5, "detection_seconds": 0.072, "exit_p0": "clean", "exit_p1": "clean", "message": "Fatal error in communication"}
+      ],
+      "summary": "5/5 fast (0.06-0.15s), 5/5 clean exit -- deterministic"
+    },
+    "tinier": {
+      "program": "binary-crypto_collateral_risk_binary_produzione_sperimentale-3-0-0",
+      "runs": [
+        {"rep": 1, "detection_seconds": 2.488, "exit_p0": "SIGABRT", "exit_p1": "SIGABRT", "message": "terminate called (uncaught boost::wrapexcept<boost::system::system_error>, read_some: stream truncated)"},
+        {"rep": 2, "detection_seconds": 2.457, "exit_p0": "SIGABRT", "exit_p1": "SIGABRT", "message": "terminate called"},
+        {"rep": 3, "detection_seconds": 2.324, "exit_p0": "SIGABRT", "exit_p1": "SIGABRT", "message": "terminate called"},
+        {"rep": 4, "detection_seconds": 0.062, "exit_p0": "clean", "exit_p1": "clean", "message": "Fatal error in communication"},
+        {"rep": 5, "detection_seconds": 0.059, "exit_p0": "clean", "exit_p1": "clean", "message": "Fatal error in communication"}
+      ],
+      "summary": "bimodal: 3/5 slow (2.3-2.5s) + SIGABRT, 2/5 fast (~0.06s) + clean exit -- same underlying cause (read_some: stream truncated) both times, non-deterministic outcome"
+    }
+  },
+  "success_condition": {
+    "definition": "detection within the same order of magnitude as mascot's <1s on at least 5 independent runs, AND deterministic exit mode",
+    "met": false,
+    "reason": "3/5 tinier runs at 2.3-2.5s are not the same order of magnitude as mascot's 0.06-0.15s (~20-40x, not a 2-3x factor), and exit mode alternates between SIGABRT and clean exit for the identical underlying cause -- explicitly the non-determinism the success condition ruled out"
+  },
+  "root_cause_hypothesis_architectural": {
+    "statement": "GC::ShareParty (tinier's startup path, GC/ShareParty.hpp) constructs the Player TWICE (once for MAC-key setup as 'shareparty', again inside ThreadMaster::run_with_error() as 'main') and executes via a thread pool (GC::ThreadMaster/Thread), unlike mascot's more linear DishonestMajorityFieldMachine path. If the truncated-stream exception is thrown on a non-main thread not covered by the same top-level try/catch, the result is std::terminate() instead of a handled exit -- and which thread notices the dead socket first is a non-deterministic scheduling detail, consistent with the observed bimodal split.",
+    "verified_to_c_source_level": false,
+    "verification_would_require": "debugging inside tinier-party.x's C++ source, explicitly out of scope for this project"
+  },
+  "step2_network_tuning": {
+    "option_found": "CONNECTION_TIMEOUT, an already-exposed compile-time flag (CONFIG.mine's MY_CFLAGS), not a C++ source patch",
+    "tested": true,
+    "sufficient": false,
+    "reason": "the decisive_comparison test above already excludes the connection-establishment phase from the measurement (kill guaranteed post-connection for both protocols) and the slowdown persists identically with production CONNECTION_TIMEOUT unchanged -- there is no second value of this flag to try"
+  },
+  "final_conclusion": {
+    "resolved": false,
+    "closed_definitively": true,
+    "dual_protocol_implemented_in_production": false,
+    "test3_test6_run": false,
+    "reason_for_closure": "both available in-scope interventions (MAC key persistence, network timeout tuning) were tried and verified insufficient; the remaining plausible cause requires a C++ source change to MP-SPDZ itself, explicitly out of scope",
+    "reopening_condition": "a concrete new reason (e.g. an upstream MP-SPDZ fix to tinier's multi-thread exception handling), verifiable against the exact test in decisive_comparison as the acceptance criterion -- not simply retrying later without new information"
+  }
+}
