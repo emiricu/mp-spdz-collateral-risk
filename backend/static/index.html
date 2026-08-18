@@ -4,98 +4,64 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>collateral.mpc — preventivo prestito crypto</title>
+<!-- Shared design tokens (colors/fonts/spacing) -- single source of
+     truth, also consumed by static/documentazione.html. This page no
+     longer defines its own parallel dark-neon palette; anything below
+     is layout/components specific to the demo app only. -->
+<link rel="stylesheet" href="/assets/theme.css">
 <style>
-  :root {
-    --bg: #06080d;
-    --bg-grid: #0a0e16;
-    --surface: #10141d;
-    --surface-2: #161b27;
-    --border: #232a3a;
-    --border-bright: #34405a;
-    --ink: #E7ECF7;
-    --ink-muted: #8B93AB;
-    --ink-faint: #576079;
-    --mint: #2CFFB5;
-    --mint-dim: #16805E;
-    --violet: #8B7BFF;
-    --violet-dim: #4B3FA0;
-    --party0: #4FD1FF;
-    --party1: #FF9F4F;
-    --party2: #C77DFF;
-    --good: #2CFFB5;
-    --good-bg: #0E2A22;
-    --warn: #FFD166;
-    --warn-bg: #2E2612;
-    --bad: #FF6161;
-    --bad-bg: #2E1414;
-    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  }
   * { box-sizing: border-box; }
-  html, body { height: 100%; }
   body {
-    margin: 0;
-    background:
-      radial-gradient(1200px 600px at 15% -10%, rgba(139,123,255,0.12), transparent 60%),
-      radial-gradient(1000px 500px at 100% 10%, rgba(44,255,181,0.08), transparent 55%),
-      var(--bg);
-    background-attachment: fixed;
-    color: var(--ink);
-    font-family: var(--sans);
-    font-size: 15px;
-    line-height: 1.5;
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--sans); font-size: 15.5px; line-height: 1.55;
     -webkit-font-smoothing: antialiased;
   }
-  .mono { font-family: var(--mono); }
-  a { color: var(--mint); }
-  ::selection { background: rgba(44,255,181,0.25); }
-
-  /* subtle animated scanline grid backdrop, cheap and off by default for reduced motion */
-  .grid-overlay {
-    position: fixed; inset: 0; pointer-events: none; z-index: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 42px 42px;
-    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 80%);
+  .mono, code { font-family: var(--mono); }
+  code {
+    background: var(--code-bg); color: var(--code-ink); padding: 0.12em 0.42em;
+    border-radius: 4px; font-size: 0.87em;
   }
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  ::selection { background: rgba(46,125,209,0.18); }
 
-  .wrap { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; padding: 32px 20px 80px; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 40px 20px 80px; }
 
   header.top {
     display: flex; align-items: center; justify-content: space-between;
-    padding-bottom: 22px; margin-bottom: 28px; border-bottom: 1px solid var(--border);
+    padding-bottom: 20px; margin-bottom: 30px; border-bottom: 1px solid var(--border);
   }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; letter-spacing: -0.01em; }
-  .brand .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 12px var(--mint); }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 16px; letter-spacing: -0.01em; color: #14161f; }
+  .brand .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good-border); }
   .brand .sub { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); font-weight: 500; letter-spacing: 0.03em; }
   .top-right { display: flex; align-items: center; gap: 14px; }
   .pill {
     font-family: var(--mono); font-size: 12px; color: var(--ink-muted);
     border: 1px solid var(--border); border-radius: 100px; padding: 5px 12px;
-    display: flex; align-items: center; gap: 6px;
+    display: flex; align-items: center; gap: 6px; background: var(--paper-2);
   }
-  .pill .led { width: 6px; height: 6px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 6px var(--mint); }
+  .pill .led { width: 6px; height: 6px; border-radius: 50%; background: var(--good-border); }
   button.ghost {
-    background: transparent; border: 1px solid var(--border); color: var(--ink-muted);
+    background: var(--paper); border: 1px solid var(--border); color: var(--ink-muted);
     font-family: var(--sans); font-size: 13px; padding: 7px 14px; border-radius: 8px; cursor: pointer;
   }
-  button.ghost:hover { border-color: var(--border-bright); color: var(--ink); }
+  button.ghost:hover { border-color: var(--border-strong); color: var(--ink); background: var(--paper-2); }
 
-  h1 { font-size: 26px; letter-spacing: -0.015em; margin: 0 0 6px; text-wrap: balance; }
-  .lede { color: var(--ink-muted); font-size: 14.5px; max-width: 60ch; margin: 0 0 28px; }
+  h1 { font-size: clamp(22px, 3vw, 27px); font-weight: 800; letter-spacing: -0.015em; margin: 0 0 8px; color: #14161f; text-wrap: balance; }
+  .lede { color: var(--ink-muted); font-size: 15px; line-height: 1.65; max-width: 68ch; margin: 0 0 28px; }
 
   .card {
-    background: linear-gradient(180deg, var(--surface), var(--surface-2));
-    border: 1px solid var(--border); border-radius: 16px; padding: 24px;
-    box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset, 0 20px 50px -30px rgba(0,0,0,0.6);
+    background: var(--paper); border: 1px solid var(--border); border-radius: 14px; padding: 26px;
+    box-shadow: 0 1px 2px rgba(20,22,31,0.03);
   }
 
   /* ---------------- login ---------------- */
-  #view-login { max-width: 400px; margin: 10vh auto 0; }
+  #view-login { max-width: 420px; margin: 9vh auto 0; }
   #view-login .card { text-align: center; }
-  #view-login .lock { font-size: 30px; margin-bottom: 6px; }
-  #view-login h1 { font-size: 20px; }
+  #view-login .lock { font-size: 26px; margin-bottom: 8px; }
+  #view-login h1 { font-size: 21px; }
   #view-login .lede { margin: 0 auto 22px; }
   .field { text-align: left; margin-bottom: 14px; }
   .field label {
@@ -103,44 +69,43 @@
     letter-spacing: 0.06em; color: var(--ink-faint); margin-bottom: 6px;
   }
   input[type="password"], input[type="text"], input[type="number"], select {
-    width: 100%; background: #0a0d14; border: 1px solid var(--border); border-radius: 9px;
-    color: var(--ink); font-family: var(--mono); font-size: 14px; padding: 11px 13px;
+    width: 100%; background: var(--paper); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--ink); font-family: var(--mono); font-size: 14px; padding: 10px 13px;
     outline: none; transition: border-color 0.15s;
   }
-  input:focus, select:focus { border-color: var(--mint); }
+  input:focus, select:focus { border-color: var(--accent); }
   select { font-family: var(--sans); appearance: none; cursor: pointer;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%238B93AB'/></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%23848DA3'/></svg>");
     background-repeat: no-repeat; background-position: right 14px center; }
 
   button.primary {
-    width: 100%; background: linear-gradient(135deg, var(--mint), #17C793);
-    color: #04140D; font-weight: 700; font-size: 14.5px; border: none; border-radius: 10px;
-    padding: 13px; cursor: pointer; letter-spacing: 0.01em;
-    box-shadow: 0 8px 24px -8px rgba(44,255,181,0.45);
-    transition: transform 0.1s, box-shadow 0.15s;
+    width: 100%; background: var(--accent); color: var(--accent-ink);
+    font-weight: 700; font-size: 14.5px; border: none; border-radius: 9px;
+    padding: 12px; cursor: pointer; letter-spacing: 0.01em;
+    transition: background 0.15s;
   }
-  button.primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 28px -8px rgba(44,255,181,0.6); }
-  button.primary:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
-  .error-msg { color: var(--bad); font-size: 13px; margin-top: 10px; min-height: 1em; }
+  button.primary:hover:not(:disabled) { background: #2568b3; }
+  button.primary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .error-msg { color: var(--danger-border); font-size: 13px; margin-top: 10px; min-height: 1em; }
 
   /* ---------------- dashboard ---------------- */
   #view-app { display: none; }
   .section-title {
     font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.07em;
-    color: var(--ink-faint); margin: 0 0 12px;
+    color: var(--ink-faint); margin: 0 0 12px; font-weight: 700;
   }
 
-  .party-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 18px; }
-  .party-card { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; background: #0b0f17; }
-  .party-card .pc-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-family: var(--mono); font-size: 12.5px; font-weight: 700; }
-  .party-card.p0 .pc-head { color: var(--party0); }
-  .party-card.p1 .pc-head { color: var(--party1); }
-  .party-card.p2 .pc-head { color: var(--party2); }
-  .party-card .pc-dot { width: 7px; height: 7px; border-radius: 50%; }
-  .party-card.p0 .pc-dot { background: var(--party0); box-shadow: 0 0 8px var(--party0); }
-  .party-card.p1 .pc-dot { background: var(--party1); box-shadow: 0 0 8px var(--party1); }
-  .party-card.p2 .pc-dot { background: var(--party2); box-shadow: 0 0 8px var(--party2); }
-  .party-card .pc-note { font-size: 11.5px; color: var(--ink-faint); margin-top: 8px; }
+  .party-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 22px; }
+  .party-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; background: var(--paper-2); }
+  .party-card .pc-head {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+    font-size: 12.5px; font-weight: 700; color: var(--ink);
+  }
+  .party-card .pc-head .pc-tag {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-faint);
+    border: 1px solid var(--border-strong); border-radius: 4px; padding: 1px 5px; background: var(--paper);
+  }
+  .party-card .pc-note { font-size: 11.5px; color: var(--ink-faint); margin-top: 8px; line-height: 1.5; }
 
   .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .row3 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; }
@@ -148,70 +113,123 @@
   .slider-row { margin-bottom: 4px; }
   .slider-row .sr-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
   .slider-row .sr-head label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-faint); }
-  .slider-row .sr-value { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--ink); }
+  .slider-row .sr-value { font-family: var(--mono); font-size: 13.5px; font-weight: 700; color: var(--ink); }
   input[type="range"] {
     -webkit-appearance: none; width: 100%; height: 4px; border-radius: 3px;
-    background: var(--border-bright); outline: none; margin: 0;
+    background: var(--border-strong); outline: none; margin: 0;
   }
   input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
-    background: var(--mint); cursor: pointer; box-shadow: 0 0 10px rgba(44,255,181,0.6);
-    border: 2px solid #04140D;
+    -webkit-appearance: none; width: 15px; height: 15px; border-radius: 50%;
+    background: var(--accent); cursor: pointer; border: 2px solid var(--paper);
+    box-shadow: 0 0 0 1px var(--accent);
   }
   input[type="range"]::-moz-range-thumb {
-    width: 16px; height: 16px; border-radius: 50%; background: var(--mint); cursor: pointer;
-    border: 2px solid #04140D; box-shadow: 0 0 10px rgba(44,255,181,0.6);
+    width: 15px; height: 15px; border-radius: 50%; background: var(--accent); cursor: pointer;
+    border: 2px solid var(--paper); box-shadow: 0 0 0 1px var(--accent);
   }
 
   .submit-row { margin-top: 22px; display: flex; align-items: center; gap: 14px; }
-  .submit-row button.primary { width: auto; padding: 13px 26px; }
+  .submit-row button.primary { width: auto; padding: 12px 26px; }
   .rate-note { font-size: 12px; color: var(--ink-faint); }
 
   /* ---------------- status / result ---------------- */
   #status-area { margin-top: 22px; }
-  .status-card { border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; background: #0b0f17; }
+  .status-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; background: var(--paper); }
   .status-row { display: flex; align-items: center; gap: 12px; }
   .spinner {
-    width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border-bright);
-    border-top-color: var(--mint); animation: spin 0.8s linear infinite; flex: none;
+    width: 17px; height: 17px; border-radius: 50%; border: 2px solid var(--border-strong);
+    border-top-color: var(--accent); animation: spin 0.8s linear infinite; flex: none;
   }
   @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .status-label { font-family: var(--mono); font-size: 13.5px; color: var(--ink-muted); }
-  .status-sub { font-size: 12px; color: var(--ink-faint); margin-top: 4px; }
+  .status-label { font-family: var(--mono); font-size: 13.5px; color: var(--ink); font-weight: 600; }
+  .status-sub { font-size: 12.5px; color: var(--ink-faint); margin-top: 4px; line-height: 1.5; }
 
-  .result-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
-  .esito-badge { font-family: var(--mono); font-weight: 700; font-size: 13px; padding: 6px 14px; border-radius: 100px; letter-spacing: 0.02em; }
-  .esito-badge.approvato { background: var(--good-bg); color: var(--good); }
-  .esito-badge.review { background: var(--warn-bg); color: var(--warn); }
-  .esito-badge.rifiutato { background: var(--bad-bg); color: var(--bad); }
+  /* esito: same visual language as documentazione's admonition boxes
+     (tinted background + colored left border), not a glowing pill --
+     good=APPROVATO, warn=REVIEW MANUALE (same amber as "attenzione"),
+     danger=RIFIUTATO. */
+  .esito-box {
+    border-left: 4px solid var(--border); background: var(--paper-2);
+    border-radius: 0 10px 10px 0; padding: 16px 20px; margin-bottom: 20px;
+  }
+  .esito-box.approvato { border-left-color: var(--good-border); background: var(--good-bg); }
+  .esito-box.review { border-left-color: var(--warn-border); background: var(--warn-bg); }
+  .esito-box.rifiutato { border-left-color: var(--danger-border); background: var(--danger-bg); }
+  .esito-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .esito-label {
+    font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    font-weight: 700; color: var(--ink-muted); margin-bottom: 4px;
+  }
+  .esito-value { font-size: 20px; font-weight: 800; letter-spacing: -0.01em; color: #14161f; }
+  .esito-box.approvato .esito-value { color: var(--good-border); }
+  .esito-box.review .esito-value { color: var(--warn-border); }
+  .esito-box.rifiutato .esito-value { color: var(--danger-border); }
 
-  .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-  .metric { background: #0b0f17; padding: 14px 16px; }
+  .result-section-title {
+    font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em;
+    font-weight: 700; color: var(--ink-faint); margin: 26px 0 12px;
+    padding-top: 20px; border-top: 1px solid var(--border);
+  }
+  .result-section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+  .result-section-note { font-size: 12px; color: var(--ink-faint); margin: -6px 0 14px; line-height: 1.5; }
+
+  .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .metric { background: var(--paper); padding: 13px 16px; }
   .metric .m-label { font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.05em; }
-  .metric .m-value { font-family: var(--mono); font-size: 19px; font-weight: 700; margin-top: 4px; }
+  .metric .m-value { font-family: var(--mono); font-size: 18px; font-weight: 700; margin-top: 4px; color: var(--ink); }
 
-  .score-gauge { margin-top: 18px; }
+  .score-gauge { margin-top: 16px; }
   .score-gauge .sg-head { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-faint); margin-bottom: 6px; font-family: var(--mono); }
-  .score-bar { height: 8px; border-radius: 5px; background: #0a0d14; border: 1px solid var(--border); overflow: hidden; }
-  .score-bar .fill { height: 100%; background: linear-gradient(90deg, var(--violet), var(--mint)); border-radius: 5px; transition: width 0.6s cubic-bezier(.2,.9,.3,1); }
+  .score-bar { height: 7px; border-radius: 5px; background: var(--paper-2); border: 1px solid var(--border); overflow: hidden; }
+  .score-bar .fill { height: 100%; background: var(--accent); border-radius: 5px; transition: width 0.6s cubic-bezier(.2,.9,.3,1); }
 
   .privacy-note {
-    margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px;
-    font-size: 12.5px; color: var(--ink-faint); display: flex; gap: 10px; align-items: flex-start;
+    margin-top: 18px; border-top: 1px solid var(--border); padding-top: 14px;
+    font-size: 12.5px; color: var(--ink-faint); display: flex; gap: 9px; align-items: flex-start; line-height: 1.55;
   }
-  .privacy-note .pn-mark { color: var(--violet); flex: none; font-size: 15px; }
+  .privacy-note .pn-mark { color: var(--accent); flex: none; font-size: 13px; margin-top: 1px; }
 
-  footer.foot { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 11.5px; color: var(--ink-faint); text-align: center; }
+  /* on-chain (simulated): reuses the same code-block visual language as
+     documentazione's Capitolo 9 example payload -- monospace, tinted
+     card, titled -- deliberately NOT styled like the private result
+     above, so the private/public boundary stays visually obvious. */
+  .onchain-card {
+    border: 1px solid var(--border-strong); border-radius: 10px; overflow: hidden; background: var(--paper);
+  }
+  .onchain-card .oc-title {
+    font-size: 12px; font-weight: 700; color: var(--ink-muted); padding: 10px 16px;
+    background: var(--paper-2); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .onchain-card .oc-title .oc-sim-tag {
+    font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--ink-faint); border: 1px solid var(--border-strong); border-radius: 100px; padding: 2px 8px;
+  }
+  .onchain-fields { padding: 14px 18px; }
+  .onchain-row { display: flex; gap: 12px; padding: 6px 0; font-size: 13px; border-bottom: 1px dashed var(--border); }
+  .onchain-row:last-of-type { border-bottom: none; }
+  .onchain-row .oc-key { color: var(--ink-faint); min-width: 130px; flex: none; }
+  .onchain-row .oc-val { font-family: var(--mono); color: var(--code-ink); word-break: break-all; }
+  .onchain-sigs { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
+  .onchain-sigs .oc-key { color: var(--ink-faint); font-size: 13px; margin-bottom: 6px; }
+  .onchain-sig { font-family: var(--mono); font-size: 12px; color: var(--code-ink); padding: 3px 0; }
+  .onchain-note {
+    font-size: 11.5px; color: var(--ink-faint); padding: 10px 18px 14px; line-height: 1.5;
+    background: var(--paper-2); border-top: 1px solid var(--border);
+  }
+
+  footer.foot { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 11.5px; color: var(--ink-faint); text-align: center; }
 
   @media (max-width: 620px) {
     .party-grid, .row2, .row3 { grid-template-columns: 1fr; }
     .submit-row { flex-direction: column; align-items: stretch; }
+    .onchain-row { flex-direction: column; gap: 2px; }
+    .onchain-row .oc-key { min-width: 0; }
   }
 </style>
 </head>
 <body>
-<div class="grid-overlay"></div>
 
 <div class="wrap">
 
@@ -220,7 +238,7 @@
     <div class="card">
       <div class="lock">&#128274;</div>
       <h1>collateral.mpc</h1>
-      <p class="lede">Prototipo di tesi &mdash; valutazione del rischio di sottocollateralizzazione tra tre piattaforme di lending, via calcolo multiparty sicuro (MP-SPDZ, protocollo <code class="mono">mascot</code>).</p>
+      <p class="lede">Prototipo di tesi &mdash; valutazione del rischio di sottocollateralizzazione tra tre piattaforme di lending, via calcolo multiparty sicuro (MP-SPDZ, protocollo <code>mascot</code>).</p>
       <form id="login-form">
         <div class="field">
           <label for="login-password">Password di accesso</label>
@@ -255,7 +273,7 @@
       <div class="section-title">Esposizione privata per piattaforma (mai condivisa in chiaro tra le tre)</div>
       <div class="party-grid">
         <div class="party-card p0">
-          <div class="pc-head"><span class="pc-dot"></span>Piattaforma A &mdash; richiedente (party 0)</div>
+          <div class="pc-head"><span class="pc-tag">P0</span>Piattaforma A &mdash; richiedente</div>
           <div class="slider-row">
             <div class="sr-head"><label>Debito esistente</label><span class="sr-value mono" id="val-p0">$10,000</span></div>
             <input type="range" id="slider-p0" min="0" max="100000" step="1000" value="10000">
@@ -263,7 +281,7 @@
           <div class="pc-note">Riceve la richiesta del cliente, conosce prezzo/collateral/storico wallet.</div>
         </div>
         <div class="party-card p1">
-          <div class="pc-head"><span class="pc-dot"></span>Piattaforma B &mdash; controparte (party 1)</div>
+          <div class="pc-head"><span class="pc-tag">P1</span>Piattaforma B &mdash; controparte</div>
           <div class="slider-row">
             <div class="sr-head"><label>Debito esistente</label><span class="sr-value mono" id="val-p1">$10,000</span></div>
             <input type="range" id="slider-p1" min="0" max="100000" step="1000" value="10000">
@@ -271,7 +289,7 @@
           <div class="pc-note">Contribuisce solo il proprio dato di esposizione, nient'altro.</div>
         </div>
         <div class="party-card p2">
-          <div class="pc-head"><span class="pc-dot"></span>Piattaforma C &mdash; controparte (party 2)</div>
+          <div class="pc-head"><span class="pc-tag">P2</span>Piattaforma C &mdash; controparte</div>
           <div class="slider-row">
             <div class="sr-head"><label>Debito esistente</label><span class="sr-value mono" id="val-p2">$10,000</span></div>
             <input type="range" id="slider-p2" min="0" max="100000" step="1000" value="10000">
@@ -320,7 +338,7 @@
     <div id="status-area"></div>
 
     <footer class="foot">
-      Calcolo eseguito realmente su tre container MPC indipendenti (party 0 / party 1 / party 2), canali cifrati (<code class="mono">-e</code>), N=3 &mdash; a questo N nessuna piattaforma pu&ograve; isolare per sottrazione il contributo delle altre, quindi l'esposizione aggregata esatta viene rivelata a tutte.
+      Calcolo eseguito realmente su tre container MPC indipendenti (party 0 / party 1 / party 2), canali cifrati (<code>-e</code>), N=3 &mdash; a questo N nessuna piattaforma pu&ograve; isolare per sottrazione il contributo delle altre, quindi l'esposizione aggregata esatta viene rivelata a tutte.
     </footer>
   </div>
 
@@ -334,6 +352,16 @@
   const loginView = $('view-login');
   const appView = $('view-app');
 
+  // Matches backend/app.py's DEMO_WALLETS exactly -- display only (the
+  // backend already knows the real mapping from the 'wallet' key sent
+  // at submit time; this local copy never leaves the browser as
+  // anything other than a label).
+  const DEMO_WALLETS = {
+    clean: '0xclean0000000000000000000000000000000001',
+    borderline: '0xborderline00000000000000000000000003',
+    flagged: '0xflagged000000000000000000000000000002',
+  };
+
   async function api(path, opts) {
     const res = await fetch(path, Object.assign({ headers: { 'Content-Type': 'application/json' } }, opts));
     let body = null;
@@ -346,6 +374,20 @@
   }
 
   function fmtUsd(n) { return '$' + Number(n).toLocaleString('en-US'); }
+  function truncateHex(hex) {
+    if (!hex || hex.length <= 14) return hex;
+    return hex.slice(0, 8) + '&hellip;' + hex.slice(-6);
+  }
+  // Simulated only -- see the on-chain card's own "(simulato)" tag and
+  // note. Not a real signature, not cryptographically meaningful:
+  // purely illustrative of the payload shape described in
+  // /documentazione Capitolo 9 (build_onchain_payload, still
+  // unimplemented -- see Scripts/crypto_risk_run.py).
+  function fakeSignatureHex() {
+    let s = '';
+    for (let i = 0; i < 64; i++) s += Math.floor(Math.random() * 16).toString(16);
+    return s;
+  }
 
   // ---- login ----
   $('login-form').addEventListener('submit', async function(e) {
@@ -401,6 +443,7 @@
   const statusArea = $('status-area');
   const submitBtn = $('submit-btn');
   let pollTimer = null;
+  let lastWalletKey = 'clean';
 
   function esitoBadgeClass(esito) {
     if (esito === 'APPROVATO') return 'approvato';
@@ -440,11 +483,23 @@
     const privacyText = hasExactExposure
       ? 'A N&ge;3 nessuna piattaforma pu&ograve; isolare per sottrazione il contributo delle altre dalla somma aggregata: l\'esposizione totale esatta pu&ograve; quindi essere rivelata in sicurezza a tutte le piattaforme partecipanti.'
       : 'A N=2 solo la fascia di esposizione aggregata viene rivelata (mai l\'importo esatto): rivelare l\'importo esatto al richiedente gli permetterebbe di dedurre per sottrazione l\'esposizione esatta della controparte, dato che conosce gi&agrave; il proprio contributo e il nuovo prestito.';
+
+    const walletAddress = DEMO_WALLETS[lastWalletKey] || DEMO_WALLETS.clean;
+    const timestamp = new Date().toISOString();
+    const sigs = [];
+    for (let i = 0; i < nPlatforms; i++) sigs.push(fakeSignatureHex());
+
     statusArea.innerHTML =
+      // ---- "il tuo risultato" (privato): quello che il calcolo ha
+      // rivelato alle piattaforme partecipanti -- sub-punteggi e flag
+      // individuali non ci sono mai stati, nemmeno qui.
       '<div class="status-card">' +
-        '<div class="result-head">' +
-          '<span class="esito-badge ' + cls + '">' + q.esito + '</span>' +
-          '<span class="status-sub mono">durata: ' + (maxDuration !== null ? maxDuration + 's' : '&mdash;') + '</span>' +
+        '<div class="result-section-title">Il tuo risultato (privato)</div>' +
+        '<div class="esito-box ' + cls + '">' +
+          '<div class="esito-head">' +
+            '<div><div class="esito-label">Esito</div><div class="esito-value">' + q.esito + '</div></div>' +
+            '<span class="status-sub mono">durata: ' + (maxDuration !== null ? maxDuration + 's' : '&mdash;') + '</span>' +
+          '</div>' +
         '</div>' +
         '<div class="metric-grid">' +
           '<div class="metric"><div class="m-label">Risk score</div><div class="m-value">' + q.risk_score + '/100</div></div>' +
@@ -458,21 +513,44 @@
         '</div>' +
         '<div class="privacy-note"><span class="pn-mark">&#9673;</span>' +
         '<span>' + privacyText + '</span></div>' +
+
+        // ---- "pubblicato on-chain" (pubblico, SIMULATO): la
+        // pubblicazione on-chain vera e propria non e' ancora
+        // implementata (vedi /documentazione Capitolo 9) -- questo
+        // riquadro mostra la FORMA del payload che verrebbe pubblicato,
+        // costruito qui nel browser, non un dato reale ne' firme
+        // crittografiche vere.
+        '<div class="result-section-title">Pubblicato on-chain (simulato)</div>' +
+        '<div class="result-section-note">Non ancora implementato realmente (vedi <a href="/documentazione#smart-contract">Capitolo 9</a> della documentazione) -- payload costruito qui nel browser solo per mostrarne la forma. Nota che il punteggio di rischio e le soglie NON compaiono qui: restano privati tra le piattaforme, per progetto.</div>' +
+        '<div class="onchain-card">' +
+          '<div class="oc-title">onchain_payload<span class="oc-sim-tag">simulato</span></div>' +
+          '<div class="onchain-fields">' +
+            '<div class="onchain-row"><span class="oc-key">wallet_address</span><span class="oc-val" title="' + walletAddress + '">' + truncateHex(walletAddress) + '</span></div>' +
+            '<div class="onchain-row"><span class="oc-key">esito</span><span class="oc-val">' + q.esito + '</span></div>' +
+            '<div class="onchain-row"><span class="oc-key">timestamp</span><span class="oc-val">' + timestamp + '</span></div>' +
+            '<div class="onchain-sigs">' +
+              '<div class="oc-key">signatures (' + nPlatforms + ')</div>' +
+              sigs.map(function(s) { return '<div class="onchain-sig">' + truncateHex(s) + '</div>'; }).join('') +
+            '</div>' +
+          '</div>' +
+          '<div class="onchain-note">Ogni piattaforma firmerebbe l\'esito che il proprio nodo ha calcolato e verificato in autonomia via MPC -- non una dichiarazione di fiducia nella controparte, ma conferma crittografica di aver ottenuto indipendentemente lo stesso risultato.</div>' +
+        '</div>' +
       '</div>';
   }
 
   function renderError(msg) {
     statusArea.innerHTML =
       '<div class="status-card"><div class="status-row">' +
-      '<div><div class="status-label" style="color:var(--bad)">Richiesta fallita</div>' +
+      '<div><div class="status-label" style="color:var(--danger-border)">Richiesta fallita</div>' +
       '<div class="status-sub">' + msg + '</div></div></div></div>';
   }
 
   submitBtn.addEventListener('click', async function() {
     if (pollTimer) clearInterval(pollTimer);
     submitBtn.disabled = true;
+    lastWalletKey = $('select-wallet').value;
     const payload = {
-      wallet: $('select-wallet').value,
+      wallet: lastWalletKey,
       new_loan_usd: parseInt($('slider-loan').value, 10),
       collateral_asset: $('select-asset').value,
       collateral_amount: parseFloat($('slider-collateral').value),

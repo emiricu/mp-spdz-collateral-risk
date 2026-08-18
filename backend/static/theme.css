@@ -1,0 +1,49 @@
+/* Shared design tokens for collateral.mpc's light, Sphinx/ReadTheDocs-
+   inspired theme -- single source of truth for /documentazione AND the
+   demo app (login, loan request form, "verifica in corso", esito
+   screen). Change a color/font/radius here, not per page -- pages
+   consume these tokens, they don't define parallel copies.
+
+   --good-*/--danger-* extend the original documentazione-only note/warn
+   pair (blue/amber) with green/red, needed for the demo's three-state
+   esito badge (APPROVATO/REVIEW MANUALE/RIFIUTATO) -- REVIEW MANUALE
+   reuses --warn-* as-is, same visual language as an "attenzione" box,
+   deliberately not a fourth distinct color. */
+:root {
+  /* sidebar tokens: only consumed by /documentazione's fixed nav, kept
+     here anyway so there is exactly one place either page could ever
+     need to look. */
+  --sidebar-bg: #23293a;
+  --sidebar-bg-2: #1b202e;
+  --sidebar-ink: #C7CDE0;
+  --sidebar-ink-dim: #8890AA;
+  --sidebar-active-bg: #2E3650;
+
+  --accent: #2E7DD1;
+  --accent-ink: #ffffff;
+
+  --paper: #ffffff;
+  --paper-2: #f7f8fa;
+  --ink: #232733;
+  --ink-muted: #565D71;
+  --ink-faint: #848DA3;
+  --border: #E1E5EC;
+  --border-strong: #CCD2DE;
+
+  --note-border: #2E7DD1;
+  --note-bg: #EBF3FC;
+  --warn-border: #C9822A;
+  --warn-bg: #FCF2E3;
+  --good-border: #2E9E5B;
+  --good-bg: #E8F6EE;
+  --danger-border: #C13B3B;
+  --danger-bg: #FBEAEA;
+
+  --code-bg: #F1F2F5;
+  --code-ink: #43314F;
+
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+
+  --sidebar-w: 300px;
+}
