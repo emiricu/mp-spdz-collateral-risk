@@ -1,0 +1,14 @@
+{
+  "tag": "tinier_5_run2",
+  "protocol": "tinier",
+  "n_platforms": 5,
+  "rep": 2,
+  "status": "ok",
+  "wall_clock_seconds": 6.06,
+  "esito": "APPROVATO",
+  "esito_code": 2,
+  "risk_score": 73,
+  "max_ltv_bps": 6500,
+  "liq_threshold_bps": 7500,
+  "data_sent_mb": 903.302
+}
