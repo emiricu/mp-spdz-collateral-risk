@@ -7,10 +7,16 @@ richiedente, party 1 = controparte) formano la rete a N=2 usata da
 dominio `field`, `mode=2` (`decide_production`).
 
 Questo giro costruisce **solo i due nodi**, asincroni via coda, con
-callback HTTP diretta a fine calcolo. Smart contract per la pubblicazione
-on-chain resta deliberatamente fuori scope. Un backend minimo e un
+callback HTTP diretta a fine calcolo. Un backend minimo e un
 frontend per lanciare un preventivo reale da browser esistono ora in
 `deploy/README.md` (demo pubblica, non un backend "di produzione").
+
+La pubblicazione on-chain dell'esito (commit-reveal su `SolvencyRegistry`)
+&egrave; invece dentro lo scope di questo nodo: ciascuna piattaforma firma
+e invia le proprie transazioni con la propria chiave, senza alcun
+relay/oracolo intermedio (`POST /commit` e `POST /reveal`, &sect;5).
+La gestione della chiave e del salt &egrave; descritta nella stessa
+sezione.
 
 ## 1. Build
 
@@ -187,6 +193,64 @@ Fallback via polling se una callback andasse persa. Stati possibili:
 `200` se il processo, Redis, il binario `mascot-party.x`, il programma
 compilato e il certificato locale sono tutti presenti; `503` altrimenti
 (dettaglio nel corpo). Uso previsto: readiness probe.
+
+### `POST /commit` e `POST /reveal`
+
+Sostituiscono il vecchio endpoint `/firma` (firma per un relay esterno):
+qui il nodo firma **e invia direttamente** la propria transazione a
+`SolvencyRegistry` su Sepolia, con la propria chiave persistita
+(`NODE_PRIVATE_KEY_PATH`, &sect;7) &mdash; nessun relay/oracolo in mezzo.
+Entrambi richiedono che il job `request_id` risulti `completato` **su
+questo stesso nodo**: l'esito pubblicato &egrave; sempre quello che
+questo nodo ha realmente calcolato, mai un valore fornito dal chiamante.
+
+```json
+{
+  "request_id": "req-123",
+  "session_id": "0x1234...64 caratteri hex",
+  "policy_version": 1,
+  "timestamp_unix": 1730000000
+}
+```
+
+`POST /commit` genera un salt casuale (`os.urandom(32)`), lo salva in
+Redis associato a `session_id` (solo su questo nodo), calcola
+`commit_hash = keccak256(abi.encode(sessionId, esito, policyVersion,
+timestamp, salt))` e invia `submitCommit`:
+
+```json
+{"party_id": 0, "session_id": "0x1234...", "tx_hash": "0xabcd..."}
+```
+
+`POST /reveal` recupera il salt generato dal proprio `/commit` per la
+stessa `session_id` e invia `submitReveal` con gli stessi valori; se lo
+smart contract rileva una discrepanza con il commit pubblicato in
+precedenza la transazione va in revert (`CommitMismatch`), non c'&egrave;
+alcuna rigenerazione silenziosa del salt. Se `/reveal` viene chiamato
+senza un `/commit` precedente per quella sessione su questo nodo:
+`409`.
+
+### Chiave Ethereum del nodo e gestione del salt
+
+Ogni piattaforma possiede una propria chiave privata Ethereum, usata
+**solo** per firmare le proprie transazioni di commit/reveal verso
+`SolvencyRegistry` &mdash; non lascia mai il nodo che la possiede, non
+viene mai inviata al chiamante (l'orchestratore richiede solo l'avvio di
+`/commit`/`/reveal`, non vede la chiave). Fornita come file montato
+fuori banda (variabile `NODE_PRIVATE_KEY_PATH`, default
+`/run/secrets/node_key`, letta da `node/app/onchain_direct.py`), mai
+committata nel repository. Variabili correlate: `SEPOLIA_RPC_URL`
+(default: un RPC pubblico), `CHAIN_ID` (default `11155111`, Sepolia) e
+`SOLVENCY_REGISTRY_ADDRESS` (indirizzo del registro deployato, &sect;
+"Lo smart contract" nella tesi).
+
+Il salt di ogni commit &egrave; generato con `os.urandom(32)` al momento
+della chiamata a `/commit`, quindi un valore nuovo per ogni sessione, e
+viene conservato solo nell'istanza Redis locale del nodo, associato a
+`session_id`, fino al reveal. La perdita del salt prima del reveal non
+compromette la sicurezza (il commit resta vincolante), ma la
+disponibilit&agrave;: il nodo non potrebbe più aprire il proprio impegno
+per quella sessione.
 
 ## 6. Callback a fine calcolo
 

@@ -34,3 +34,20 @@ def ping():
         return bool(_redis.ping())
     except redis.RedisError:
         return False
+
+
+def _salt_key(session_id):
+    return f'salt:{session_id}'
+
+
+def set_salt(session_id, salt_hex):
+    """Persists the random salt this node generated at /commit time for
+    session_id, so the matching /reveal call (possibly served by a
+    different worker/process) can reuse the exact same value -- never
+    transmitted anywhere else, kept only long enough to cover a session's
+    realistic commit-to-reveal window."""
+    _redis.set(_salt_key(session_id), salt_hex, ex=config.JOB_TTL_SECONDS)
+
+
+def get_salt(session_id):
+    return _redis.get(_salt_key(session_id))

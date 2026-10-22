@@ -4,3 +4,8 @@ rq==1.16.2
 redis==5.0.8
 requests==2.32.3
 cryptography==43.0.1
+eth-keys==0.8.0
+eth-utils==6.0.0
+eth-abi==6.0.0
+pycryptodome==3.23.0
+eth-account==0.13.4

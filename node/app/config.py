@@ -101,3 +101,10 @@ CALLBACK_TIMEOUT_SECONDS = float(os.environ.get('CALLBACK_TIMEOUT_SECONDS', '10'
 JOB_TTL_SECONDS = _require_int('JOB_TTL_SECONDS', default=24 * 3600)
 
 CACHE_DIR = os.environ.get('PRICE_CACHE_DIR', '/tmp/crypto_risk_run_cache')
+
+# --- Thesis demo: direct on-chain commit/reveal (replaces the old /firma
+# signature-for-relay endpoint, see onchain_direct.py) ---
+SEPOLIA_RPC_URL = os.environ.get('SEPOLIA_RPC_URL', 'https://ethereum-sepolia-rpc.publicnode.com')
+CHAIN_ID = _require_int('CHAIN_ID', default=11155111)
+SOLVENCY_REGISTRY_ADDRESS = os.environ.get('SOLVENCY_REGISTRY_ADDRESS')
+NODE_PRIVATE_KEY_PATH = os.environ.get('NODE_PRIVATE_KEY_PATH', '/run/secrets/node_key')
