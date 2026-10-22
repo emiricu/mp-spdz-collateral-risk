@@ -1,3 +1,21 @@
+# Verifica di solvibilità cross-banca via MPC (crypto-collateral)
+
+Questo repository è un fork di [MP-SPDZ](https://github.com/data61/MP-SPDZ) usato come base per un progetto di tesi: un consorzio di banche verifica in modo privacy-preserving la solvibilità aggregata di un cliente che richiede un prestito garantito da collaterale crypto, senza che nessuna banca riveli alle altre l'esposizione debitoria che quel cliente ha presso di essa. Il risultato del calcolo viene poi pubblicato on-chain tramite un meccanismo di commit-reveal, implementato nel repository gemello [aave-v4-mpc-integration](https://github.com/emiricu/aave-v4-mpc-integration) (un fork di Aave V4 con il gate di solvibilità consortile).
+
+**Cosa c'è qui, in breve:**
+
+- `Programs/Source/crypto_collateral_risk.mpc` — il programma MPC che ogni nodo del consorzio esegue: calcola l'esposizione aggregata del cliente e un verdetto di rischio (approvato/rifiutato/revisione manuale) senza mai rivelare in chiaro, a nessuna parte, l'esposizione debitoria privata degli altri partecipanti.
+- `node/` — l'implementazione del nodo di rete (container Docker, API HTTP, client on-chain diretto per commit/reveal). **`node/README.md` contiene le istruzioni complete per costruire e configurare la rete di nodi**, dalla compilazione del binario al deploy multi-macchina, passando per lo scambio dei certificati TLS e i test di affidabilità ripetuti.
+- `deploy/` — script e istruzioni per un deploy pubblico end-to-end (rete di nodi + backend + frontend), con `deploy/README.md` come guida pratica passo-passo.
+- `Scripts/risk_data/` — la logica di policy (soglie di rischio, calcolo del punteggio) usata dal programma MPC.
+- `results_produzione/`, `results_retest_controllato/`, `results_tinier_vs_mascot/` — benchmark reali delle prestazioni del protocollo (tempo di calcolo, traffico di rete) al variare del numero di partecipanti e del protocollo MPC usato (mascot vs tinier).
+
+**Per costruire la rete da zero**: segui `node/README.md`, sezione 1 ("Build") in avanti — copre compilazione del programma MPC, generazione dei certificati, configurazione di ciascun nodo (`PARTY_ID`, `PARTY0_HOST`, variabili d'ambiente), apertura delle porte di rete necessarie, e verifica end-to-end con più nodi su macchine reali separate.
+
+Il resto di questo documento è il README originale del framework MP-SPDZ, su cui questo progetto si basa.
+
+---
+
 # Multi-Protocol SPDZ [![Documentation Status](https://readthedocs.org/projects/mp-spdz/badge/?version=latest)](https://mp-spdz.readthedocs.io/en/latest/?badge=latest) [![Build Status](https://dev.azure.com/data61/MP-SPDZ/_apis/build/status/data61.MP-SPDZ?branchName=master)](https://dev.azure.com/data61/MP-SPDZ/_build/latest?definitionId=7&branchName=master) [![Gitter](https://badges.gitter.im/MP-SPDZ/community.svg)](https://gitter.im/MP-SPDZ/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 This is a software to benchmark various secure multi-party computation
